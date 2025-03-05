@@ -86,10 +86,9 @@ export enum OperatorType {
     TYPE_LOGIC_AS_U256_EQUAL = 15,
     TYPE_LOGIC_EQUAL = 16, // TYPE&DATA(vector<u8>) MUST BE EQUAL
     TYPE_LOGIC_HAS_SUBSTRING = 17, // SUBSTRING
-    TYPE_LOGIC_ALWAYS_TRUE = 18, // aways true
-    TYPE_LOGIC_NOT = 19, // NOT
-    TYPE_LOGIC_AND = 20, // AND
-    TYPE_LOGIC_OR = 21, // OR
+    TYPE_LOGIC_NOT = 18, // NOT
+    TYPE_LOGIC_AND = 19, // AND
+    TYPE_LOGIC_OR = 20, // OR
 }       
 
 export const LogicsInfo = [
@@ -100,7 +99,6 @@ export const LogicsInfo = [
     [OperatorType.TYPE_LOGIC_AS_U256_EQUAL, 'Unsigned Integer =', 'The first item = anything that follows'],
     [OperatorType.TYPE_LOGIC_EQUAL, 'Equal', 'Data and type are exactly equal for all items'],
     [OperatorType.TYPE_LOGIC_HAS_SUBSTRING, 'Has Sub String', 'The first item contains anything that follows'],
-    [OperatorType.TYPE_LOGIC_ALWAYS_TRUE, 'Always True', 'Always True'], 
     [OperatorType.TYPE_LOGIC_NOT, 'Not', 'Not operation'],
     [OperatorType.TYPE_LOGIC_AND, 'And', 'All Items And operations'],
     [OperatorType.TYPE_LOGIC_OR, 'Or', 'All Items Or operations'], 

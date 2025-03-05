@@ -100,10 +100,6 @@ export class GuardParser {
 
     static ResolveData = (constants:  DeGuardConstant[], stack:DeGuardData[], current: DeGuardData) => {
         switch (current.type) {
-            case OperatorType.TYPE_LOGIC_ALWAYS_TRUE:
-                current.ret_type = ValueType.TYPE_BOOL;
-                stack.push(current);
-                return;
             case OperatorType.TYPE_LOGIC_NOT:
                 current.ret_type = ValueType.TYPE_BOOL;
                 if (stack.length < 1) ERROR(Errors.Fail, 'ResolveData: TYPE_LOGIC_NOT');
@@ -360,7 +356,6 @@ export class GuardParser {
                 case ContextType.TYPE_SIGNER:
                 case ContextType.TYPE_CLOCK:
                 case ContextType.TYPE_GUARD:
-                case OperatorType.TYPE_LOGIC_ALWAYS_TRUE:
                 case OperatorType.TYPE_LOGIC_NOT:
                     break;
                 case OperatorType.TYPE_LOGIC_AS_U256_GREATER:

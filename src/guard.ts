@@ -173,14 +173,13 @@ export const GUARD_QUERIES:any[] = [
     [MODULES.progress, 'Closest Forward time', 827, [ValueType.TYPE_STRING, ValueType.TYPE_STRING, ValueType.TYPE_STRING], ValueType.TYPE_U64, 'The time when the forward that closest time to the current node was last triggered.', ['node name', 'next node name', 'forward name']],  
 
     [MODULES.wowok, 'Builder', 900, [], ValueType.TYPE_ADDRESS, 'Builder address of Wowok.', []], 
-    [MODULES.wowok, 'Everyone Guard', 901, [], ValueType.TYPE_ADDRESS, 'A guard that all addresses can pass through.', []], 
-    [MODULES.wowok, 'Object of Entities', 902, [], ValueType.TYPE_ADDRESS, 'The address of entity information object.', []],
-    [MODULES.wowok, 'Grantor Count', 903, [], ValueType.TYPE_U64, 'Number of registered grantors.', []],   
-    [MODULES.wowok, 'Has Grantor', 904, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether an address has been registered as a grantor?', ['address']], 
-    [MODULES.wowok, 'Grantor Name', 905, [ValueType.TYPE_ADDRESS], ValueType.TYPE_STRING, "Name of a grantor.", ['address']], 
-    [MODULES.wowok, 'Grantor Registration Time', 906, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'Registration time of a grantor.', ['address']], 
-    [MODULES.wowok, 'Grantor Expired Time', 907, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The expiration time of a grantor.', ['address']], 
-    [MODULES.wowok, 'Grantee Object for Grantor', 908, [ValueType.TYPE_ADDRESS], ValueType.TYPE_ADDRESS, 'Grantee repository address of a grantor.', ['address']], 
+    [MODULES.wowok, 'Object of Entities', 901, [], ValueType.TYPE_ADDRESS, 'The address of entity information object.', []],
+    [MODULES.wowok, 'Grantor Count', 902, [], ValueType.TYPE_U64, 'Number of registered grantors.', []],   
+    [MODULES.wowok, 'Has Grantor', 903, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether an address has been registered as a grantor?', ['address']], 
+    [MODULES.wowok, 'Grantor Name', 904, [ValueType.TYPE_ADDRESS], ValueType.TYPE_STRING, "Name of a grantor.", ['address']], 
+    [MODULES.wowok, 'Grantor Registration Time', 905, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'Registration time of a grantor.', ['address']], 
+    [MODULES.wowok, 'Grantor Expired Time', 906, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The expiration time of a grantor.', ['address']], 
+    [MODULES.wowok, 'Grantee Object for Grantor', 907, [ValueType.TYPE_ADDRESS], ValueType.TYPE_ADDRESS, 'Grantee repository address of a grantor.', ['address']], 
 /* @Deprecated
     [MODULES.vote, 'Permission', 1101, [], ValueType.TYPE_ADDRESS, 'Permission object address.', []],       
     [MODULES.vote, 'Be Voting', 1102, [], ValueType.TYPE_BOOL, 'Whether to start voting and options will not be changed?', []],
@@ -675,8 +674,6 @@ export class GuardMaker {
                 for (let i = 1; i <= splice_len; ++i) {
                     if (this.type_validator[this.type_validator.length -i] != ValueType.TYPE_BOOL) { ERROR(Errors.Fail, 'type_validator check:'+e)  }
                 }
-                break;
-            case OperatorType.TYPE_LOGIC_ALWAYS_TRUE:
                 break;
             case OperatorType.TYPE_NUMBER_ADD:
             case OperatorType.TYPE_NUMBER_DEVIDE:
