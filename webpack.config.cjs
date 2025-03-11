@@ -5,9 +5,6 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.ts', '.json'],
     alias: {
-      "fs": path.resolve(__dirname, './empty.ts'),
-      "os": path.resolve(__dirname, './empty.ts'),
-      "path": path.resolve(__dirname, './empty.ts'),
     }
   },
   output: {
