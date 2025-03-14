@@ -49,7 +49,7 @@ export declare class Treasury {
     add_withdraw_guard(guard: string, amount: bigint, passport?: PassportObject): void;
     remove_withdraw_guard(guard: string[], removeall?: boolean, passport?: PassportObject): void;
     change_permission(new_permission: PermissionObject): void;
-    static parseObjectType: (chain_type: string) => string;
+    static parseObjectType: (chain_type?: string) => string;
     static MAX_WITHDRAW_GUARD_COUNT: number;
 }
 //# sourceMappingURL=treasury.d.ts.map

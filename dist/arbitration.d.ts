@@ -37,7 +37,7 @@ export declare class Arbitration {
     get_object(): TxbObject;
     private constructor();
     static From(txb: TransactionBlock, token_type: string, permission: PermissionObject, object: TxbObject): Arbitration;
-    static New(txb: TransactionBlock, token_type: string, permission: PermissionObject, description: string, fee: bigint, withdrawTreasury: TreasuryObject, passport?: PassportObject): Arbitration;
+    static New(txb: TransactionBlock, token_type: string, permission: PermissionObject, description: string, fee: bigint | number | string, withdrawTreasury: TreasuryObject, passport?: PassportObject): Arbitration;
     launch(): ArbitrationAddress;
     set_description(description: string, passport?: PassportObject): void;
     set_fee(fee: bigint, passport?: PassportObject): void;

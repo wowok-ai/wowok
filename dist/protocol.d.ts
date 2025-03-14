@@ -52,11 +52,12 @@ export type PaymentObject = TransactionResult | string | TransactionArgument;
 export type PaymentAddress = TransactionResult;
 export type ReceivedObject = TransactionResult | string | TransactionArgument;
 export type CoinWrapperObject = TransactionResult;
+export type TxbAddress = string | TransactionResult;
 export type TxbObject = string | TransactionResult | TransactionArgument | GuardObject | RepositoryObject | PermissionObject | MachineObject | PassportObject | DemandObject | ServiceObject | OrderObject | DiscountObject | DemandObject | ResourceObject | EntityObject | ArbitrationObject | ArbObject | TreasuryObject;
 export type WowokObject = TransactionResult;
 export type FnCallType = `${string}::${string}::${string}`;
 export declare enum OperatorType {
-    TYPE_QUERY = 1,
+    TYPE_QUERY = 1,// query wowok object
     TYPE_NUMBER_ADD = 2,
     TYPE_NUMBER_SUBTRACT = 3,
     TYPE_NUMBER_MULTIPLY = 4,
@@ -67,12 +68,11 @@ export declare enum OperatorType {
     TYPE_LOGIC_AS_U256_LESSER = 13,
     TYPE_LOGIC_AS_U256_LESSER_EQUAL = 14,
     TYPE_LOGIC_AS_U256_EQUAL = 15,
-    TYPE_LOGIC_EQUAL = 16,
-    TYPE_LOGIC_HAS_SUBSTRING = 17,
-    TYPE_LOGIC_ALWAYS_TRUE = 18,
-    TYPE_LOGIC_NOT = 19,
-    TYPE_LOGIC_AND = 20,
-    TYPE_LOGIC_OR = 21
+    TYPE_LOGIC_EQUAL = 16,// TYPE&DATA(vector<u8>) MUST BE EQUAL
+    TYPE_LOGIC_HAS_SUBSTRING = 17,// SUBSTRING
+    TYPE_LOGIC_NOT = 18,// NOT
+    TYPE_LOGIC_AND = 19,// AND
+    TYPE_LOGIC_OR = 20
 }
 export declare const LogicsInfo: (string | OperatorType)[][];
 export declare enum ValueType {
@@ -120,9 +120,9 @@ export declare const IsValidOperatorType: (type: number) => boolean;
 export declare const IsValidValueType: (type: number) => boolean;
 export declare const IsNumberType: (type: ValueType | any) => boolean;
 export declare enum ContextType {
-    TYPE_SIGNER = 60,
-    TYPE_CLOCK = 61,
-    TYPE_GUARD = 62,
+    TYPE_SIGNER = 60,// address type; the signer address on verifying
+    TYPE_CLOCK = 61,// u64 type; On-chain time at validation
+    TYPE_GUARD = 62,// address type; the address of the guard being verified
     TYPE_CONSTANT = 80
 }
 interface ValueTypeString {
@@ -194,10 +194,10 @@ export declare class Protocol {
     WOWOK_COIN_TYPE: () => string;
     COINS_TYPE: () => CoinTypeInfo[];
     update_coinType: (token_type: string, decimals: number, symbol: string) => void;
-    explorerUrl: (objectid: string, type?: 'object' | 'txblock' | 'account') => string;
+    explorerUrl: (objectid: string, type?: "object" | "txblock" | "account") => string;
     CoinTypes_Testnet: CoinTypeInfo[];
     CoinTypes_Mainnet: CoinTypeInfo[];
-    coinTypeInfo: (token_type: string, handler: (info: CoinTypeInfo) => void) => CoinTypeInfo | 'loading';
+    coinTypeInfo: (token_type: string, handler: (info: CoinTypeInfo) => void) => CoinTypeInfo | "loading";
     static CLOCK_OBJECT: {
         objectId: string;
         mutable: boolean;

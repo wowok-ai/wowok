@@ -169,6 +169,10 @@ export class Bcs {
             'like': BCS.U32,
             'dislike': BCS.U32,
         });
+        this.bcs.registerStructType('TagStruct', {
+            'nick': 'string',
+            'tags': "vector<string>",
+        });
         this.bcs.registerStructType('PersonalInfo', {
             'name': 'vector<u8>',
             'description': 'vector<u8>',
@@ -324,6 +328,12 @@ export class Bcs {
         r.description = new TextDecoder().decode(Uint8Array.from(r.description));
         return r;
     }
+    de_tags(data) {
+        if (!data || data.length === 0)
+            return '';
+        const struct_vec = this.bcs.de('vector<u8>', data);
+        return this.bcs.de('TagStruct', Uint8Array.from(struct_vec));
+    }
     de_perms(data) {
         if (!data || data.length < 1)
             return '';
@@ -372,7 +382,7 @@ export const MAX_DESCRIPTION_LENGTH = 1024;
 export const MAX_NAME_LENGTH = 64;
 export const MAX_ENDPOINT_LENGTH = 1024;
 // export const OptionNone = (txb:TransactionBlock) : TransactionArgument => { return txb.pure([], BCS.U8) };
-export const IsValidDesription = (description) => { return description?.length <= MAX_DESCRIPTION_LENGTH; };
+export const IsValidDesription = (description) => { return description.length <= MAX_DESCRIPTION_LENGTH; };
 export const IsValidName = (name) => { if (!name)
     return false; return name.length <= MAX_NAME_LENGTH && name.length != 0; };
 export const IsValidName_AllowEmpty = (name) => { return name.length <= MAX_NAME_LENGTH; };
@@ -384,6 +394,12 @@ export const IsValidAddress = (addr) => {
         return false;
     }
     return true;
+};
+export const IsValidCoinType = (coin_type) => {
+    if (!coin_type) {
+        return false;
+    }
+    return coin_type.startsWith('0x2::coin::Coin') || coin_type.startsWith('0x0000000000000000000000000000000000000000000000000000000000000002');
 };
 export const IsValidBigint = (value, max = MAX_U256, min) => {
     if (value === '' || value === undefined)
@@ -595,3 +611,6 @@ export const FirstLetterUppercase = (str) => {
         return '';
     return str.substring(0, 1).toUpperCase() + str.substring(1);
 };
+export function hasDuplicates(array) {
+    return array.some((item, index) => array.findIndex(i => i === item) !== index);
+}

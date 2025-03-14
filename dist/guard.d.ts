@@ -18,6 +18,7 @@ export interface GuardAnswer {
     identifiers: number[];
 }
 export type OnQueryAnswer = (answer: GuardAnswer) => void;
+export declare const GUARD_QUERIES: any[];
 export declare class Guard {
     static MAX_INPUT_LENGTH: number;
     protected txb: TransactionBlock;
@@ -29,7 +30,6 @@ export declare class Guard {
     launch(): GuardAddress;
     static everyone_guard(txb: TransactionBlock): GuardAddress;
     static QueryAddressIdentifiers(guard: GuardObject, onQueryAnswer: OnQueryAnswer, sender: string): void;
-    static QUERIES: any[];
     static BoolCmd: any[];
     static IsBoolCmd: (cmd: number) => boolean;
     static CmdFilter: (retType: ValueType) => any[];
@@ -48,14 +48,17 @@ export declare class Guard {
     static StringOptions: () => Guard_Options[];
     static BoolOptions: () => Guard_Options[];
     static AddressOptions: () => Guard_Options[];
-    static Options: (ret_type: ValueType | 'number' | 'any') => Guard_Options[];
+    static Options: (ret_type: ValueType | "number" | "any") => Guard_Options[];
 }
+export declare const IsValidGuardIdentifier: (identifier: number | undefined) => boolean;
 export declare class GuardMaker {
     protected data: Uint8Array[];
     protected type_validator: Data_Type[];
     protected constant: GuardConstant;
-    private static index;
-    private static get_index;
+    private static _witness_index;
+    private static _const_index;
+    private static GetWitnessIndex;
+    private static getConstIndex;
     static IsValidIndentifier: (identifier: number) => boolean;
     constructor();
     add_constant(type: ValueType, value?: any, identifier?: number, bNeedSerialize?: boolean): number;
@@ -67,7 +70,7 @@ export declare class GuardMaker {
     IsReady(): boolean;
     combine(otherBuilt: GuardMaker, bAnd?: boolean, bCombinConstant?: boolean): GuardMaker;
     get_constant(): GuardConstant;
-    get_input(): Uint8Array[];
+    get_input(): Uint8Array<ArrayBufferLike>[];
     static input_combine(input1: Uint8Array, input2: Uint8Array, bAnd?: boolean): Uint8Array;
     static input_not(input: Uint8Array): Uint8Array;
     static match_u256(type: number): boolean;

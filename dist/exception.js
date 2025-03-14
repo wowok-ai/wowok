@@ -21,9 +21,11 @@ export var Errors;
     Errors["Fail"] = "fail";
     Errors["IsValidIndentifier"] = "indentifier invalid";
     Errors["isValidHttpUrl"] = "invalid url";
-    Errors["IsValidUserDefinedIndex"] = "invalid user defined permission index";
+    Errors["IsValidBizPermissionIndex"] = "invalid biz-permission index";
     Errors["bcsTypeInvalid"] = "invalid bcs type";
     Errors["IsValidServiceItemName"] = "invalid service item name";
+    Errors["IsValidCoinType"] = "not the coin type";
+    Errors["IsValidGuardIdentifier"] = "guard identifier invalid";
     Errors["noPermission"] = "no permission";
 })(Errors || (Errors = {}));
 export const ERROR = (error, info) => {

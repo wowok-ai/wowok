@@ -15,49 +15,15 @@ export class Entity {
         return r;
     }
     mark(resource, address, like) {
-        if (!IsValidAddress(address))
+        if (typeof (address) === 'string' && !IsValidAddress(address)) {
             ERROR(Errors.IsValidAddress, like);
+        }
         this.txb.moveCall({
             target: Protocol.Instance().entityFn(like),
             arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, resource.get_object()),
-                this.txb.pure.address(address)]
+                typeof (address) === 'string' ? this.txb.pure.address(address) : address]
         });
     }
-    /*
-    add_safer(safer: Safer[], bExistModify:boolean=true) {
-        if (safer.length === 0) return ;
-        if (!IsValidArray(safer, (v:Safer) => {
-            if (!IsValidName(v.name) || !IsValidDesription(v.value)) {
-                return false
-            }
-        })) {
-            ERROR(Errors.InvalidParam, 'add_safer');
-        }
-
-        const name = safer.map((v)=>v.name);
-        const value = safer.map((v)=>v.value);
-        this.txb.moveCall({
-            target:Protocol.Instance().entityFn('safer_add') as FnCallType,
-            arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.vector('string', name),
-                this.txb.pure.vector('string', value),  this.txb.pure.bool(bExistModify)]
-        })
-    }
-
-    remove_safer(name:string[], removeall?:boolean) {
-        if (name.length === 0 && !removeall) return;
-
-        if (removeall) {
-            this.txb.moveCall({
-                target:Protocol.Instance().entityFn('safer_remove_all') as FnCallType,
-                arguments:[Protocol.TXB_OBJECT(this.txb, this.object)]
-            })
-        } else {
-            this.txb.moveCall({
-                target:Protocol.Instance().entityFn('safer_remove') as FnCallType,
-                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.vector('string', name)]
-            })
-        }
-    }*/
     update(info) {
         if (info?.name && !IsValidName(info.name))
             ERROR(Errors.IsValidName, 'update');
@@ -99,6 +65,12 @@ export class Entity {
     destroy_resource(resource) {
         return this.txb.moveCall({
             target: Protocol.Instance().entityFn('resource_destroy'),
+            arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, resource.get_object())]
+        });
+    }
+    use_resource(resource) {
+        return this.txb.moveCall({
+            target: Protocol.Instance().entityFn('resource_use'),
             arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, resource.get_object())]
         });
     }

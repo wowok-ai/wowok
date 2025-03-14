@@ -2,7 +2,7 @@ import { Protocol, ValueType, RepositoryValueType, } from './protocol';
 import { Permission } from './permission';
 import { Bcs, array_unique, IsValidDesription, IsValidAddress, IsValidArray, IsValidName, ValueTypeConvert } from './utils';
 import { ERROR, Errors } from './exception';
-import { MAX_U8, MAX_U128, MAX_U256, MAX_U64, parseObjectType } from './utils';
+import { MAX_U8, MAX_U128, MAX_U256, MAX_U64 } from './utils';
 export var Repository_Policy_Mode;
 (function (Repository_Policy_Mode) {
     Repository_Policy_Mode[Repository_Policy_Mode["POLICY_MODE_FREE"] = 0] = "POLICY_MODE_FREE";
@@ -408,9 +408,6 @@ export class Repository {
     };
     static IsValidValue = (value) => {
         return value.length < Repository.MAX_VALUE_LENGTH;
-    };
-    static parseObjectType = (chain_type) => {
-        return parseObjectType(chain_type, 'repository::Repository<');
     };
     static rpc_de_data(fields) {
         const rep = fields?.map((v) => {

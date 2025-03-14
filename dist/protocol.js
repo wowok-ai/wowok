@@ -38,10 +38,9 @@ export var OperatorType;
     OperatorType[OperatorType["TYPE_LOGIC_AS_U256_EQUAL"] = 15] = "TYPE_LOGIC_AS_U256_EQUAL";
     OperatorType[OperatorType["TYPE_LOGIC_EQUAL"] = 16] = "TYPE_LOGIC_EQUAL";
     OperatorType[OperatorType["TYPE_LOGIC_HAS_SUBSTRING"] = 17] = "TYPE_LOGIC_HAS_SUBSTRING";
-    OperatorType[OperatorType["TYPE_LOGIC_ALWAYS_TRUE"] = 18] = "TYPE_LOGIC_ALWAYS_TRUE";
-    OperatorType[OperatorType["TYPE_LOGIC_NOT"] = 19] = "TYPE_LOGIC_NOT";
-    OperatorType[OperatorType["TYPE_LOGIC_AND"] = 20] = "TYPE_LOGIC_AND";
-    OperatorType[OperatorType["TYPE_LOGIC_OR"] = 21] = "TYPE_LOGIC_OR";
+    OperatorType[OperatorType["TYPE_LOGIC_NOT"] = 18] = "TYPE_LOGIC_NOT";
+    OperatorType[OperatorType["TYPE_LOGIC_AND"] = 19] = "TYPE_LOGIC_AND";
+    OperatorType[OperatorType["TYPE_LOGIC_OR"] = 20] = "TYPE_LOGIC_OR";
 })(OperatorType || (OperatorType = {}));
 export const LogicsInfo = [
     [OperatorType.TYPE_LOGIC_AS_U256_GREATER, 'Unsigned Integer >', 'The first item > anything that follows'],
@@ -51,7 +50,6 @@ export const LogicsInfo = [
     [OperatorType.TYPE_LOGIC_AS_U256_EQUAL, 'Unsigned Integer =', 'The first item = anything that follows'],
     [OperatorType.TYPE_LOGIC_EQUAL, 'Equal', 'Data and type are exactly equal for all items'],
     [OperatorType.TYPE_LOGIC_HAS_SUBSTRING, 'Has Sub String', 'The first item contains anything that follows'],
-    [OperatorType.TYPE_LOGIC_ALWAYS_TRUE, 'Always True', 'Always True'],
     [OperatorType.TYPE_LOGIC_NOT, 'Not', 'Not operation'],
     [OperatorType.TYPE_LOGIC_AND, 'And', 'All Items And operations'],
     [OperatorType.TYPE_LOGIC_OR, 'Or', 'All Items Or operations'],
@@ -160,14 +158,14 @@ const TESTNET = {
 }
 */
 const TESTNET = {
-    wowok: "0x30ed8dfa0b8597b1c753b8345e3c7b8792041feeaa7dc765bacd10f63c4402b7",
-    wowok_origin: '0x30ed8dfa0b8597b1c753b8345e3c7b8792041feeaa7dc765bacd10f63c4402b7',
-    base: '0x75eae2a5c8e9bcee76ff8f684bcc38e49a26530526ef8c32703dc0b4a4281f93',
-    base_origin: '0x75eae2a5c8e9bcee76ff8f684bcc38e49a26530526ef8c32703dc0b4a4281f93',
-    wowok_object: '0xc26fcc691dbd4c05d753e170a11c151dbdec130b77691b391d1012dfb8c445bf',
-    entity_object: '0x1de2c69c9a795f56a8c409b54bbf50e544d4178d7c64b5520d929f5eea65b5ff',
-    treasury_cap: '0x9f415c863f0c26103e70fc4a739fea479ff20544057a3c5665db16c0b8650f7c',
-    oracle_object: '0x6c7d9b8ab0e9d21291e0128ca3e0d550b30f375f1e008381f2fbeef6753e6dcf',
+    wowok: "0xe98ef6b139de57b59d71496dc2b48d4e36e195013194748bdfe90688a9821132",
+    wowok_origin: '0xe98ef6b139de57b59d71496dc2b48d4e36e195013194748bdfe90688a9821132',
+    base: '0xa475682a229bcf913b2d561370ed44a055d0091a4a02b25d780d48aed03df267',
+    base_origin: '0xa475682a229bcf913b2d561370ed44a055d0091a4a02b25d780d48aed03df267',
+    wowok_object: '0xf2d3dc8667e21ca03fd808e51f7f9f291bad861bab1f62b4f07f39834830a5d9',
+    entity_object: '0x40eb7a354875548a55a196c0f1cbbf217026fee9d86f94615b992878a6629e03',
+    treasury_cap: '0x405105d71add6c57c1de0dbceb2676320ddb5bbe4c3cfdf79c7b23783e9e3761',
+    oracle_object: '0x4592d870a3c79c37d49fe55d1eba3ed2e82bcf707822d698beeceacce0dabdc6',
 };
 const MAINNET = {
     wowok: "",

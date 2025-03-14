@@ -103,7 +103,7 @@ export interface Permission_Index {
     index: PermissionIndexType;
     entities: Permission_Index_Entity[];
 }
-export interface UserDefinedIndex {
+export interface BizPermission {
     index: PermissionIndexType;
     name: string;
 }
@@ -115,8 +115,8 @@ export declare class Permission {
     static From(txb: TransactionBlock, object: TxbObject): Permission;
     static New(txb: TransactionBlock, description: string): Permission;
     launch(): PermissionAddress;
-    add_userdefine(index: number, name: string): void;
-    remove_userdefine(index: number): void;
+    add_bizPermission(index: number, name: string): void;
+    remove_bizPermission(index: number): void;
     transfer_permission(old_entity: string, new_entity: string): void;
     add_entity2(entities: string[], index?: PermissionIndexType): void;
     add_entity3(entities: Permission_Index[]): void;
@@ -144,7 +144,7 @@ export declare class Permission {
     static PERMISSION_ADMIN: number;
     static PERMISSION_OWNER_AND_ADMIN: number;
     static BUSINESS_PERMISSIONS_START: PermissionIndex;
-    static IsValidUserDefinedIndex: (index: number) => boolean;
+    static IsValidBizPermissionIndex: (index: number) => boolean;
     static IsValidPermissionIndex: (index: PermissionIndexType) => boolean;
 }
 //# sourceMappingURL=permission.d.ts.map

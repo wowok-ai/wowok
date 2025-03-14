@@ -12,7 +12,7 @@ export type Service_Sale = {
     endpoint?: string | null;
 };
 export declare enum Service_Discount_Type {
-    ratio = 0,
+    ratio = 0,// -off%
     minus = 1
 }
 export type Service_Discount = {

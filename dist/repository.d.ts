@@ -73,7 +73,6 @@ export declare class Repository {
     static MAX_REFERENCE_COUNT: number;
     static IsValidName: (key: string) => boolean;
     static IsValidValue: (value: Uint8Array) => boolean;
-    static parseObjectType: (chain_type?: string | null) => string;
     static rpc_de_data(fields: any): RepData[];
     static DataType2ValueType(data: string): ValueType | undefined;
     static ResolveRepositoryData: (dataType: RepositoryValueType, data: string | boolean | string[]) => {

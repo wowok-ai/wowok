@@ -20,9 +20,11 @@ export declare enum Errors {
     Fail = "fail",
     IsValidIndentifier = "indentifier invalid",
     isValidHttpUrl = "invalid url",
-    IsValidUserDefinedIndex = "invalid user defined permission index",
+    IsValidBizPermissionIndex = "invalid biz-permission index",
     bcsTypeInvalid = "invalid bcs type",
     IsValidServiceItemName = "invalid service item name",
+    IsValidCoinType = "not the coin type",
+    IsValidGuardIdentifier = "guard identifier invalid",
     noPermission = "no permission"
 }
 export declare const ERROR: (error: Errors, info?: any) => never;
