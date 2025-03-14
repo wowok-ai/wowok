@@ -16,10 +16,19 @@ export * from './payment'
 export * from './arbitration'
 export * from './exception'
 export { BCS, getSuiMoveConfig, } from '@mysten/bcs';
-export { Transaction as TransactionBlock, type TransactionArgument, type TransactionResult} from '@mysten/sui/transactions';
-export { SuiClient, type SuiObjectResponse, type SuiTransactionBlockResponseOptions, type DynamicFieldPage, type CoinBalance, type CoinStruct,
-    type SuiTransactionBlockResponse as CallResponse} from '@mysten/sui/client';
+export { Transaction as TransactionBlock } from '@mysten/sui/transactions';
+export { SuiClient } from '@mysten/sui/client';
 export { Ed25519Keypair,  } from '@mysten/sui/keypairs/ed25519';
 export { fromHEX, toHEX } from '@mysten/bcs';
 export { decodeSuiPrivateKey, encodeSuiPrivateKey } from '@mysten/sui/cryptography';
 export { getFaucetHost, requestSuiFromFaucetV0,  requestSuiFromFaucetV1} from '@mysten/sui/faucet';
+import * as WowokTxn from '@mysten/sui/transactions';
+export type TransactionArgument = WowokTxn.TransactionArgument;
+export type TransactionResult = WowokTxn.TransactionResult;
+import * as WowokClt from '@mysten/sui/client';
+export type ObjectResponse = WowokClt.SuiObjectResponse;
+//export type TransactionBlockResponseOptions = WowokClt.SuiTransactionBlockResponseOptions;
+export type DynamicFieldPage = WowokClt.DynamicFieldPage;
+export type CoinBalance = WowokClt.CoinBalance;
+export type CoinStruct = WowokClt.CoinStruct;
+export type CallResponse = WowokClt.SuiTransactionBlockResponse;

@@ -1,5 +1,5 @@
-import { Protocol, FnCallType, TxbObject, ResourceAddress, PermissionObject, ResourceObject} from './protocol';
-import { IsValidDesription, IsValidAddress, IsValidName, isValidHttpUrl, Bcs, IsValidArray,  } from './utils';
+import { Protocol, FnCallType, TxbObject, ResourceAddress, ResourceObject} from './protocol';
+import { IsValidDesription, IsValidAddress, IsValidName, isValidHttpUrl, Bcs, } from './utils';
 import { ERROR, Errors } from './exception';
 import { TagName, Resource } from './resource';
 import { Transaction as TransactionBlock, TransactionResult } from '@mysten/sui/transactions';
