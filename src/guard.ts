@@ -218,6 +218,8 @@ export const GUARD_QUERIES:any[] = [
     [MODULES.payment, 'Is from Treasury', 1211, [], ValueType.TYPE_BOOL, 'Whether the payment comes from a Treasury?', []], 
     [MODULES.payment, 'Treasury Address', 1212, [], ValueType.TYPE_ADDRESS, 'The Treasury from which the payment comes.', []], 
     [MODULES.payment, 'Biz-ID', 1213, [], ValueType.TYPE_U64, 'Bisiness ID number of the payment.', []], 
+    [MODULES.payment, 'Check the purpose of payment', 1214, [ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], ValueType.TYPE_BOOL, 'Do Guard, Object Perpose, and Biz-ID match?', ['guard address', 'object address', 'Biz-ID']], 
+    [MODULES.payment, 'Check & Amount for a Recipient', 1215, [ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS, ValueType.TYPE_U64, ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Check and get the amount of payment received by an address.', ['guard address', 'object address', 'Biz-ID', 'recipient address']], 
 
     [MODULES.treasury, 'Permission', 1400, [], ValueType.TYPE_ADDRESS, 'Permission object address.', []], 
     [MODULES.treasury, 'Balance', 1401, [], ValueType.TYPE_U64, "Treasury balance.", []], 
