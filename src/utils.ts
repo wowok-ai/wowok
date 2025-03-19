@@ -394,14 +394,24 @@ export const deepClone = <T>(origin: T, target?: Record<string, any> | T ): T =>
     return tar as T
 }
 
-export const MAX_DESCRIPTION_LENGTH = 1024;
+export const MAX_DESCRIPTION_LENGTH = 4000;
 export const MAX_NAME_LENGTH = 64;
 export const MAX_ENDPOINT_LENGTH = 1024;
 // export const OptionNone = (txb:TransactionBlock) : TransactionArgument => { return txb.pure([], BCS.U8) };
+const IsValidStringLength = (str: string, max_len:number) : boolean => {
+    return Bcs.getInstance().ser(ValueType.TYPE_STRING, Uint8Array.from(str)).length <= max_len
+}
+export const IsValidDesription = (description:string) : boolean => { 
+    return IsValidStringLength(description, MAX_DESCRIPTION_LENGTH)
+} 
+export const IsValidName = (name?:string) : boolean => { 
+    if(!name || name.length === 0) {
+        return false;
+    } 
+    return IsValidStringLength(name, MAX_NAME_LENGTH) 
+}
 
-export const IsValidDesription = (description:string) : boolean => { return description.length <= MAX_DESCRIPTION_LENGTH } 
-export const IsValidName = (name?:string) : boolean => { if(!name) return false; return name.length <= MAX_NAME_LENGTH && name.length != 0 }
-export const IsValidName_AllowEmpty = (name:string) : boolean => { return name.length <= MAX_NAME_LENGTH }
+export const IsValidName_AllowEmpty = (name:string) : boolean => { return IsValidStringLength(name, MAX_NAME_LENGTH)}
 export const IsValidEndpoint = (endpoint:string) : boolean => { 
     return (endpoint.length > 0 && endpoint.length <= MAX_ENDPOINT_LENGTH && isValidHttpUrl(endpoint)) ;
 }

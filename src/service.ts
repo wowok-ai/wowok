@@ -8,7 +8,8 @@ import { FnCallType, GuardObject, PassportObject, PermissionObject, RepositoryOb
     PaymentAddress,
     ArbObject,
     ArbitrationObject,
-    ProgressObject} from './protocol';
+    ProgressObject,
+    ProgressAddress} from './protocol';
 import { ERROR, Errors } from './exception';
 import { Transaction as TransactionBlock,  } from '@mysten/sui/transactions';
 import { SuiObjectData } from '@mysten/sui/client';
@@ -71,6 +72,10 @@ export interface WithdrawPayee {
     for_guard?: GuardObject,
 }
 
+export interface BuyResult {
+    order: OrderAddress;
+    progress?: ProgressAddress; 
+}
 
 export type handleDiscountObject = (owner:string, objects:(SuiObjectData|null|undefined)[]) => void;
 export class Service {
@@ -1027,7 +1032,7 @@ export class Service {
     }
     
     buy(buy_items:Service_Buy[], coin:CoinObject, discount?:DiscountObject, machine?:MachineObject, 
-        customer_info_crypto?: Customer_RequiredInfo, passport?:PassportObject) : OrderAddress {
+        customer_info_crypto?: Customer_RequiredInfo, passport?:PassportObject) : BuyResult {
         if (!buy_items) {
             ERROR(Errors.InvalidParam, 'buy_items')
         }
@@ -1088,19 +1093,20 @@ export class Service {
             this.update_order_required_info(order, customer_info_crypto);
         }
 
+        var progress : ProgressAddress | undefined  = undefined;
         if (machine) {
-            return this.txb.moveCall({
-                target:Protocol.Instance().serviceFn('order_create_with_machine') as FnCallType,
+            progress = this.txb.moveCall({
+                target:Protocol.Instance().serviceFn('order_bind_service_machine') as FnCallType,
                 arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), Protocol.TXB_OBJECT(this.txb, machine)],
                 typeArguments:[this.pay_token_type]            
             })        
-        } else {
-            return this.txb.moveCall({
-                target:Protocol.Instance().serviceFn('order_create') as FnCallType,
-                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order)],
-                typeArguments:[this.pay_token_type]            
-            })  
-        }
+        } 
+
+        return {order: this.txb.moveCall({
+            target:Protocol.Instance().serviceFn('order_create') as FnCallType,
+            arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order)],
+            typeArguments:[this.pay_token_type]            
+        }), progress:progress}
     }
 
     order_bind_machine(order:OrderObject, machine:MachineObject) {
