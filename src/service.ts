@@ -77,6 +77,11 @@ export interface BuyResult {
     progress?: ProgressAddress; 
 }
 
+export interface OrderResult {
+    order: OrderObject;
+    progress?: ProgressObject; 
+}
+
 export type handleDiscountObject = (owner:string, objects:(SuiObjectData|null|undefined)[]) => void;
 export class Service {
     protected pay_token_type;
@@ -1031,11 +1036,9 @@ export class Service {
         })    
     }
     
-    buy(buy_items:Service_Buy[], coin:CoinObject, discount?:DiscountObject, machine?:MachineObject, 
-        customer_info_crypto?: Customer_RequiredInfo, passport?:PassportObject) : BuyResult {
-        if (!buy_items) {
-            ERROR(Errors.InvalidParam, 'buy_items')
-        }
+    order(buy_items:Service_Buy[], coin:CoinObject, discount?:DiscountObject, machine?:MachineObject,
+        customer_info_crypto?: Customer_RequiredInfo, passport?:PassportObject) : OrderResult {
+        if (buy_items.length === 0)  ERROR(Errors.InvalidParam, 'order.buy_items empty');
 
         let bValid = true; let names:string[]  = [];
         buy_items.forEach((v) => {
@@ -1093,29 +1096,42 @@ export class Service {
             this.update_order_required_info(order, customer_info_crypto);
         }
 
-        var progress : ProgressAddress | undefined  = undefined;
+        var progress : ProgressObject | undefined  = undefined;
         if (machine) {
-            progress = this.txb.moveCall({
-                target:Protocol.Instance().serviceFn('order_bind_service_machine') as FnCallType,
-                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), Protocol.TXB_OBJECT(this.txb, machine)],
-                typeArguments:[this.pay_token_type]            
-            })        
-        } 
-
-        return {order: this.txb.moveCall({
-            target:Protocol.Instance().serviceFn('order_create') as FnCallType,
-            arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order)],
-            typeArguments:[this.pay_token_type]            
-        }), progress:progress}
+            progress = this.order_bind_machine(order, machine);
+        }
+        return {order:order, progress: progress}
     }
 
-    order_bind_machine(order:OrderObject, machine:MachineObject) {
+    order_launch(order:OrderResult) : BuyResult {
+        var progress : ProgressAddress | undefined;
+        if (order.progress) {
+            progress = this.txb.moveCall({
+                target:Protocol.Instance().progressFn('create') as FnCallType,
+                arguments: [Protocol.TXB_OBJECT(this.txb, order.progress)],
+            })   
+        } 
+        
+        return {order: this.txb.moveCall({
+            target:Protocol.Instance().serviceFn('order_create') as FnCallType,
+            arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order.order)],
+            typeArguments:[this.pay_token_type]            
+        }), progress:progress}   
+    }
+
+    buy(buy_items:Service_Buy[], coin:CoinObject, discount?:DiscountObject, machine?:MachineObject, 
+        customer_info_crypto?: Customer_RequiredInfo, passport?:PassportObject) : BuyResult {
+        const r = this.order(buy_items, coin ,discount, machine, customer_info_crypto, passport);
+        return this.order_launch(r);          
+    }
+
+    order_bind_machine(order:OrderObject, machine:MachineObject) : ProgressObject {
         if (!Protocol.IsValidObjects([order, machine])) {
             ERROR(Errors.IsValidObjects, 'order & machine');
         }
 
-        this.txb.moveCall({
-            target:Protocol.Instance().serviceFn('order_create_with_machine') as FnCallType,
+        return this.txb.moveCall({
+            target:Protocol.Instance().serviceFn('order_bind_machine') as FnCallType,
             arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), Protocol.TXB_OBJECT(this.txb, machine)],
             typeArguments:[this.pay_token_type]            
         })    

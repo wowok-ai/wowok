@@ -440,18 +440,18 @@ export class Arbitration {
         }
     }
 
-    dispute(param:Dispute, passport?:PassportObject) : ArbAddress {
+    arb(param:Dispute, passport?:PassportObject) : ArbObject {
         if (!Protocol.IsValidObjects([param.order])) {
-            ERROR(Errors.IsValidObjects, 'dispute.param.order')
+            ERROR(Errors.IsValidObjects, 'arb.param.order')
         }
         if (!IsValidTokenType(param.order_token_type)) {
-            ERROR(Errors.IsValidTokenType, 'dispute.param.order_token_type')
+            ERROR(Errors.IsValidTokenType, 'arb.param.order_token_type')
         }
         if (!IsValidDesription(param.description)) {
-            ERROR(Errors.IsValidDesription, 'dispute.param.description')
+            ERROR(Errors.IsValidDesription, 'arb.param.description')
         }
         if (!IsValidArray(param.votable_proposition, IsValidName)) {
-            ERROR(Errors.IsValidArray, 'dispute.param.votable_proposition')
+            ERROR(Errors.IsValidArray, 'arb.param.votable_proposition')
         }
 
         if (passport) {
@@ -487,6 +487,19 @@ export class Arbitration {
                 })
             }
         }
+    }
+
+    arb_launch(arb:ArbObject) : ArbAddress {
+        return this.txb.moveCall({
+            target:Protocol.Instance().arbFn('create') as FnCallType,
+            arguments:[Protocol.TXB_OBJECT(this.txb, arb)],
+            typeArguments:[this.pay_token_type]
+        })    
+    }
+
+    dispute(param:Dispute, passport?:PassportObject) : ArbAddress {
+        const arb = this.arb(param, passport);
+        return this.arb_launch(arb)
     }
 
     change_permission(new_permission:PermissionObject) {
