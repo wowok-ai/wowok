@@ -28,8 +28,9 @@ The protocol address may change due to protocol upgrade. Please update the SDK t
 * Encrypted personal information transfer and order management
 * Support compensation and dispute voting arbitration
 
-#### [How can social resources collaborate to meet a Kenya 10-day personalized travel dream](https://github.com/wowok-ai/examples/tree/main/kenya)
-* Demand + Service + Machine/Progress + Order + Permission + Treasury + Arbitration
+#### [How can social resources collaborate to meet an Iceland personalized travel dream](https://github.com/wowok-ai/examples/tree/main/travel)
+* Service + Machine/Progress + Order + Permission + Treasury + Arbitration
+* Multi-Services, and Travel's supply chain is integrated with the purchase of insurance on behalf of Travel
 
 #### [See more examples...](https://github.com/wowok-ai/examples)
   
