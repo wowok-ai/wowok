@@ -104,9 +104,21 @@ export class GuardParser {
                 current.ret_type = ValueType.TYPE_BOOL;
                 if (stack.length < 1) ERROR(Errors.Fail, 'ResolveData: TYPE_LOGIC_NOT');
 
-                let param = stack.pop() as DeGuardData;
+                var param = stack.pop() as DeGuardData;
                 if (!param.ret_type || param.ret_type !=  ValueType.TYPE_BOOL) {
                     ERROR(Errors.Fail, 'ResolveData: TYPE_LOGIC_NOT type invalid');
+                }
+
+                current.child.push(param);
+                stack.push(current);
+                return;
+            case OperatorType.TYPE_NUMBER_ADDRESS:
+                current.ret_type = ValueType.TYPE_ADDRESS;
+                if (stack.length < 1) ERROR(Errors.Fail, 'ResolveData: TYPE_NUMBER_ADDRESS');
+
+                var param = stack.pop() as DeGuardData;
+                if (!param.ret_type || !GuardMaker.match_u256(param.ret_type)) {
+                    ERROR(Errors.Fail, 'ResolveData: TYPE_NUMBER_ADDRESS type invalid');
                 }
 
                 current.child.push(param);
@@ -357,6 +369,7 @@ export class GuardParser {
                 case ContextType.TYPE_CLOCK:
                 case ContextType.TYPE_GUARD:
                 case OperatorType.TYPE_LOGIC_NOT:
+                case OperatorType.TYPE_NUMBER_ADDRESS:
                     break;
                 case OperatorType.TYPE_LOGIC_AS_U256_GREATER:
                 case OperatorType.TYPE_LOGIC_AS_U256_GREATER_EQUAL:

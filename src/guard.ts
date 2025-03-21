@@ -18,6 +18,7 @@ export  interface Guard_Options {
     name: string;
     value: number;  
     group?: string;
+    return: ValueType | 'number' | 'any';
 }
 
 export interface GuardAnswer {
@@ -277,6 +278,24 @@ export const GUARD_QUERIES:any[] = [
     [MODULES.arb, 'Number of Votes', 1612, [ValueType.TYPE_U8], ValueType.TYPE_U64, 'The number of votes received for an option.', ['option index']], 
 ];
 
+export enum FunctionGroup {
+    txn = 'Txn Functions', 
+    number = 'Number Crunching',
+    logic = 'Compare or Logic'
+}
+
+export const GuardFunctions : Guard_Options[] = [
+    {from:'type', name:'Txn Signer', value:ContextType.TYPE_SIGNER, group:FunctionGroup.txn, return:ValueType.TYPE_ADDRESS},
+    {from:'type', name:'Txn Time', value:ContextType.TYPE_CLOCK, group:FunctionGroup.txn, return:ValueType.TYPE_U64},
+    {from:'type', name:'Guard Address', value:ContextType.TYPE_GUARD, group:FunctionGroup.txn, return:ValueType.TYPE_ADDRESS},
+    {from:'type', name:'PositiveNumber to Address', value:OperatorType.TYPE_NUMBER_ADDRESS, group:FunctionGroup.number, return:ValueType.TYPE_ADDRESS},
+    {from:'type', name:'PositiveNumber Add (+)', value:OperatorType.TYPE_NUMBER_ADD, group:FunctionGroup.number, return:'number'},
+    {from:'type', name:'PositiveNumber Subtract (-)', value:OperatorType.TYPE_NUMBER_SUBTRACT, group:FunctionGroup.number, return:'number'},
+    {from:'type', name:'PositiveNumber Multiply (*)', value:OperatorType.TYPE_NUMBER_MULTIPLY, group:FunctionGroup.number, return:'number'},
+    {from:'type', name:'PositiveNumber Devide (/)', value:OperatorType.TYPE_NUMBER_DEVIDE, group:FunctionGroup.number, return:'number'},
+    {from:'type', name:'PositiveNumber Mod (%)', value:OperatorType.TYPE_NUMBER_MOD, group:FunctionGroup.number, return:'number'},
+]
+
 export class Guard {
     static MAX_INPUT_LENGTH = 10240;
 //    static MAX_PAYLOADS_LENGTH = 4096;
@@ -384,7 +403,6 @@ export class Guard {
 
     static BoolCmd = GUARD_QUERIES.filter(q => q[4] === ValueType.TYPE_BOOL);
     static IsBoolCmd = (cmd:number) : boolean => { return Guard.BoolCmd.includes((q:any) => {return q[2] == cmd}) }
-
     static CmdFilter = (retType:ValueType) => { return GUARD_QUERIES.filter((q)=> q[4] === retType)}
     static GetCmd = (cmd:number | undefined) : any => { 
         return GUARD_QUERIES.find((q:any) => {return q[2] == cmd}) ;
@@ -392,7 +410,7 @@ export class Guard {
     static GetCmdOption = (cmd:number) : Guard_Options | undefined => { 
         const  r = Guard.GetCmd(cmd);
         if (!r) return r;
-        return  {from:'query', name:r[1], value:r[2], group:FirstLetterUppercase(r[0])}
+        return  {from:'query', name:r[1], value:r[2], group:FirstLetterUppercase(r[0]), return:r[4]}
     }
 
     static GetInputParams = (cmd:number) : ValueType[] => { 
@@ -408,46 +426,41 @@ export class Guard {
     static NumberOptions = () : Guard_Options[] => {
         const r: Guard_Options[] = [...Guard.CmdFilter(ValueType.TYPE_U8), ...Guard.CmdFilter(ValueType.TYPE_U64), 
             ...Guard.CmdFilter(ValueType.TYPE_U128), ...Guard.CmdFilter(ValueType.TYPE_U256)].map((v)=> { 
-                return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0])}});
+                return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]}});
         return r.concat(Guard.Crunchings);
     }
 
-    static Signer:Guard_Options = {from:'type', name:'Txn Signer', value:ContextType.TYPE_SIGNER, group:'Txn Functions'};
-    static Time:Guard_Options = {from:'type', name:'Txn Time', value:ContextType.TYPE_CLOCK, group:'Txn Functions'};
-    static Guard:Guard_Options = {from:'type', name:'Guard Address', value:ContextType.TYPE_GUARD, group:'Txn Functions'};
+    static Signer:Guard_Options = GuardFunctions.find(v => v.name==='Txn Signer' && v.value===ContextType.TYPE_SIGNER)!;
+    static Time:Guard_Options = GuardFunctions.find(v => v.name==='Txn Time' && v.value===ContextType.TYPE_CLOCK)!; 
+    static Guard:Guard_Options = GuardFunctions.find(v => v.name==='Guard Address' && v.value===ContextType.TYPE_GUARD)!; 
 
-    static Logics = () :Guard_Options[] => LogicsInfo.map((v) => { return {from:'type', name:v[1] as string, value:v[0] as number, group:'Compare or Logic'}});
-    static Crunchings: Guard_Options[] = [
-        {from:'type', name:'Txn Time', value:ContextType.TYPE_CLOCK, group:'Txn Functions'},
-        {from:'type', name:'PositiveNumber Add (+)', value:OperatorType.TYPE_NUMBER_ADD, group:'Number Crunching'},
-        {from:'type', name:'PositiveNumber Subtract (-)', value:OperatorType.TYPE_NUMBER_SUBTRACT, group:'Number Crunching'},
-        {from:'type', name:'PositiveNumber Multiply (*)', value:OperatorType.TYPE_NUMBER_MULTIPLY, group:'Number Crunching'},
-        {from:'type', name:'PositiveNumber Devide (/)', value:OperatorType.TYPE_NUMBER_DEVIDE, group:'Number Crunching'},
-        {from:'type', name:'PositiveNumber Mod (%)', value:OperatorType.TYPE_NUMBER_MOD, group:'Number Crunching'},
-    ]
+    static Logics = () :Guard_Options[] => LogicsInfo.map((v) => { return {from:'type', name:v[1] as string, value:v[0] as number, group:FunctionGroup.logic, return:ValueType.TYPE_BOOL}});
+    static Crunchings: Guard_Options[] = GuardFunctions.filter(v => v.value === OperatorType.TYPE_NUMBER_ADD ||
+        v.value === OperatorType.TYPE_NUMBER_SUBTRACT || v.value === OperatorType.TYPE_NUMBER_MULTIPLY || 
+        v.value === OperatorType.TYPE_NUMBER_DEVIDE || v.value === OperatorType.TYPE_NUMBER_MOD || v.value === OperatorType.TYPE_NUMBER_ADDRESS
+    ) ;
 
     static CommonOptions = (retType:ValueType) : Guard_Options[] => {
-        return Guard.CmdFilter(retType).map((v)=> {return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0])}});
+        return Guard.CmdFilter(retType).map((v)=> {return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]}});
     }
 
     static AllOptions = () :  Guard_Options[] => {
-        var r:Guard_Options[] =  GUARD_QUERIES.map((v)=>{return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0])}});
-        return [...r, ...Guard.Crunchings, ...Guard.Logics(), Guard.Signer, Guard.Time, Guard.Guard]
+        var r:Guard_Options[] =  GUARD_QUERIES.map((v)=>{return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]}});
+        return [...r, ...GuardFunctions]
     }
 
     static StringOptions = () : Guard_Options[] => {
         return [...Guard.CmdFilter(ValueType.TYPE_STRING)].map((v) => {
-            return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0])};
+            return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]};
         });
     }
     static BoolOptions = () : Guard_Options[] => {
-        const n1:Guard_Options[] = Guard.BoolCmd.map((v)=> { return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0])}});
+        const n1:Guard_Options[] = Guard.BoolCmd.map((v)=> { return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]}});
         return [...n1, ...Guard.Logics()];
     }
     static AddressOptions = () : Guard_Options[] => {
-        const n1:Guard_Options[] = GUARD_QUERIES.filter(q => q[4] === ValueType.TYPE_ADDRESS).map((v)=> { return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0])}});
-        n1.push(Guard.Signer); n1.push(Guard.Guard);
-        return [...n1]
+        const n1:Guard_Options[] = GUARD_QUERIES.filter(q => q[4] === ValueType.TYPE_ADDRESS).map((v)=> { return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]}});
+        return [...n1, ...GuardFunctions.filter(v=>v.return===ValueType.TYPE_ADDRESS)]
     }
 
     static Options = (ret_type: ValueType | 'number' | 'any') : Guard_Options[] => {
@@ -666,6 +679,11 @@ export class GuardMaker {
                 splice_len =  1;
                 if (this.type_validator.length < splice_len) { ERROR(Errors.Fail, 'type_validator.length:'+e) }
                 if (this.type_validator[this.type_validator.length -1] != ValueType.TYPE_BOOL) { ERROR(Errors.Fail, 'type_validator check:'+e)  }
+                break;
+            case OperatorType.TYPE_NUMBER_ADDRESS:
+                splice_len =  1; ret = ValueType.TYPE_ADDRESS;
+                if (this.type_validator.length < splice_len) { ERROR(Errors.Fail, 'type_validator.length:'+e) }
+                if (!GuardMaker.match_u256(this.type_validator[this.type_validator.length -1])) { ERROR(Errors.Fail, 'type_validator check:'+e)  }
                 break;
             case OperatorType.TYPE_LOGIC_AND:
             case OperatorType.TYPE_LOGIC_OR: //@ logics count

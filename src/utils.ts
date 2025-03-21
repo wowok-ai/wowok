@@ -428,6 +428,12 @@ export const IsValidCoinType = (coin_type:string | undefined) : boolean => {
     return coin_type.startsWith('0x2::coin::Coin') || coin_type.startsWith('0x0000000000000000000000000000000000000000000000000000000000000002')
 }
 
+
+export const getUTCDayStartByDivision = (interval=86400000): number => { // 1 day default
+    const now = Date.now(); 
+    return Math.floor(now / interval) * interval;
+}
+
 export const IsValidBigint = (value:string | number | undefined | bigint, max:bigint=MAX_U256, min?:bigint) : boolean => {
     if (value === '' || value === undefined) return false;
     try {
@@ -518,7 +524,7 @@ function removeTrailingZeros(numberString: string): string {
       }
       
       if (trimmedString[endIndex] === '.') {
-        endIndex--; // 如果小数点后面全是零，也去掉小数点
+        endIndex--; 
       }
       
       return trimmedString.slice(0, endIndex + 1);

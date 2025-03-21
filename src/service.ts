@@ -3,13 +3,8 @@ import { IsValidArray, IsValidPercent, IsValidName_AllowEmpty, parseObjectType, 
     IsValidName, } from './utils'
 import { FnCallType, GuardObject, PassportObject, PermissionObject, RepositoryObject, MachineObject, ServiceAddress, 
     ServiceObject, DiscountObject, OrderObject, OrderAddress, CoinObject, Protocol, ValueType,
-    TxbObject,
-    TreasuryObject,
-    PaymentAddress,
-    ArbObject,
-    ArbitrationObject,
-    ProgressObject,
-    ProgressAddress} from './protocol';
+    TxbObject, TreasuryObject, PaymentAddress, ArbObject,
+    ArbitrationObject, ProgressObject, ProgressAddress} from './protocol';
 import { ERROR, Errors } from './exception';
 import { Transaction as TransactionBlock,  } from '@mysten/sui/transactions';
 import { SuiObjectData } from '@mysten/sui/client';
