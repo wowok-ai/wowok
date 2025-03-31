@@ -11,12 +11,12 @@ import { SuiObjectData } from '@mysten/sui/client';
 
 export type Service_Guard_Percent = {
     guard:GuardObject;
-    percent: number;
+    percent: number; // [0-100]
 }
 export type Service_Sale = {
     item: string;
-    price: string;
-    stock: string;
+    price: string | number | bigint;
+    stock: string | number | bigint;
     endpoint?:string | null;
 }
 export enum Service_Discount_Type {
@@ -49,19 +49,19 @@ export enum BuyRequiredEnum {
 
 export type Service_Buy = {
     item: string;
-    max_price: string;
-    count: string;
+    max_price: string | number | bigint;
+    count: string | number | bigint;
 }
 
 export type DicountDispatch = {
     receiver: string;
-    count: bigint;
+    count: number;
     discount: Service_Discount;
 }
 export interface WithdrawPayee {
     withdraw_guard: GuardObject;
     treasury: TreasuryObject,
-    index: bigint,
+    index: bigint | number | string,
     remark: string,
     for_object?: string,
     for_guard?: GuardObject,
@@ -586,7 +586,7 @@ export class Service {
             ERROR(Errors.InvalidParam, 'add_sales')
         }
         
-        let names: string[]  = []; let price: string[] = []; let stock: string[] = []; let endpoint: string[] = [];
+        let names: string[]  = []; let price: (string | number | bigint)[] = []; let stock: (string | number | bigint)[] = []; let endpoint: string[] = [];
         sales.forEach((s) => {
             if (s.endpoint && !IsValidEndpoint(s.endpoint)) {
                 ERROR(Errors.IsValidEndpoint, 'add_sales')

@@ -99,7 +99,7 @@ export const LogicsInfo = [
     [OperatorType.TYPE_LOGIC_AS_U256_LESSER_EQUAL, 'Unsigned Integer <=', 'The first item <= anything that follows'],
     [OperatorType.TYPE_LOGIC_AS_U256_EQUAL, 'Unsigned Integer =', 'The first item = anything that follows'],
     [OperatorType.TYPE_LOGIC_EQUAL, 'Equal', 'Data and type are exactly equal for all items'],
-    [OperatorType.TYPE_LOGIC_HAS_SUBSTRING, 'Has Sub String', 'The first item contains anything that follows'],
+    [OperatorType.TYPE_LOGIC_HAS_SUBSTRING, 'Has Sub String', 'The first string contains anything that follows'],
     [OperatorType.TYPE_LOGIC_NOT, 'Not', 'Not operation'],
     [OperatorType.TYPE_LOGIC_AND, 'And', 'All Items And operations'],
     [OperatorType.TYPE_LOGIC_OR, 'Or', 'All Items Or operations'], 
@@ -164,7 +164,7 @@ export enum ContextType {
     TYPE_CLOCK = 61, // u64 type; On-chain time at validation
     TYPE_GUARD = 62, // address type; the address of the guard being verified
     //TYPE_STACK_ADDRESS = 63, // object queried from current stack top
-    TYPE_CONSTANT = 80,
+    TYPE_CONSTANT = 80, 
 }
 interface ValueTypeString {
     type: ValueType | ContextType;
@@ -212,15 +212,15 @@ export enum ENTRYPOINT {
 }
 
 const TESTNET = {
-    wowok: "0x82b571c4476f1d7213906c3f76731256f5c9a55f28a74660cf54e8ad56d77a57",
-    wowok_origin:'0x82b571c4476f1d7213906c3f76731256f5c9a55f28a74660cf54e8ad56d77a57' ,
-    base: '0x00b283ff2f3a0c706497faaa4e52536002c2a4908780d06582a98e2bc4a0a332',
-    base_origin: '0x00b283ff2f3a0c706497faaa4e52536002c2a4908780d06582a98e2bc4a0a332',
+    wowok: "0xd1ed1921f385bb6c016070325950e87f1d0e3b6a5dcc67c7a9a7b66618f29239",
+    wowok_origin:'0xd1ed1921f385bb6c016070325950e87f1d0e3b6a5dcc67c7a9a7b66618f29239' ,
+    base: '0xd9705a4f0b7ae3400d3af4ba781b2d2f6b4dc5dd81e2e1ce2bc949c16583df7f',
+    base_origin: '0xd9705a4f0b7ae3400d3af4ba781b2d2f6b4dc5dd81e2e1ce2bc949c16583df7f',
 
-    wowok_object: '0xe81643d04fcf6403adde4e9218de53fd66f2c7a715337b4710e573f6d272a4e5',
-    entity_object: '0x2b2ef38ef38459397a137d807f3f5a914c98e2c6ae9878849def71aea0cc8ca9',
-    treasury_cap:'0x176f957de5a0f8a5a47484a3dc8462c37df88a503781a0ac82cadd005aa80535',
-    oracle_object:'0x43d91c12ffc66111767f93cc49a5c87db23465996cfaee2c0b1cc072adc0b68e',
+    wowok_object: '0x04bc9f2680baa9e1cc1e52b329f7d7790afeb95f097b704c10116c257c5d07c4',
+    entity_object: '0x70623568c63000b21b7b5e180c7e5415970763335c3e3b90b1795b0fc164c60d',
+    treasury_cap:'0xfe7b18c27914fef876dfefd018350cfe33c45b6c5fbe5931f9449048e834da5b',
+    oracle_object:'0x70b4a282626aef7d31822079a1727a6576c718e9640cb30ad4c385d632138689',
 }
 const MAINNET = {
     wowok: "",

@@ -21,7 +21,7 @@ export interface Vote {
 export interface Feedback {
     arb:ArbObject,
     feedback:string, 
-    indemnity?:string,  // bigint
+    indemnity?:string | number | bigint,  // bigint
 }
 
 export interface Dispute {

@@ -29,253 +29,220 @@ export interface GuardAnswer {
 
 export type OnQueryAnswer = (answer: GuardAnswer) => void;
 
-export const GUARD_QUERIES:any[] = [ 
+export interface GuardQuery {
+    module: MODULES;
+    query_name: string;
+    query_id: number;
+    parameters: ValueType[];
+    return: ValueType;
+    description: string;
+    parameters_description?: string[];
+}
+export const GUARD_QUERIES:GuardQuery[] = [ 
     // module, 'name', 'id', [input], output
-    [MODULES.permission, 'Owner', 1, [], ValueType.TYPE_ADDRESS, "Owner's address."],
-    [MODULES.permission, 'Is Admin', 2, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Is a certain address an administrator?', ['address']],
-    [MODULES.permission, 'Has Rights', 3, [ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], ValueType.TYPE_BOOL, 'Does an address have a certain permission(Admin always have permissions)?', ['address', 'permission index']],
-    [MODULES.permission, 'Contains Address', 4, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether an address is included in the personnel permission table?', ['address']],
-    [MODULES.permission, 'Contains Permission', 5, [ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], ValueType.TYPE_BOOL, 'Whether a certain permission for a certain address is defined in the personnel permission table?', ['address', 'permission index']],
-    [MODULES.permission, 'Contains Permission Guard', 6, [ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], ValueType.TYPE_BOOL, 'Whether a permission guard for a certain address is defined in the personnel permission table?', ['address', 'permission index']],
-    [MODULES.permission, 'Permission Guard', 7, [ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], ValueType.TYPE_ADDRESS, 'Permission guard for a certain address.', ['address', 'permission index']],
-    [MODULES.permission, 'Number of Entities', 8, [], ValueType.TYPE_U64, 'Number of entities in the personnel permission table.', []],
-    [MODULES.permission, 'Number of Admin', 9, [], ValueType.TYPE_U64, 'Number of administrators.', []],
+    {module:MODULES.permission, query_name:'Owner', query_id:1, parameters:[], return:ValueType.TYPE_ADDRESS, description:"Owner's address."},
+    {module:MODULES.permission, query_name:'Is Admin', query_id:2, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Is a certain address an administrator?', parameters_description:['address']},
+    {module:MODULES.permission, query_name:'Has Rights', query_id:3, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], return:ValueType.TYPE_BOOL, description:'Does an address have a certain permission(Admin always have permissions)?', parameters_description:['address', 'permission index']},
+    {module:MODULES.permission, query_name:'Contains Address', query_id:4, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether an address is included in the personnel permission table?', parameters_description:['address']},
+    {module:MODULES.permission, query_name:'Contains Permission', query_id:5, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], return:ValueType.TYPE_BOOL, description:'Whether a certain permission for a certain address is defined in the personnel permission table?', parameters_description:['address', 'permission index']},
+    {module:MODULES.permission, query_name:'Contains Permission Guard', query_id:6, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], return:ValueType.TYPE_BOOL, description:'Whether a permission guard for a certain address is defined in the personnel permission table?', parameters_description:['address', 'permission index']},
+    {module:MODULES.permission, query_name:'Permission Guard', query_id:7, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], return:ValueType.TYPE_ADDRESS, description:'Permission guard for a certain address.', parameters_description:['address', 'permission index']},
+    {module:MODULES.permission, query_name:'Number of Entities', query_id:8, parameters:[], return:ValueType.TYPE_U64, description:'Number of entities in the personnel permission table.', },
+    {module:MODULES.permission, query_name:'Number of Admin', query_id:9, parameters:[], return:ValueType.TYPE_U64, description:'Number of administrators.', },
 
-    [MODULES.repository, 'Permission', 100, [], ValueType.TYPE_ADDRESS, 'Permission object address.', []],
-    [MODULES.repository, 'Contains Policy', 101, [ValueType.TYPE_STRING], ValueType.TYPE_BOOL, 'Is a consensus policy included?', ['the filed name']],
-    [MODULES.repository, 'Is Permission set of Policy', 102, [ValueType.TYPE_STRING], ValueType.TYPE_BOOL, 'Does a certain consensus policy set data operation permissions?', ['the policy name']],
-    [MODULES.repository, 'Permission of Policy', 103, [ValueType.TYPE_STRING], ValueType.TYPE_U64, 'The permission index of a certain consensus policy in the Permission object.', ['the policy name']],
-    [MODULES.repository, 'Value Type of Policy',  104, [ValueType.TYPE_STRING], ValueType.TYPE_U8, 'Data types defined by consensus policy.', ['the policy name']],
-    [MODULES.repository, 'Contains Data', 105, [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], ValueType.TYPE_BOOL, 'Does it contain data for a certain field of an address?', ['address','the field name']],
-    [MODULES.repository, 'Raw data without Type', 106, [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], ValueType.TYPE_VEC_U8, 'Data for a field at an address and does not contain data type information.', ['address', 'the field name']],       
-    [MODULES.repository, 'Raw data', 107, [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], ValueType.TYPE_VEC_U8, 'Data for a field at an address, and the first byte contains data type information.', ['address', 'the field name']],
-    [MODULES.repository, 'Type', 108, [], ValueType.TYPE_U8, 'The repository Type. 0: Normal; 1: Wowok greenee.', []],   
-    [MODULES.repository, 'Policy Mode', 109, [], ValueType.TYPE_U8, 'Policy Mode. 0: Free mode;  1: Strict mode.', []],   
-    [MODULES.repository, 'Reference Count', 110, [], ValueType.TYPE_U64, 'The number of times it is referenced by other objects.', []],   
-    [MODULES.repository, 'Is Referenced by An Object', 111, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Is it referenced by an object?', ['address']],   
-    [MODULES.repository, 'Number Data', 112, [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], ValueType.TYPE_U256, 'Data for a field at an address and get unsigned integer type data.', ['address', 'the field name']],       
-    [MODULES.repository, 'String Data', 113, [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], ValueType.TYPE_STRING, 'Data for a field at an address and get string type data.', ['address', 'the field name']],       
-    [MODULES.repository, 'Address Data', 114, [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], ValueType.TYPE_ADDRESS, 'Data for a field at an address and get address type data.', ['address', 'the field name']],       
-    [MODULES.repository, 'Bool Data', 115, [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], ValueType.TYPE_BOOL, 'Data for a field at an address and get bool type data.', ['address', 'the field name']],       
-    [MODULES.repository, 'Number Vector Data', 116, [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], ValueType.TYPE_VEC_U256, 'Data for a field at an address and get unsigned integer vector type data.', ['address', 'the field name']],       
-    [MODULES.repository, 'String Vector Data', 117, [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], ValueType.TYPE_VEC_STRING, 'Data for a field at an address and get string vector type data.', ['address', 'the field name']],  
-    [MODULES.repository, 'Address Vector Data', 118, [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], ValueType.TYPE_VEC_ADDRESS, 'Data for a field at an address and get address vector type data.', ['address', 'the field name']],       
-    [MODULES.repository, 'Bool Vector Data', 119, [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], ValueType.TYPE_VEC_BOOL, 'Data for a field at an address and get bool vector type data.', ['address', 'the field name']],            
+    {module:MODULES.repository, query_name:'Permission', query_id:100, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', },
+    {module:MODULES.repository, query_name:'Contains Policy', query_id:101, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_BOOL, description:'Is a consensus policy included?', parameters_description:['the filed name']},
+    {module:MODULES.repository, query_name:'Is Permission set of Policy', query_id:102, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_BOOL, description:'Does a certain consensus policy set data operation permissions?', parameters_description:['the policy name']},
+    {module:MODULES.repository, query_name:'Permission of Policy', query_id:103, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_U64,  description:'The permission index of a certain consensus policy in the Permission object.', parameters_description:['the policy name']},
+    {module:MODULES.repository, query_name:'Value Type of Policy', query_id:104, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_U8,  description:'Data types defined by consensus policy.', parameters_description:['the policy name']},
+    {module:MODULES.repository, query_name:'Contains Data', query_id:105, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_BOOL, description:'Does it contain data for a certain field of an address?', parameters_description:['address','the field name']},
+    {module:MODULES.repository, query_name:'Raw data without Type', query_id:106, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_VEC_U8,  description:'Data for a field at an address and does not contain data type information.', parameters_description:['address', 'the field name']},       
+    {module:MODULES.repository, query_name:'Raw data', query_id:107, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_VEC_U8,  description:'Data for a field at an address, and the first byte contains data type information.', parameters_description:['address', 'the field name']},
+    {module:MODULES.repository, query_name:'Type', query_id:108, parameters:[], return:ValueType.TYPE_U8,  description:'The repository Type. 0: Normal; 1: Wowok greenee.', },   
+    {module:MODULES.repository, query_name:'Policy Mode', query_id:109, parameters:[], return:ValueType.TYPE_U8,  description:'Policy Mode. 0: Free mode;  1: Strict mode.', },   
+    {module:MODULES.repository, query_name:'Reference Count', query_id:110, parameters:[], return:ValueType.TYPE_U64,  description:'The number of times it is referenced by other objects.', },   
+    {module:MODULES.repository, query_name:'Is Referenced by An Object', query_id:111, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Is it referenced by an object?', parameters_description:['address']},   
+    {module:MODULES.repository, query_name: 'Number Data', query_id:112, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_U256, description:'Data for a field at an address and get unsigned integer type data.', parameters_description:['address', 'the field name']},       
+    {module:MODULES.repository, query_name:'String Data', query_id:113, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_STRING, description:'Data for a field at an address and get string type data.', parameters_description:['address', 'the field name']},       
+    {module:MODULES.repository, query_name:'Address Data', query_id:114, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_ADDRESS, description:'Data for a field at an address and get address type data.', parameters_description:['address', 'the field name']},       
+    {module:MODULES.repository, query_name:'Bool Data', query_id:115, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_BOOL, description:'Data for a field at an address and get bool type data.', parameters_description:['address', 'the field name']},       
+    {module:MODULES.repository, query_name:'Number Vector Data', query_id:116, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_VEC_U256, description:'Data for a field at an address and get unsigned integer vector type data.', parameters_description:['address', 'the field name']},       
+    {module:MODULES.repository, query_name:'String Vector Data', query_id:117, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_VEC_STRING, description:'Data for a field at an address and get string vector type data.', parameters_description:['address', 'the field name']},  
+    {module:MODULES.repository, query_name:'Address Vector Data', query_id:118, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_VEC_ADDRESS, description:'Data for a field at an address and get address vector type data.', parameters_description:['address', 'the field name']},       
+    {module:MODULES.repository, query_name:'Bool Vector Data', query_id:119, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return: ValueType.TYPE_VEC_BOOL, description:'Data for a field at an address and get bool vector type data.', parameters_description:['address', 'the field name']},            
     
-    [MODULES.entity, 'Has Entity', 200, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Is an entity already registered?', ['address']], 
-    [MODULES.entity, 'Likes', 201, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The number of likes for an address by other addresses.', ['address']], 
-    [MODULES.entity, 'Dislikes', 202, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The number of dislikes for an address by other addresses.', ['address']], 
-    [MODULES.entity, 'Entity Info', 203, [ValueType.TYPE_ADDRESS], ValueType.TYPE_VEC_U8, 'Public information about an entity.', ['address']], 
-    [MODULES.entity, 'Has Resource by Entity?', 204, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether an entity created a resource?', ['address']], 
-    [MODULES.entity, 'Entity Resource', 205, [ValueType.TYPE_ADDRESS], ValueType.TYPE_ADDRESS, 'The address of a resource object created by an entity.', ['address']], 
+    {module:MODULES.entity, query_name:'Has Entity', query_id:200, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Is an entity already registered?', parameters_description:['address']}, 
+    {module:MODULES.entity, query_name:'Likes', query_id:201, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The number of likes for an address by other addresses.', parameters_description:['address']}, 
+    {module:MODULES.entity, query_name:'Dislikes', query_id:202, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The number of dislikes for an address by other addresses.', parameters_description:['address']}, 
+    {module:MODULES.entity, query_name:'Entity Info', query_id:203, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_VEC_U8, description:'Public information about an entity.', parameters_description:['address']}, 
+    {module:MODULES.entity, query_name:'Has Resource by Entity?', query_id:204, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether an entity created a resource?', parameters_description:['address']}, 
+    {module:MODULES.entity, query_name:'Entity Resource', query_id:205, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_ADDRESS, description:'The address of a resource object created by an entity.', parameters_description:['address']}, 
 
-    [MODULES.demand, 'Permission', 300, [], ValueType.TYPE_ADDRESS, 'Permission object address.', []],       
-    [MODULES.demand, 'Deadline', 302, [], ValueType.TYPE_U64, 'The expiration time of presenting.', []],   
-    [MODULES.demand, 'Bounty Count', 303, [], ValueType.TYPE_U64, 'Number of Bounties.', []],   
-    [MODULES.demand, 'Has Guard', 304, [], ValueType.TYPE_BOOL, 'Whether the present guard is set?', []],       
-    [MODULES.demand, 'Guard', 305, [], ValueType.TYPE_ADDRESS, 'The present guard address.', []],
-    [MODULES.demand, 'Has Service Picked', 306, [], ValueType.TYPE_BOOL, 'Whether a service has been picked and bounties given?', []],   
-    [MODULES.demand, 'Service Picked', 307, [], ValueType.TYPE_ADDRESS, 'Service address that has been picked.', []], 
-    [MODULES.demand, 'Presenter Count', 308, [], ValueType.TYPE_U64, 'Number of presenters.', []],
-    [MODULES.demand, 'Has Presenter', 309, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Is a certain address a presenter?', ['address']],   
-    [MODULES.demand, 'Who Got Bounty', 310, [ValueType.TYPE_ADDRESS], ValueType.TYPE_ADDRESS, 'The address that bounties given.', ['address']], 
+    {module:MODULES.demand, query_name:'Permission', query_id:300, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', },       
+    {module:MODULES.demand, query_name:'Deadline', query_id:302, parameters:[], return:ValueType.TYPE_U64, description:'The expiration time of presenting.', },   
+    {module:MODULES.demand, query_name:'Bounty Count', query_id:303, parameters:[], return:ValueType.TYPE_U64, description:'Number of Bounties.', },   
+    {module:MODULES.demand, query_name:'Has Guard', query_id:304, parameters:[], return:ValueType.TYPE_BOOL, description:'Whether the present guard is set?', },       
+    {module:MODULES.demand, query_name:'Guard', query_id:305, parameters:[], return:ValueType.TYPE_ADDRESS, description:'The present guard address.', },
+    {module:MODULES.demand, query_name:'Has Service Picked', query_id:306, parameters:[], return:ValueType.TYPE_BOOL, description:'Whether a service has been picked and bounties given?', },   
+    {module:MODULES.demand, query_name:'Service Picked', query_id:307, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Service address that has been picked.', }, 
+    {module:MODULES.demand, query_name:'Presenter Count', query_id:308, parameters:[], return:ValueType.TYPE_U64, description:'Number of presenters.', },
+    {module:MODULES.demand, query_name:'Has Presenter', query_id:309, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Is a certain address a presenter?', parameters_description:['address']},   
+    {module:MODULES.demand, query_name:'Who Got Bounty', query_id:310, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_ADDRESS, description:'The address that bounties given.', parameters_description:['address']}, 
 
-    [MODULES.service, 'Permission', 400, [], ValueType.TYPE_ADDRESS, 'Permission object address.', []],       
-    [MODULES.service, 'Payee', 401, [], ValueType.TYPE_ADDRESS, 'Payee address, that all order withdrawals will be collected to this address.', []],
-    [MODULES.service, 'Has Buying Guard', 402, [], ValueType.TYPE_BOOL, 'Is the guard condition of buying set?', []],   
-    [MODULES.service, 'Buying Guard', 403, [], ValueType.TYPE_ADDRESS, 'Buying guard, that Purchase only if you meet the conditions of the guard.', []],   
-    [MODULES.service, 'Contains Repository', 404, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, "Is a certain repository one of the service's consensus repositories?", ['address']],       
-    [MODULES.service, 'Has Withdrawing Guard', 405, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether a certain guard is set when withdrawing money?', ['address']],
-    [MODULES.service, 'Withdrawing Guard Percent', 406, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The percentage of withdrawals allowed by a certain withdrawal guard.', ['address']],   
-    [MODULES.service, 'Has Refunding Guard', 407, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether a certain guard is set when refunding money?', ['address']], 
-    [MODULES.service, 'Refunding Guard Percent', 408, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The percentage of refund allowed by a certain refund guard.', ['address']],
-    [MODULES.service, 'Has Sales Item', 409, [ValueType.TYPE_STRING], ValueType.TYPE_BOOL, 'Is there a sales item for the service?', ['the item name']],   
-    [MODULES.service, 'Sale Item Price', 410, [ValueType.TYPE_STRING], ValueType.TYPE_U64, 'What is the price of a certain sale item?', ['the item name']], 
-    [MODULES.service, 'Sale Item Inventory', 411, [ValueType.TYPE_STRING], ValueType.TYPE_U64, 'How much inventory is there for a certain sales item?', ['the item name']], 
-    [MODULES.service, 'Has Machine', 412, [], ValueType.TYPE_BOOL, "Has the machine(progress generator) that serves the order been set up?", []],
-    [MODULES.service, 'Machine', 413, [], ValueType.TYPE_ADDRESS, 'Machine address, that generate progresses serving the execution process of order.', []],  
-    [MODULES.service, 'Paused', 414, [], ValueType.TYPE_BOOL, 'Pause the creation of new order?'], 
-    [MODULES.service, 'Published', 415, [], ValueType.TYPE_BOOL, 'Is it allowed to create orders?'], 
-    [MODULES.service, 'Has Required Info', 416, [], ValueType.TYPE_BOOL, 'Whether the necessary information that needs to be provided by the customer is set?', []],
-    [MODULES.service, 'Required Info of Service-Pubkey', 417, [], ValueType.TYPE_STRING, 'The public key used to encrypt customer information, and only the service provider can decrypt and view customer information.', []],   
-    [MODULES.service, 'Required Info', 418, [], ValueType.TYPE_VEC_STRING, 'Names of the required information item that needs to be provided by the customer.', []],  
-    [MODULES.service, 'Number of Treasuries', 419, [], ValueType.TYPE_U64, 'The number of treasuries that can be externally withdrawn for purposes such as compensation or incentives.', []],   
-    [MODULES.service, 'Contains Treasury', 420, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Does it contain externally withdrawable Treasury for purposes such as compensation or incentives?', ['treasury address']],  
-    [MODULES.service, 'Number of Arbitrations', 421, [], ValueType.TYPE_U64, 'The number of arbitrations that allows a refund to be made from the order at any time based on the arbitration result.', []],   
-    [MODULES.service, 'Contains Arbitration', 422, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Does it contain an arbitration that allows a refund to be made from the order at any time based on the arbitration result.?', ['arbitration address']],  
+    {module:MODULES.service, query_name:'Permission', query_id:400, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', },       
+    {module:MODULES.service, query_name:'Payee', query_id:401, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Payee address, that all order withdrawals will be collected to this address.', },
+    {module:MODULES.service, query_name:'Has Buying Guard', query_id:402, parameters:[], return:ValueType.TYPE_BOOL, description:'Is the guard condition of buying set?', },   
+    {module:MODULES.service, query_name:'Buying Guard', query_id:403, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Buying guard, that Purchase only if you meet the conditions of the guard.', },   
+    {module:MODULES.service, query_name:'Contains Repository', query_id:404, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:"Is a certain repository one of the service's consensus repositories?", parameters_description:['address']},       
+    {module:MODULES.service, query_name:'Has Withdrawing Guard', query_id:405, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether a certain guard is set when withdrawing money?', parameters_description:['address']},
+    {module:MODULES.service, query_name:'Withdrawing Guard Percent', query_id:406, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The percentage of withdrawals allowed by a certain withdrawal guard.', parameters_description:['address']},   
+    {module:MODULES.service, query_name:'Has Refunding Guard', query_id:407, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether a certain guard is set when refunding money?', parameters_description:['address']}, 
+    {module:MODULES.service, query_name:'Refunding Guard Percent', query_id:408, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The percentage of refund allowed by a certain refund guard.', parameters_description:['address']},
+    {module:MODULES.service, query_name:'Has Sales Item', query_id:409, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_BOOL, description:'Is there a sales item for the service?', parameters_description:['the item name']},   
+    {module:MODULES.service, query_name:'Sale Item Price', query_id:410, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_U64, description:'What is the price of a certain sale item?', parameters_description:['the item name']}, 
+    {module:MODULES.service, query_name:'Sale Item Inventory', query_id:411, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_U64, description:'How much inventory is there for a certain sales item?', parameters_description:['the item name']}, 
+    {module:MODULES.service, query_name:'Has Machine', query_id:412, parameters:[], return:ValueType.TYPE_BOOL, description:"Has the machine(progress generator) that serves the order been set up?", },
+    {module:MODULES.service, query_name:'Machine', query_id:413, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Machine address, that generate progresses serving the execution process of order.', },  
+    {module:MODULES.service, query_name:'Paused', query_id:414, parameters:[], return:ValueType.TYPE_BOOL, description:'Pause the creation of new order?'}, 
+    {module:MODULES.service, query_name:'Published', query_id:415, parameters:[], return:ValueType.TYPE_BOOL, description:'Is it allowed to create orders?'}, 
+    {module:MODULES.service, query_name:'Has Required Info', query_id:416, parameters:[], return:ValueType.TYPE_BOOL, description:'Whether the necessary information that needs to be provided by the customer is set?', },
+    {module:MODULES.service, query_name:'Required Info of Service-Pubkey', query_id:417, parameters:[], return:ValueType.TYPE_STRING, description:'The public key used to encrypt customer information, and only the service provider can decrypt and view customer information.', },   
+    {module:MODULES.service, query_name:'Required Info', query_id:418, parameters:[], return:ValueType.TYPE_VEC_STRING, description:'Names of the required information item that needs to be provided by the customer.', },  
+    {module:MODULES.service, query_name:'Number of Treasuries', query_id:419, parameters:[], return:ValueType.TYPE_U64, description:'The number of treasuries that can be externally withdrawn for purposes such as compensation or incentives.', },   
+    {module:MODULES.service, query_name:'Contains Treasury', query_id:420, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Does it contain externally withdrawable Treasury for purposes such as compensation or incentives?', parameters_description:['treasury address']},  
+    {module:MODULES.service, query_name:'Number of Arbitrations', query_id:421, parameters:[], return:ValueType.TYPE_U64, description:'The number of arbitrations that allows a refund to be made from the order at any time based on the arbitration result.', },   
+    {module:MODULES.service, query_name:'Contains Arbitration', query_id:422, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Does it contain an arbitration that allows a refund to be made from the order at any time based on the arbitration result.?', parameters_description:['arbitration address']},  
 
-    [MODULES.order, 'Amount', 500, [], ValueType.TYPE_U64, 'Order amount.', []],       
-    [MODULES.order, 'Payer', 501, [], ValueType.TYPE_ADDRESS, 'Order payer.', []],
-    [MODULES.order, 'Service', 502, [], ValueType.TYPE_ADDRESS, 'Service for creating orders.', []],   
-    [MODULES.order, 'Has Progress', 503, [], ValueType.TYPE_BOOL, 'Is there a Progress for executing the order process?', []],   
-    [MODULES.order, 'Progress', 504, [], ValueType.TYPE_ADDRESS, 'Progress address for executing the order process.', []],       
-    [MODULES.order, 'Required Info', 505, [], ValueType.TYPE_BOOL, 'Is Required Info set?', []],
-    [MODULES.order, 'Discount Used', 506, [], ValueType.TYPE_BOOL, 'Discount coupon used for this order?', []],   
-    [MODULES.order, 'Discount', 507, [], ValueType.TYPE_ADDRESS, 'Discount address that already used.', []], 
-    [MODULES.order, 'Balance', 508, [], ValueType.TYPE_U64, 'The amount currently in the order.', []], 
-//        [MODULES.order, 'Refunded', 509, [], ValueType.TYPE_BOOL, 'Whether a refund has occurred?', []],
-//        [MODULES.order, 'Withdrawed', 510, [], ValueType.TYPE_BOOL, 'Whether a service provider withdrawal has occurred?', []],   
-    [MODULES.order, 'Number of Agents', 511, [], ValueType.TYPE_U64, 'The number of agents for the order.', []], 
-    [MODULES.order, 'Has Agent', 512, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether an address is an order agent?', ['agent address']], 
-    [MODULES.order, 'Number of Disputes', 513, [], ValueType.TYPE_U64, 'Number of arbitrations for the order.', []],
-    [MODULES.order, 'Has Arb', 514, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Does the order contain an Arb for arbitration?', ['arb address']],   
-/* @Deprecated
-    [MODULES.reward, 'Permission', 600, [], ValueType.TYPE_ADDRESS, 'Permission object address.', []],       
-    [MODULES.reward, 'Rewards Remaining', 601, [], ValueType.TYPE_U64, 'Number of rewards to be claimed.', []],
-    [MODULES.reward, 'Reward Count Supplied', 602, [], ValueType.TYPE_U64, 'Total rewards supplied.', []],   
-    [MODULES.reward, 'Guard Count', 603, [], ValueType.TYPE_U64, 'The number of claiming guards.', []],   
-    [MODULES.reward, 'Has Guard', 604, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether a claiming guard is set up?', ['address']],       
-    [MODULES.reward, 'Guard Portion', 605, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The portions of rewards, that can be claimed if a certain guard condition is met.', ['address']],
-    [MODULES.reward, 'Deadline', 606, [], ValueType.TYPE_U64, 'The expiration time of claiming.', []],   
-    [MODULES.reward, 'Has Claimed by An Address', 607, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether a certain address has claimed rewards?', ['address']], 
-    [MODULES.reward, 'Portions Claimed by An Address', 608, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The portions of rewards that have been claimed by a certain address.', []],
-    [MODULES.reward, 'Number of Addresses Claimed', 609, [], ValueType.TYPE_U64, 'Number of addresses that have claimed rewards.', []],   
-    [MODULES.reward, 'Is Sponsor', 620, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether an address is a sponsor of the reward pool?', ['address']], 
-    [MODULES.reward, 'Portions by A Sponsor', 611, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The portions of sponsorship reward pools for a certain address.', ['address']], 
-    [MODULES.reward, 'Number of Sponsors', 612, [], ValueType.TYPE_U64, 'Number of sponsors in the sponsorship reward pool.', []],
-    [MODULES.reward, 'Allow Repeated Claims', 613, [], ValueType.TYPE_BOOL, 'Whether to allow repeated claims?', []],  
-*/    
+    {module:MODULES.order, query_name:'Amount', query_id:500, parameters:[], return:ValueType.TYPE_U64, description:'Order amount.', },       
+    {module:MODULES.order, query_name:'Payer', query_id:501, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Order payer.', },
+    {module:MODULES.order, query_name:'Service', query_id:502, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Service for creating orders.', },   
+    {module:MODULES.order, query_name:'Has Progress', query_id:503, parameters:[], return:ValueType.TYPE_BOOL, description:'Is there a Progress for executing the order process?', },   
+    {module:MODULES.order, query_name:'Progress', query_id:504, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Progress address for executing the order process.', },       
+    {module:MODULES.order, query_name:'Required Info', query_id:505, parameters:[], return:ValueType.TYPE_BOOL, description:'Is Required Info set?', },
+    {module:MODULES.order, query_name:'Discount Used', query_id:506, parameters:[], return:ValueType.TYPE_BOOL, description:'Discount coupon used for this order?', },   
+    {module:MODULES.order, query_name:'Discount', query_id:507, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Discount address that already used.', }, 
+    {module:MODULES.order, query_name:'Balance', query_id:508, parameters:[], return:ValueType.TYPE_U64, description:'The amount currently in the order.', }, 
+    {module:MODULES.order, query_name:'Number of Agents', query_id:511, parameters:[], return:ValueType.TYPE_U64, description:'The number of agents for the order.', }, 
+    {module:MODULES.order, query_name:'Has Agent', query_id:512, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether an address is an order agent?', parameters_description:['agent address']}, 
+    {module:MODULES.order, query_name:'Number of Disputes', query_id:513, parameters:[], return:ValueType.TYPE_U64, description:'Number of arbitrations for the order.', },
+    {module:MODULES.order, query_name:'Has Arb', query_id:514, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Does the order contain an Arb for arbitration?', parameters_description:['arb address']},   
 
-    [MODULES.machine, 'Permission', 700, [], ValueType.TYPE_ADDRESS, 'Permission object address.', []],
-    [MODULES.machine, 'Paused', 701, [], ValueType.TYPE_BOOL, 'Pause the creation of new Progress?', []],
-    [MODULES.machine, 'Published', 702, [], ValueType.TYPE_BOOL, 'Is it allowed to create Progress?', []],
-    [MODULES.machine, 'Is Consensus Repository', 703, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether an address is a consensus repository?', ['adddress']],
-    [MODULES.machine, 'Has Endpoint', 704, [], ValueType.TYPE_BOOL, 'Is the endpoint set?', []],   
-    [MODULES.machine, 'Endpoint', 705, [], ValueType.TYPE_STRING, 'Endpoint url/ipfs.', []],
+    {module:MODULES.machine, query_name:'Permission', query_id:700, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', },
+    {module:MODULES.machine, query_name:'Paused', query_id:701, parameters:[], return:ValueType.TYPE_BOOL, description:'Pause the creation of new Progress?', },
+    {module:MODULES.machine, query_name:'Published', query_id:702, parameters:[], return:ValueType.TYPE_BOOL, description:'Is it allowed to create Progress?', },
+    {module:MODULES.machine, query_name:'Is Consensus Repository', query_id:703, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether an address is a consensus repository?', parameters_description:['adddress']},
+    {module:MODULES.machine, query_name:'Has Endpoint', query_id:704, parameters:[], return:ValueType.TYPE_BOOL, description:'Is the endpoint set?', },   
+    {module:MODULES.machine, query_name:'Endpoint', query_id:705, parameters:[], return:ValueType.TYPE_STRING, description:'Endpoint url/ipfs.', },
 
-    [MODULES.progress, 'Machine', 800, [], ValueType.TYPE_ADDRESS, 'The Machine object that created this Progress.', []],       
-    [MODULES.progress, 'Current Node', 801, [], ValueType.TYPE_STRING, 'The name of the currently running node.', []],
-    [MODULES.progress, 'Has Parent', 802, [], ValueType.TYPE_BOOL, 'Is the parent Progress defined?', []],   
-    [MODULES.progress, 'Parent', 803, [], ValueType.TYPE_ADDRESS, 'The parent Progress, that contains some child Progress.', []],   
-    [MODULES.progress, 'Has Task', 804, [], ValueType.TYPE_BOOL, 'Does it contain clear task(eg. an Order)?', []],       
-    [MODULES.progress, 'Task', 805, [], ValueType.TYPE_ADDRESS, 'Task object address.', []],
-    [MODULES.progress, 'Has Unique Permission', 806, [ValueType.TYPE_STRING], ValueType.TYPE_BOOL, 'Does Progress define a unique operation permission?', ['operator name']],   
-    [MODULES.progress, 'Is Unique Permission Operator', 807, [ValueType.TYPE_STRING, ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Is an address an operator with unique permissions?', ['operator name','address']], 
-    [MODULES.progress, 'Has Context Repository', 808, [], ValueType.TYPE_BOOL, 'Whether the repository reference for Progress is set?', []],
-    [MODULES.progress, 'Context Repository', 809, [], ValueType.TYPE_ADDRESS, 'Repository reference for Progress.', []],   
-    [MODULES.progress, 'Last Session Time', 810, [], ValueType.TYPE_U64, 'Time when the previous session was completed.', []],
-    [MODULES.progress, 'Last Session Node', 811, [], ValueType.TYPE_STRING, 'The name of the last completed node.', []],  
-    [MODULES.progress, 'Current Session-id', 812, [], ValueType.TYPE_U64, 'The session id of ongoing node.', []],  
-    [MODULES.progress, 'Parent Session-id', 813, [], ValueType.TYPE_U64, 'The child process was started in the Session-id phase of the parent process.', []],   
-    [MODULES.progress, 'Parent Next Node', 814, [], ValueType.TYPE_STRING, 'The child process is started at the next node stage of the parent process.', []],
-    [MODULES.progress, 'Parent Forward', 815, [], ValueType.TYPE_STRING, 'The child process is started in the Forward phase of the next node of the parent process.', []],  
-    [MODULES.progress, 'Parent Node', 816, [], ValueType.TYPE_STRING, 'The node name of the parent process where the child process is located.', []],  
-    [MODULES.progress, 'Forward Accomplished', 817, [ValueType.TYPE_U64, ValueType.TYPE_STRING, ValueType.TYPE_STRING], ValueType.TYPE_BOOL, 'Has the forward been accomplished?', ['session-id', 'next node name', 'forward name']],  
-    [MODULES.progress, 'Forward Operator', 818, [ValueType.TYPE_U64, ValueType.TYPE_STRING, ValueType.TYPE_STRING], ValueType.TYPE_ADDRESS, 'The forward operator.', ['session-id', 'next node name', 'forward name']],   
-    [MODULES.progress, 'Forward Message', 819, [ValueType.TYPE_U64, ValueType.TYPE_STRING, ValueType.TYPE_STRING], ValueType.TYPE_STRING, 'The forward message.', ['session-id', 'next node name', 'forward name']],
-    [MODULES.progress, 'Forward Order Count', 820, [ValueType.TYPE_U64, ValueType.TYPE_STRING, ValueType.TYPE_STRING], ValueType.TYPE_U64, 'The forward Order count.', ['session-id', 'next node name', 'forward name']],  
-    [MODULES.progress, 'Forward time', 821, [ValueType.TYPE_U64, ValueType.TYPE_STRING, ValueType.TYPE_STRING], ValueType.TYPE_U64, 'The time when the forward was last triggered.', ['session-id', 'next node name', 'forward name']],  
-    [MODULES.progress, 'Closest Session Time', 822, [ValueType.TYPE_STRING], ValueType.TYPE_U64, 'The time a node that closest time to the current node completes its session.', ['node name']],  
-    [MODULES.progress, 'Closest Forward Accomplished', 823, [ValueType.TYPE_STRING, ValueType.TYPE_STRING, ValueType.TYPE_STRING], ValueType.TYPE_BOOL, 'Has the forward been accomplished?', ['node name', 'next node name', 'forward name']],  
-    [MODULES.progress, 'Closest Forward Operator', 824, [ValueType.TYPE_STRING, ValueType.TYPE_STRING, ValueType.TYPE_STRING], ValueType.TYPE_ADDRESS, 'The operator of the forward that closest time to the current node.', ['node name', 'next node name', 'forward name']],   
-    [MODULES.progress, 'Closest Forward Message', 825, [ValueType.TYPE_STRING, ValueType.TYPE_STRING, ValueType.TYPE_STRING], ValueType.TYPE_STRING, 'The message of the forward that closest time to the current node.', ['node name', 'next node name', 'forward name']],
-    [MODULES.progress, 'Closest Forward Order Count', 826, [ValueType.TYPE_STRING, ValueType.TYPE_STRING, ValueType.TYPE_STRING], ValueType.TYPE_U64, 'The Order count of the forward that closest time to the current node.', ['node name', 'next node name', 'forward name']],  
-    [MODULES.progress, 'Closest Forward time', 827, [ValueType.TYPE_STRING, ValueType.TYPE_STRING, ValueType.TYPE_STRING], ValueType.TYPE_U64, 'The time when the forward that closest time to the current node was last triggered.', ['node name', 'next node name', 'forward name']],  
+    {module:MODULES.progress, query_name:'Machine', query_id:800, parameters:[], return:ValueType.TYPE_ADDRESS, description:'The Machine object that created this Progress.', },       
+    {module:MODULES.progress, query_name:'Current Node', query_id:801, parameters:[], return:ValueType.TYPE_STRING, description:'The name of the currently running node.', },
+    {module:MODULES.progress, query_name:'Has Parent', query_id:802, parameters:[], return:ValueType.TYPE_BOOL, description:'Is the parent Progress defined?', },   
+    {module:MODULES.progress, query_name:'Parent', query_id:803, parameters:[], return:ValueType.TYPE_ADDRESS, description:'The parent Progress, that contains some child Progress.', },   
+    {module:MODULES.progress, query_name:'Has Task', query_id:804, parameters:[], return:ValueType.TYPE_BOOL, description:'Does it contain clear task(eg. an Order)?', },       
+    {module:MODULES.progress, query_name:'Task', query_id:805, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Task object address.', },
+    {module:MODULES.progress, query_name:'Has Unique Permission', query_id:806, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_BOOL, description:'Does Progress define a unique operation permission?', parameters_description:['operator name']},   
+    {module:MODULES.progress, query_name:'Is Unique Permission Operator', query_id:807, parameters:[ValueType.TYPE_STRING, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Is an address an operator with unique permissions?', parameters_description:['operator name','address']}, 
+    {module:MODULES.progress, query_name:'Has Context Repository', query_id:808, parameters:[], return:ValueType.TYPE_BOOL, description:'Whether the repository reference for Progress is set?', },
+    {module:MODULES.progress, query_name:'Context Repository', query_id:809, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Repository reference for Progress.', },   
+    {module:MODULES.progress, query_name:'Last Session Time', query_id:810, parameters:[], return:ValueType.TYPE_U64, description:'Time when the previous session was completed.', },
+    {module:MODULES.progress, query_name:'Last Session Node', query_id:811, parameters:[], return:ValueType.TYPE_STRING, description:'The name of the last completed node.', },  
+    {module:MODULES.progress, query_name:'Current Session-id', query_id:812, parameters:[], return:ValueType.TYPE_U64, description:'The session id of ongoing node.', },  
+    {module:MODULES.progress, query_name:'Parent Session-id', query_id:813, parameters:[], return:ValueType.TYPE_U64, description:'The child process was started in the Session-id phase of the parent process.', },   
+    {module:MODULES.progress, query_name:'Parent Next Node', query_id:814, parameters:[], return:ValueType.TYPE_STRING, description:'The child process is started at the next node stage of the parent process.', },
+    {module:MODULES.progress, query_name:'Parent Forward', query_id:815, parameters:[], return:ValueType.TYPE_STRING, description:'The child process is started in the Forward phase of the next node of the parent process.', },  
+    {module:MODULES.progress, query_name:'Parent Node', query_id:816, parameters:[], return:ValueType.TYPE_STRING, description:'The node name of the parent process where the child process is located.', },  
+    {module:MODULES.progress, query_name:'Forward Accomplished', query_id:817, parameters:[ValueType.TYPE_U64, ValueType.TYPE_STRING, ValueType.TYPE_STRING], return:ValueType.TYPE_BOOL, description:'Has the forward been accomplished?', parameters_description:['session-id', 'next node name', 'forward name']},  
+    {module:MODULES.progress, query_name:'Forward Operator', query_id:818, parameters:[ValueType.TYPE_U64, ValueType.TYPE_STRING, ValueType.TYPE_STRING], return:ValueType.TYPE_ADDRESS, description:'The forward operator.', parameters_description:['session-id', 'next node name', 'forward name']},   
+    {module:MODULES.progress, query_name:'Forward Message', query_id:819, parameters:[ValueType.TYPE_U64, ValueType.TYPE_STRING, ValueType.TYPE_STRING], return:ValueType.TYPE_STRING, description:'The forward message.', parameters_description:['session-id', 'next node name', 'forward name']},
+    {module:MODULES.progress, query_name:'Forward Order Count', query_id:820, parameters:[ValueType.TYPE_U64, ValueType.TYPE_STRING, ValueType.TYPE_STRING], return:ValueType.TYPE_U64, description:'The forward Order count.', parameters_description:['session-id', 'next node name', 'forward name']},  
+    {module:MODULES.progress, query_name:'Forward time', query_id:821, parameters:[ValueType.TYPE_U64, ValueType.TYPE_STRING, ValueType.TYPE_STRING], return:ValueType.TYPE_U64, description:'The time when the forward was last triggered.', parameters_description:['session-id', 'next node name', 'forward name']},  
+    {module:MODULES.progress, query_name:'Closest Session Time', query_id:822, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_U64, description:'The time a node that closest time to the current node completes its session.', parameters_description:['node name']},  
+    {module:MODULES.progress, query_name:'Closest Forward Accomplished', query_id:823, parameters:[ValueType.TYPE_STRING, ValueType.TYPE_STRING, ValueType.TYPE_STRING], return:ValueType.TYPE_BOOL, description:'Has the forward been accomplished?', parameters_description:['node name', 'next node name', 'forward name']},  
+    {module:MODULES.progress, query_name:'Closest Forward Operator', query_id:824, parameters:[ValueType.TYPE_STRING, ValueType.TYPE_STRING, ValueType.TYPE_STRING], return:ValueType.TYPE_ADDRESS, description:'The operator of the forward that closest time to the current node.', parameters_description:['node name', 'next node name', 'forward name']},   
+    {module:MODULES.progress, query_name:'Closest Forward Message', query_id:825, parameters:[ValueType.TYPE_STRING, ValueType.TYPE_STRING, ValueType.TYPE_STRING], return:ValueType.TYPE_STRING, description:'The message of the forward that closest time to the current node.', parameters_description:['node name', 'next node name', 'forward name']},
+    {module:MODULES.progress, query_name:'Closest Forward Order Count', query_id:826, parameters:[ValueType.TYPE_STRING, ValueType.TYPE_STRING, ValueType.TYPE_STRING], return:ValueType.TYPE_U64, description:'The Order count of the forward that closest time to the current node.', parameters_description:['node name', 'next node name', 'forward name']},  
+    {module:MODULES.progress, query_name:'Closest Forward time', query_id:827, parameters:[ValueType.TYPE_STRING, ValueType.TYPE_STRING, ValueType.TYPE_STRING], return:ValueType.TYPE_U64, description:'The time when the forward that closest time to the current node was last triggered.', parameters_description:['node name', 'next node name', 'forward name']},  
 
-    [MODULES.wowok, 'Builder', 900, [], ValueType.TYPE_ADDRESS, 'Builder address of Wowok.', []], 
-    [MODULES.wowok, 'Object of Entities', 901, [], ValueType.TYPE_ADDRESS, 'The address of entity information object.', []],
-    [MODULES.wowok, 'Grantor Count', 902, [], ValueType.TYPE_U64, 'Number of registered grantors.', []],   
-    [MODULES.wowok, 'Has Grantor', 903, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether an address has been registered as a grantor?', ['address']], 
-    [MODULES.wowok, 'Grantor Name', 904, [ValueType.TYPE_ADDRESS], ValueType.TYPE_STRING, "Name of a grantor.", ['address']], 
-    [MODULES.wowok, 'Grantor Registration Time', 905, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'Registration time of a grantor.', ['address']], 
-    [MODULES.wowok, 'Grantor Expired Time', 906, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The expiration time of a grantor.', ['address']], 
-    [MODULES.wowok, 'Grantee Object for Grantor', 907, [ValueType.TYPE_ADDRESS], ValueType.TYPE_ADDRESS, 'Grantee repository address of a grantor.', ['address']], 
-/* @Deprecated
-    [MODULES.vote, 'Permission', 1101, [], ValueType.TYPE_ADDRESS, 'Permission object address.', []],       
-    [MODULES.vote, 'Be Voting', 1102, [], ValueType.TYPE_BOOL, 'Whether to start voting and options will not be changed?', []],
-    [MODULES.vote, 'Deadline Locked', 1103, [], ValueType.TYPE_BOOL, 'Whether the deadline cannot be modified?', []],   
-    [MODULES.vote, 'Vote-Guard Locked', 1104, [], ValueType.TYPE_BOOL, 'Whether the Guard for voting cannot be modified?', []],   
-    [MODULES.vote, 'Max Choice Count', 1105, [], ValueType.TYPE_U8, 'The maximum number of options that can be selected in one vote.', []],       
-    [MODULES.vote, 'Deadline', 1106, [], ValueType.TYPE_U64, 'Deadline for voting.', []],
-    [MODULES.vote, 'Has Reference', 1107, [], ValueType.TYPE_BOOL, 'Whether to vote for a reference Object?', []],   
-    [MODULES.vote, 'Reference', 1108, [], ValueType.TYPE_ADDRESS, 'Reference Object that voting for.', []], 
-    [MODULES.vote, 'Has Vote-Guard', 1109, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Is a certain Guard included in the Vote-Guard settings?', ['guard address']],
-    [MODULES.vote, 'Vote-Guard Wight', 1110, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The voting weight corresponding to the Vote-Guard.', ['guard address']],   
-    [MODULES.vote, 'Has Voted by Address', 1111, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether an address has already voted?', ['address']], 
-    [MODULES.vote, 'Voted Weight by Address', 1112, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The weight of whether an address has been voted on.', ['adddress']], 
-    [MODULES.vote, 'Has Option', 1113, [ValueType.TYPE_STRING], ValueType.TYPE_BOOL, 'Whether a voting option is included?', ['option content']],
-    [MODULES.vote, 'Has Object of Option', 1114, [ValueType.TYPE_STRING], ValueType.TYPE_BOOL, 'Whether a voting option refers to an object?', ['option content']],   
-    [MODULES.vote, 'Option Object', 1115, [ValueType.TYPE_STRING], ValueType.TYPE_ADDRESS, 'The object referenced by a voting option.', ['option content']], 
-    [MODULES.vote, 'Option Counts', 1116, [ValueType.TYPE_STRING], ValueType.TYPE_U64, 'The number of votes for the voting option.', ['option content']], 
-    [MODULES.vote, 'Option Votes', 1117, [ValueType.TYPE_STRING], ValueType.TYPE_U64, 'The number of voted addresses for the voting option.', ['option content']], 
-    [MODULES.vote, 'Address Count Voted', 1118, [], ValueType.TYPE_U64, 'Total number of addresses voted.', []],   
-    [MODULES.vote, 'Top1 Option by Addresses', 1119, [], ValueType.TYPE_STRING, 'The content of the voting option ranked first by the number of voting addresses.', []], 
-    [MODULES.vote, 'Top1 Counts by Addresses', 1120, [], ValueType.TYPE_U64, 'Number of votes for the top voting option by number of voting addresses.', []], 
-    [MODULES.vote, 'Top1 Option by Votes', 1121, [], ValueType.TYPE_STRING, 'The content of the voting option ranked first by the number of votes.', []], 
-    [MODULES.vote, 'Top1 Counts by Votes', 1122, [], ValueType.TYPE_U64, 'Number of votes for the top voting option by number of votes.', []], 
-    [MODULES.vote, 'Voted Time by Address', 1113, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The time of whether an address has been voted on.', ['adddress']], 
-*/ 
-    [MODULES.payment, 'Sender', 1200, [], ValueType.TYPE_ADDRESS, 'Payment originator address.', []], 
-    [MODULES.payment, 'Total Amount', 1201, [], ValueType.TYPE_U128, "Payment amount.", []], 
-    [MODULES.payment, 'Remark', 1202, [], ValueType.TYPE_STRING, 'Payment remark.', ['address']], 
-    [MODULES.payment, 'Has Guard for Perpose', 1203, [], ValueType.TYPE_BOOL, 'Whether the payment references a Guard?', []], 
-    [MODULES.payment, 'Has Object for Perpose', 1204, [], ValueType.TYPE_BOOL, 'Whether the payment references an Object?', []], 
-    [MODULES.payment, 'Guard for Perpose', 1205, [], ValueType.TYPE_ADDRESS, 'The Guard referenced by this payment.', []], 
-    [MODULES.payment, 'Object for Perpose', 1206, [], ValueType.TYPE_ADDRESS, "The Object referenced by this payment.", []], 
-    [MODULES.payment, 'Number of Recipients', 1207, [], ValueType.TYPE_U64, 'Number of recipients to receive payment from.', []], 
-    [MODULES.payment, 'Is a Recipient', 1208, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Is a recipient received the payment?', ['address']], 
-    [MODULES.payment, 'Amount for a Recipient', 1209, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The amount of payment received by an address.', ['address']], 
-    [MODULES.payment, 'Time', 1210, [], ValueType.TYPE_U64, 'Payment time', []], 
-    [MODULES.payment, 'Is from Treasury', 1211, [], ValueType.TYPE_BOOL, 'Whether the payment comes from a Treasury?', []], 
-    [MODULES.payment, 'Treasury Address', 1212, [], ValueType.TYPE_ADDRESS, 'The Treasury from which the payment comes.', []], 
-    [MODULES.payment, 'Biz-ID', 1213, [], ValueType.TYPE_U64, 'Bisiness ID number of the payment.', []], 
-    [MODULES.payment, 'Check the purpose of payment', 1214, [ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], ValueType.TYPE_BOOL, 'Do Guard, Object Perpose, and Biz-ID match?', ['guard address', 'object address', 'Biz-ID']], 
-    [MODULES.payment, 'Check & Amount for a Recipient', 1215, [ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS, ValueType.TYPE_U64, ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Check and get the amount of payment received by an address.', ['guard address', 'object address', 'Biz-ID', 'recipient address']], 
+    {module:MODULES.wowok, query_name:'Builder', query_id:900, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Builder address of Wowok.', }, 
+    {module:MODULES.wowok, query_name:'Object of Entities', query_id:901, parameters:[], return:ValueType.TYPE_ADDRESS, description:'The address of entity information object.', },
+    {module:MODULES.wowok, query_name:'Grantor Count', query_id:902, parameters:[], return:ValueType.TYPE_U64, description:'Number of registered grantors.', },   
+    {module:MODULES.wowok, query_name:'Has Grantor', query_id:903, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether an address has been registered as a grantor?', parameters_description:['address']}, 
+    {module:MODULES.wowok, query_name:'Grantor Name', query_id:904, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_STRING, description:"Name of a grantor.", parameters_description:['address']}, 
+    {module:MODULES.wowok, query_name:'Grantor Registration Time', query_id:905, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'Registration time of a grantor.', parameters_description:['address']}, 
+    {module:MODULES.wowok, query_name:'Grantor Expired Time', query_id:906, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The expiration time of a grantor.', parameters_description:['address']}, 
+    {module:MODULES.wowok, query_name:'Grantee Object for Grantor', query_id:907, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_ADDRESS, description:'Grantee repository address of a grantor.', parameters_description:['address']}, 
 
-    [MODULES.treasury, 'Permission', 1400, [], ValueType.TYPE_ADDRESS, 'Permission object address.', []], 
-    [MODULES.treasury, 'Balance', 1401, [], ValueType.TYPE_U64, "Treasury balance.", []], 
-    [MODULES.treasury, 'Number of Flow Records', 1402, [], ValueType.TYPE_U64, 'Number of treasury transactions.', []], 
-    [MODULES.treasury, 'Inflow Amount', 1403, [], ValueType.TYPE_U128, 'Treasury inflow amount.', []], 
-    [MODULES.treasury, 'Outflow Amount', 1404, [], ValueType.TYPE_U128, 'Treasury outflow amount.', []], 
-    [MODULES.treasury, 'Has Deposit Guard', 1405, [], ValueType.TYPE_BOOL, 'Whether the deposit Guard set?', []], 
-    [MODULES.treasury, 'Deposit Guard', 1406, [], ValueType.TYPE_ADDRESS, 'Deposit Guard address.', []], 
-    [MODULES.treasury, 'Number of Withdraw Guards', 1407, [], ValueType.TYPE_U64, 'Number of withdraw guards.', []], 
-    [MODULES.treasury, 'Has Withdraw Guard', 1408, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Has a Withdraw Guard added?', ['guard address']], 
-    [MODULES.treasury, 'Withdrawal Amount with Guard', 1409, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'withdrawal amount corresponding the Guard.', ['guard address']], 
-    [MODULES.treasury, 'Recent Time with Operation', 1410, [ValueType.TYPE_U8], ValueType.TYPE_U64, 'Time of the most recent fund operation.', ['operation']], 
-    [MODULES.treasury, 'Recent Signer with Operation', 1411, [ValueType.TYPE_U8], ValueType.TYPE_ADDRESS, 'Signer address of the most recent fund operation.', ['operation']], 
-    [MODULES.treasury, 'Recent Payment with Operation', 1412, [ValueType.TYPE_U8], ValueType.TYPE_ADDRESS, 'Payment address of the most recent fund operation.', ['operation']], 
-    [MODULES.treasury, 'Recent Amount with Operation', 1413, [ValueType.TYPE_U8], ValueType.TYPE_U64, 'Amount of the most recent fund operation.', ['operation']], 
-    [MODULES.treasury, 'Recent Time with Op/Pmt', 1414, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'Time of the most recent fund operation with payment specified.', ['operation', 'payment address']], 
-    [MODULES.treasury, 'Recent Signer with Op&Pmt', 1415, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], ValueType.TYPE_ADDRESS, 'Signer of the most recent fund operationwith payment specified.', ['operation', 'payment address']], 
-    [MODULES.treasury, 'Recent Amount with Op/Pmt', 1416, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'Amount of the most recent fund operation with payment specified.', ['operation', 'payment address']], 
-    [MODULES.treasury, 'Recent Time with Op/Sgr', 1417, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'Time of the most recent fund operation with signer specified.', ['operation', 'signer address']], 
-    [MODULES.treasury, 'Recent Payment with Op/Sgr', 1418, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], ValueType.TYPE_ADDRESS, 'Payment of the most recent fund operation with singner specified.', ['operation', 'signer address']], 
-    [MODULES.treasury, 'Recent Amount with Op/Sgr', 1419, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'Amount of the most recent fund operation with singer specified.', ['operation', 'signer address']], 
-    [MODULES.treasury, 'Recent Time with Op/Pmt/Sgr', 1420, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'Time of the most recent fund operation.', ['operation', 'payment address', 'singer address']], 
-    [MODULES.treasury, 'Recent Amount with Op/Pmt/Sgr', 1421, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'Amount of the most recent fund operation.', ['operation', 'payment address', 'singer address']], 
-    [MODULES.treasury, 'Has Operation', 1422, [ValueType.TYPE_U8], ValueType.TYPE_BOOL, 'Whether there was a fund operation?', ['operation']], 
-    [MODULES.treasury, 'Has Operation with Pmt', 1423, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether there was a fund operation with payment specified?', ['operation', 'payment address']], 
-    [MODULES.treasury, 'Has Operation with Sgr', 1424, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether there was a fund operation with singer specified?', ['operation', 'singer address']], 
-    [MODULES.treasury, 'Has Operation with Pmt/Sgr', 1425, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Whether there was a fund operation?', ['operation', 'payment address', 'singer address']], 
-    [MODULES.treasury, 'Operation at Least Times', 1426, [ValueType.TYPE_U8, ValueType.TYPE_U8], ValueType.TYPE_BOOL, 'Does it operate at least a certain number of times?', ['operation', 'at least times']], 
-    [MODULES.treasury, 'Operation at Least Times by a Signer', 1427, [ValueType.TYPE_U8, ValueType.TYPE_ADDRESS, ValueType.TYPE_U8], ValueType.TYPE_BOOL, 'Does it operate at least a certain number of times by a signer?', ['operation', 'signer address', 'at least times']], 
+    {module:MODULES.payment, query_name:'Sender', query_id:1200, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Payment originator address.', }, 
+    {module:MODULES.payment, query_name:'Total Amount', query_id:1201, parameters:[], return:ValueType.TYPE_U128, description:"Payment amount.", }, 
+    {module:MODULES.payment, query_name:'Remark', query_id:1202, parameters:[], return:ValueType.TYPE_STRING, description:'Payment remark.', parameters_description:['address']}, 
+    {module:MODULES.payment, query_name:'Has Guard for Perpose', query_id:1203, parameters:[], return:ValueType.TYPE_BOOL, description:'Whether the payment references a Guard?', }, 
+    {module:MODULES.payment, query_name:'Has Object for Perpose', query_id:1204, parameters:[], return:ValueType.TYPE_BOOL, description:'Whether the payment references an Object?', }, 
+    {module:MODULES.payment, query_name:'Guard for Perpose', query_id:1205, parameters:[], return:ValueType.TYPE_ADDRESS, description:'The Guard referenced by this payment.', }, 
+    {module:MODULES.payment, query_name:'Object for Perpose', query_id:1206, parameters:[], return:ValueType.TYPE_ADDRESS, description:"The Object referenced by this payment.", }, 
+    {module:MODULES.payment, query_name:'Number of Recipients', query_id:1207, parameters:[], return:ValueType.TYPE_U64, description:'Number of recipients to receive payment from.', }, 
+    {module:MODULES.payment, query_name:'Is a Recipient', query_id:1208, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Is a recipient received the payment?', parameters_description:['address']}, 
+    {module:MODULES.payment, query_name:'Amount for a Recipient', query_id:1209, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The amount of payment received by an address.', parameters_description:['address']}, 
+    {module:MODULES.payment, query_name:'Time', query_id:1210, parameters:[], return:ValueType.TYPE_U64, description:'Payment time', }, 
+    {module:MODULES.payment, query_name:'Is from Treasury', query_id:1211, parameters:[], return:ValueType.TYPE_BOOL, description:'Whether the payment comes from a Treasury?', }, 
+    {module:MODULES.payment, query_name:'Treasury Address', query_id:1212, parameters:[], return:ValueType.TYPE_ADDRESS, description:'The Treasury from which the payment comes.', }, 
+    {module:MODULES.payment, query_name:'Biz-ID', query_id:1213, parameters:[], return:ValueType.TYPE_U64, description:'Bisiness ID number of the payment.', }, 
+    {module:MODULES.payment, query_name:'Check the purpose of payment', query_id:1214, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], return:ValueType.TYPE_BOOL, description:'Do Guard, Object Perpose, and Biz-ID match?', parameters_description:['guard address', 'object address', 'Biz-ID']}, 
+    {module:MODULES.payment, query_name:'Check & Amount for a Recipient', query_id:1215, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS, ValueType.TYPE_U64, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Check and get the amount of payment received by an address.', parameters_description:['guard address', 'object address', 'Biz-ID', 'recipient address']}, 
 
-    [MODULES.arbitration, 'Permission', 1500, [], ValueType.TYPE_ADDRESS, 'Permission object address.', []], 
-    [MODULES.arbitration, 'Paused', 1501, [], ValueType.TYPE_BOOL, "Is it allowed to create Arb?", []], 
-    [MODULES.arbitration, 'Fee', 1502, [], ValueType.TYPE_U64, 'Cost of arbitration.', []], 
-    [MODULES.arbitration, 'Has Endpoint', 1503, [], ValueType.TYPE_BOOL, 'Is the endpoint set?', []], 
-    [MODULES.arbitration, 'Endpoint', 1504, [], ValueType.TYPE_STRING, 'Endpoint url/ipfs.', []], 
-    [MODULES.arbitration, 'Has Customer Guard', 1505, [], ValueType.TYPE_BOOL, 'Is there Guard set to apply for arbitration?', []], 
-    [MODULES.arbitration, 'Customer Guard', 1506, [], ValueType.TYPE_ADDRESS, 'Guard to apply for arbitration.', []], 
-    [MODULES.arbitration, 'Number of Voting Guard', 1507, [], ValueType.TYPE_U64, 'Number of voting guards.', []], 
-    [MODULES.arbitration, 'Has Voting Guard', 1508, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Has the voting Guard added?', ['guard address']], 
-    [MODULES.arbitration, 'Voting Weight', 1509, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'Voting weight of the voting Guard.', ['guard address']], 
-    [MODULES.arbitration, 'Treasury', 1510, [], ValueType.TYPE_ADDRESS, 'The address of the Treasury where fees was collected at the time of withdrawal.', []], 
+    {module:MODULES.treasury, query_name:'Permission', query_id:1400, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', }, 
+    {module:MODULES.treasury, query_name:'Balance', query_id:1401, parameters:[], return:ValueType.TYPE_U64, description:"Treasury balance.", }, 
+    {module:MODULES.treasury, query_name:'Number of Flow Records', query_id:1402, parameters:[], return:ValueType.TYPE_U64,  description:'Number of treasury transactions.', }, 
+    {module:MODULES.treasury, query_name:'Inflow Amount', query_id:1403, parameters:[], return:ValueType.TYPE_U128,  description:'Treasury inflow amount.', }, 
+    {module:MODULES.treasury, query_name:'Outflow Amount', query_id:1404, parameters:[], return:ValueType.TYPE_U128,  description:'Treasury outflow amount.', }, 
+    {module:MODULES.treasury, query_name:'Has Deposit Guard', query_id:1405, parameters:[], return:ValueType.TYPE_BOOL, description:'Whether the deposit Guard set?', }, 
+    {module:MODULES.treasury, query_name:'Deposit Guard', query_id:1406, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Deposit Guard address.', }, 
+    {module:MODULES.treasury, query_name:'Number of Withdraw Guards', query_id:1407, parameters:[], return:ValueType.TYPE_U64,  description:'Number of withdraw guards.', }, 
+    {module:MODULES.treasury, query_name:'Has Withdraw Guard', query_id:1408, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Has a Withdraw Guard added?', parameters_description:['guard address']}, 
+    {module:MODULES.treasury, query_name:'Withdrawal Amount with Guard', query_id:1409, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64,  description:'withdrawal amount corresponding the Guard.', parameters_description:['guard address']}, 
+    {module:MODULES.treasury, query_name:'Recent Time with Operation', query_id:1410, parameters:[ValueType.TYPE_U8], return:ValueType.TYPE_U64,  description:'Time of the most recent fund operation.', parameters_description:['operation']}, 
+    {module:MODULES.treasury, query_name:'Recent Signer with Operation', query_id:1411, parameters:[ValueType.TYPE_U8], return:ValueType.TYPE_ADDRESS, description:'Signer address of the most recent fund operation.', parameters_description:['operation']}, 
+    {module:MODULES.treasury, query_name:'Recent Payment with Operation', query_id:1412, parameters:[ValueType.TYPE_U8], return:ValueType.TYPE_ADDRESS, description:'Payment address of the most recent fund operation.', parameters_description:['operation']}, 
+    {module:MODULES.treasury, query_name:'Recent Amount with Operation', query_id:1413, parameters:[ValueType.TYPE_U8], return:ValueType.TYPE_U64,  description:'Amount of the most recent fund operation.', parameters_description:['operation']}, 
+    {module:MODULES.treasury, query_name:'Recent Time with Op/Pmt', query_id:1414, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'Time of the most recent fund operation with payment specified.', parameters_description:['operation', 'payment address']}, 
+    {module:MODULES.treasury, query_name:'Recent Signer with Op&Pmt', query_id:1415, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_ADDRESS, description:'Signer of the most recent fund operationwith payment specified.', parameters_description:['operation', 'payment address']}, 
+    {module:MODULES.treasury, query_name:'Recent Amount with Op/Pmt', query_id:1416, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'Amount of the most recent fund operation with payment specified.', parameters_description:['operation', 'payment address']}, 
+    {module:MODULES.treasury, query_name:'Recent Time with Op/Sgr', query_id:1417, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'Time of the most recent fund operation with signer specified.', parameters_description:['operation', 'signer address']}, 
+    {module:MODULES.treasury, query_name:'Recent Payment with Op/Sgr', query_id:1418, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_ADDRESS, description:'Payment of the most recent fund operation with singner specified.', parameters_description:['operation', 'signer address']}, 
+    {module:MODULES.treasury, query_name:'Recent Amount with Op/Sgr', query_id:1419, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'Amount of the most recent fund operation with singer specified.', parameters_description:['operation', 'signer address']}, 
+    {module:MODULES.treasury, query_name:'Recent Time with Op/Pmt/Sgr', query_id:1420, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'Time of the most recent fund operation.', parameters_description:['operation', 'payment address', 'singer address']}, 
+    {module:MODULES.treasury, query_name:'Recent Amount with Op/Pmt/Sgr', query_id:1421, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'Amount of the most recent fund operation.', parameters_description:['operation', 'payment address', 'singer address']}, 
+    {module:MODULES.treasury, query_name:'Has Operation', query_id:1422, parameters:[ValueType.TYPE_U8], return:ValueType.TYPE_BOOL, description:'Whether there was a fund operation?', parameters_description:['operation']}, 
+    {module:MODULES.treasury, query_name:'Has Operation with Pmt', query_id:1423, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether there was a fund operation with payment specified?', parameters_description:['operation', 'payment address']}, 
+    {module:MODULES.treasury, query_name:'Has Operation with Sgr', query_id:1424, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether there was a fund operation with singer specified?', parameters_description:['operation', 'singer address']}, 
+    {module:MODULES.treasury, query_name:'Has Operation with Pmt/Sgr', query_id:1425, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether there was a fund operation?', parameters_description:['operation', 'payment address', 'singer address']}, 
+    {module:MODULES.treasury, query_name:'Operation at Least Times', query_id:1426, parameters:[ValueType.TYPE_U8, ValueType.TYPE_U8], return:ValueType.TYPE_BOOL, description:'Does it operate at least a certain number of times?', parameters_description:['operation', 'at least times']}, 
+    {module:MODULES.treasury, query_name:'Operation at Least Times by a Signer', query_id:1427, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS, ValueType.TYPE_U8], return:ValueType.TYPE_BOOL, description:'Does it operate at least a certain number of times by a signer?', parameters_description:['operation', 'signer address', 'at least times']}, 
 
-    [MODULES.arb, 'Order', 1600, [], ValueType.TYPE_ADDRESS, 'Order under arbitration.', []], 
-    [MODULES.arb, 'Arbitration', 1601, [], ValueType.TYPE_ADDRESS, "Arbitration object address.", []], 
-    [MODULES.arb, 'Feedback', 1602, [], ValueType.TYPE_STRING, 'Arbitration feedback.', []], 
-    [MODULES.arb, 'Has Compensation', 1603, [], ValueType.TYPE_BOOL, 'Whether there is an arbitration result?', []], 
-    [MODULES.arb, 'Compensation', 1604, [], ValueType.TYPE_U64, 'Compensation should be given to the order payer.', []], 
-    [MODULES.arb, 'Unclaimed Arbitration Costs', 1605, [], ValueType.TYPE_U64, 'Unclaimed arbitration costs.', []], 
-    [MODULES.arb, 'Turnout', 1606, [], ValueType.TYPE_U64, 'The number of addresses have voted.', []], 
-    [MODULES.arb, 'Has voted', 1607, [ValueType.TYPE_ADDRESS], ValueType.TYPE_BOOL, 'Has someone voted?', ['voter address']], 
-    [MODULES.arb, 'Voting weight', 1608, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The weight of a complete vote for the address.', ['voter address']], 
-    [MODULES.arb, 'Voting Time', 1609, [ValueType.TYPE_ADDRESS], ValueType.TYPE_U64, 'The time of a complete vote for the address.', ['voter address']], 
-    [MODULES.arb, 'Voting Option', 1610, [ValueType.TYPE_ADDRESS, ValueType.TYPE_U8], ValueType.TYPE_BOOL, 'Does an address complete voting for the option?', ['voter address', 'option index']], 
-    [MODULES.arb, 'Number of Options', 1611, [], ValueType.TYPE_U64, 'Number of voting options.', []], 
-    [MODULES.arb, 'Number of Votes', 1612, [ValueType.TYPE_U8], ValueType.TYPE_U64, 'The number of votes received for an option.', ['option index']], 
+    {module:MODULES.arbitration, query_name:'Permission', query_id:1500, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', }, 
+    {module:MODULES.arbitration, query_name:'Paused', query_id:1501, parameters:[], return:ValueType.TYPE_BOOL, description:"Is it allowed to create Arb?", }, 
+    {module:MODULES.arbitration, query_name:'Fee', query_id:1502, parameters:[], return:ValueType.TYPE_U64, description:'Cost of arbitration.', }, 
+    {module:MODULES.arbitration, query_name:'Has Endpoint', query_id:1503, parameters:[], return:ValueType.TYPE_BOOL, description:'Is the endpoint set?', }, 
+    {module:MODULES.arbitration, query_name:'Endpoint', query_id:1504, parameters:[], return:ValueType.TYPE_STRING, description:'Endpoint url/ipfs.', }, 
+    {module:MODULES.arbitration, query_name:'Has Customer Guard', query_id:1505, parameters:[], return:ValueType.TYPE_BOOL, description:'Is there Guard set to apply for arbitration?', }, 
+    {module:MODULES.arbitration, query_name:'Customer Guard', query_id:1506, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Guard to apply for arbitration.', }, 
+    {module:MODULES.arbitration, query_name:'Number of Voting Guard', query_id:1507, parameters:[], return:ValueType.TYPE_U64, description:'Number of voting guards.', }, 
+    {module:MODULES.arbitration, query_name:'Has Voting Guard', query_id:1508, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Has the voting Guard added?', parameters_description:['guard address']}, 
+    {module:MODULES.arbitration, query_name:'Voting Weight', query_id:1509, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'Voting weight of the voting Guard.', parameters_description:['guard address']}, 
+    {module:MODULES.arbitration, query_name:'Treasury', query_id:1510, parameters:[], return:ValueType.TYPE_ADDRESS, description:'The address of the Treasury where fees was collected at the time of withdrawal.', }, 
+
+    {module:MODULES.arb, query_name:'Order', query_id:1600, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Order under arbitration.', }, 
+    {module:MODULES.arb, query_name:'Arbitration', query_id:1601, parameters:[], return:ValueType.TYPE_ADDRESS, description:"Arbitration object address.", }, 
+    {module:MODULES.arb, query_name:'Feedback', query_id:1602, parameters:[], return:ValueType.TYPE_STRING, description:'Arbitration feedback.', }, 
+    {module:MODULES.arb, query_name:'Has Compensation', query_id:1603, parameters:[], return:ValueType.TYPE_BOOL, description:'Whether there is an arbitration result?', }, 
+    {module:MODULES.arb, query_name:'Compensation', query_id:1604, parameters:[], return:ValueType.TYPE_U64, description:'Compensation should be given to the order payer.', }, 
+    {module:MODULES.arb, query_name:'Unclaimed Arbitration Costs', query_id:1605, parameters:[], return:ValueType.TYPE_U64, description:'Unclaimed arbitration costs.', }, 
+    {module:MODULES.arb, query_name:'Turnout', query_id:1606, parameters:[], return:ValueType.TYPE_U64, description:'The number of addresses have voted.', }, 
+    {module:MODULES.arb, query_name:'Has voted', query_id:1607, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Has someone voted?', parameters_description:['voter address']}, 
+    {module:MODULES.arb, query_name:'Voting weight', query_id:1608, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The weight of a complete vote for the address.', parameters_description:['voter address']}, 
+    {module:MODULES.arb, query_name:'Voting Time', query_id:1609, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The time of a complete vote for the address.', parameters_description:['voter address']}, 
+    {module:MODULES.arb, query_name:'Voting Option', query_id:1610, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_U8], return:ValueType.TYPE_BOOL, description:'Does an address complete voting for the option?', parameters_description:['voter address', 'option index']}, 
+    {module:MODULES.arb, query_name:'Number of Options', query_id:1611, parameters:[], return:ValueType.TYPE_U64, description:'Number of voting options.', }, 
+    {module:MODULES.arb, query_name:'Number of Votes', query_id:1612, parameters:[ValueType.TYPE_U8], return:ValueType.TYPE_U64, description:'The number of votes received for an option.', parameters_description:['option index']}, 
 ];
 
 export enum FunctionGroup {
@@ -401,9 +368,9 @@ export class Guard {
     }
 
 
-    static BoolCmd = GUARD_QUERIES.filter(q => q[4] === ValueType.TYPE_BOOL);
-    static IsBoolCmd = (cmd:number) : boolean => { return Guard.BoolCmd.includes((q:any) => {return q[2] == cmd}) }
-    static CmdFilter = (retType:ValueType) => { return GUARD_QUERIES.filter((q)=> q[4] === retType)}
+    static BoolCmd:GuardQuery[] = GUARD_QUERIES.filter(q => q.return === ValueType.TYPE_BOOL);
+    static IsBoolCmd = (cmd:number) : boolean => { return Guard.BoolCmd.some((q:GuardQuery) => {return q.query_id == cmd}) };
+    static CmdFilter = (retType:ValueType) => { return GUARD_QUERIES.filter((q)=> q.return === retType)};
     static GetCmd = (cmd:number | undefined) : any => { 
         return GUARD_QUERIES.find((q:any) => {return q[2] == cmd}) ;
     }
@@ -426,7 +393,7 @@ export class Guard {
     static NumberOptions = () : Guard_Options[] => {
         const r: Guard_Options[] = [...Guard.CmdFilter(ValueType.TYPE_U8), ...Guard.CmdFilter(ValueType.TYPE_U64), 
             ...Guard.CmdFilter(ValueType.TYPE_U128), ...Guard.CmdFilter(ValueType.TYPE_U256)].map((v)=> { 
-                return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]}});
+                return {from:'query', name:v.query_name, value:v.query_id, group:FirstLetterUppercase(v.module), return:v.return}});
         return r.concat(Guard.Crunchings);
     }
 
@@ -441,25 +408,25 @@ export class Guard {
     ) ;
 
     static CommonOptions = (retType:ValueType) : Guard_Options[] => {
-        return Guard.CmdFilter(retType).map((v)=> {return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]}});
+        return Guard.CmdFilter(retType).map((v)=> {return {from:'query', name:v.query_name, value:v.query_id, group:FirstLetterUppercase(v.module), return:v.return}});
     }
 
     static AllOptions = () :  Guard_Options[] => {
-        var r:Guard_Options[] =  GUARD_QUERIES.map((v)=>{return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]}});
+        var r:Guard_Options[] =  GUARD_QUERIES.map((v)=>{return {from:'query', name:v.query_name, value:v.query_id, group:FirstLetterUppercase(v.module), return:v.return}});
         return [...r, ...GuardFunctions]
     }
 
     static StringOptions = () : Guard_Options[] => {
         return [...Guard.CmdFilter(ValueType.TYPE_STRING)].map((v) => {
-            return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]};
+            return {from:'query', name:v.query_name, value:v.query_id, group:FirstLetterUppercase(v.module), return:v.return};
         });
     }
     static BoolOptions = () : Guard_Options[] => {
-        const n1:Guard_Options[] = Guard.BoolCmd.map((v)=> { return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]}});
+        const n1:Guard_Options[] = Guard.BoolCmd.map((v)=> { return {from:'query', name:v.query_name, value:v.query_id, group:FirstLetterUppercase(v.module), return:v.return}});
         return [...n1, ...Guard.Logics()];
     }
     static AddressOptions = () : Guard_Options[] => {
-        const n1:Guard_Options[] = GUARD_QUERIES.filter(q => q[4] === ValueType.TYPE_ADDRESS).map((v)=> { return {from:'query', name:v[1], value:v[2], group:FirstLetterUppercase(v[0]), return:v[4]}});
+        const n1:Guard_Options[] = GUARD_QUERIES.filter(q => q.return === ValueType.TYPE_ADDRESS).map((v)=> { return {from:'query', name:v.query_name, value:v.query_id, group:FirstLetterUppercase(v.module), return:v.return}});
         return [...n1, ...GuardFunctions.filter(v=>v.return===ValueType.TYPE_ADDRESS)]
     }
 
@@ -592,7 +559,7 @@ export class GuardMaker {
     // object_address_from: string for static address; number as identifier  inconstant
     add_query(module:MODULES, query_name:string, object_address_from:string | number) : GuardMaker {        
         let query_index = GUARD_QUERIES.findIndex((q) => { 
-            return q[0] ==  module && q[1]  == query_name
+            return q.module ==  module && q.query_name  == query_name
         })
         if (query_index == -1)  {
             ERROR(Errors.InvalidParam, 'query_name:'+query_name);
@@ -608,13 +575,13 @@ export class GuardMaker {
             }
         }
 
-        let offset = this.type_validator.length - GUARD_QUERIES[query_index][3].length;
+        let offset = this.type_validator.length - GUARD_QUERIES[query_index].parameters.length;
         if (offset < 0) { 
             ERROR(Errors.InvalidParam, 'offset:'+query_name);
         }
 
         let types = this.type_validator.slice(offset);
-        if (!array_equal(types, GUARD_QUERIES[query_index][3])) { // type validate 
+        if (!array_equal(types, GUARD_QUERIES[query_index].parameters)) { // type validate 
             ERROR(Errors.Fail, 'array_equal:'+query_name);
         }
         
@@ -633,9 +600,9 @@ export class GuardMaker {
             }
         }
 
-        this.data.push(Bcs.getInstance().ser('u16', GUARD_QUERIES[query_index][2])); // cmd(u16)
-        this.type_validator.splice(offset, GUARD_QUERIES[query_index][3].length); // delete type stack
-        this.type_validator.push(GUARD_QUERIES[query_index][4]); // add the return value type to type stack
+        this.data.push(Bcs.getInstance().ser('u16', GUARD_QUERIES[query_index].query_id)); // cmd(u16)
+        this.type_validator.splice(offset, GUARD_QUERIES[query_index].parameters.length); // delete type stack
+        this.type_validator.push(GUARD_QUERIES[query_index].return); // add the return value type to type stack
         return this;
     }
 

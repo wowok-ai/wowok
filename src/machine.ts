@@ -9,7 +9,7 @@ import { Errors, ERROR}  from './exception'
 export interface ServiceWrap {
     object: ServiceObject,
     pay_token_type: string,
-    bOptional: boolean, // If ture, An order at least must be placed from this service provider
+    bRequired?: boolean, // If true, An order at least must be placed from this service provider
 }
 export interface Machine_Forward {
     name: string; // foward name
@@ -167,7 +167,7 @@ export class Machine {
             }
             this.txb.moveCall({ 
                 target:Protocol.Instance().serviceFn('add_to') as FnCallType,
-                    arguments:[this.txb.object(v.object), this.txb.pure.bool(v.bOptional), f],
+                    arguments:[this.txb.object(v.object), this.txb.pure.bool(v.bRequired ?? false), f],
                     typeArguments:[v.pay_token_type]
             });  
         })
@@ -430,7 +430,7 @@ export class Machine {
             })
         }
         const f = this.forward(foward);
-        const t = this.txb.pure.option('u32', threshold);
+        const t = this.txb.pure.option('u32', threshold ?? undefined);
         this.txb.moveCall({
             target:Protocol.Instance().machineFn('forward_add') as FnCallType,
             arguments:[n, this.txb.pure.string(node_prior), this.txb.pure.string(foward.name), t, f],
@@ -512,7 +512,7 @@ export class Machine {
                 let forward_permission_index = f.fields.value.fields.permission_index;
                 forwards.push({name:forward_name, namedOperator:forward_namedOperator, permission:forward_permission_index,
                     weight:forward_weight, guard:forward_guard?forward_guard:'', suppliers:f.fields.value.fields.suppliers.fields.contents.map((v:any) => {
-                        return {object:v.fields.key, bOptional:v.fields.value, pay_token_type:''}
+                        return {object:v.fields.key, bRequired:v.fields.value, pay_token_type:''}
                     })}); //@ NOTICE...
             });
             pairs.push({prior_node:p.fields.key, threshold:p.fields.value.fields.threshold, forwards:forwards});
