@@ -187,10 +187,10 @@ export class GuardParser {
                 if (!current?.cmd)  ERROR(Errors.Fail, 'OperateParamCount: cmd invalid ' + current.type);
                 let r = Guard.GetCmd(current.cmd!);
                 if (!r) ERROR(Errors.Fail, 'OperateParamCount: cmd not supported ' + current.type);
-                current.ret_type = r[4];
+                current.ret_type = r?.return;
 
-                if (stack.length < r[3].length) ERROR(Errors.Fail, 'OperateParamCount: cmd param lost ' + current.type);
-                r[3].forEach((e:number) => {    
+                if (stack.length < r!.parameters.length) ERROR(Errors.Fail, 'OperateParamCount: cmd param lost ' + current.type);
+                r!.parameters.forEach((e:number) => {    
                     let d = stack.pop() as DeGuardData;
                     if (!d?.ret_type || d.ret_type != e) {
                         ERROR(Errors.Fail, 'OperateParamCount: cmd param not match ' + current.type);

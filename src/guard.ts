@@ -371,24 +371,24 @@ export class Guard {
     static BoolCmd:GuardQuery[] = GUARD_QUERIES.filter(q => q.return === ValueType.TYPE_BOOL);
     static IsBoolCmd = (cmd:number) : boolean => { return Guard.BoolCmd.some((q:GuardQuery) => {return q.query_id == cmd}) };
     static CmdFilter = (retType:ValueType) => { return GUARD_QUERIES.filter((q)=> q.return === retType)};
-    static GetCmd = (cmd:number | undefined) : any => { 
-        return GUARD_QUERIES.find((q:any) => {return q[2] == cmd}) ;
+    static GetCmd = (cmd:number | undefined) : GuardQuery | undefined => { 
+        return GUARD_QUERIES.find((q) => {return q.query_id == cmd}) ;
     }
     static GetCmdOption = (cmd:number) : Guard_Options | undefined => { 
         const  r = Guard.GetCmd(cmd);
         if (!r) return r;
-        return  {from:'query', name:r[1], value:r[2], group:FirstLetterUppercase(r[0]), return:r[4]}
+        return  {from:'query', name:r.query_name, value:r.query_id, group:FirstLetterUppercase(r.module), return:r.return}
     }
 
     static GetInputParams = (cmd:number) : ValueType[] => { 
         const r = Guard.GetCmd(cmd);
         if (!r) return [];
-        return (r as any[])[3];
+        return r.parameters;
     }
     static GetModuleName = (cmd:number) : string => {
         let r = Guard.GetCmd(cmd);
         if (!r) return '';
-        return FirstLetterUppercase(r[0])
+        return FirstLetterUppercase(r.module)
     }
     static NumberOptions = () : Guard_Options[] => {
         const r: Guard_Options[] = [...Guard.CmdFilter(ValueType.TYPE_U8), ...Guard.CmdFilter(ValueType.TYPE_U64), 
@@ -556,33 +556,43 @@ export class GuardMaker {
         return this;
     }
 
-    // object_address_from: string for static address; number as identifier  inconstant
     add_query(module:MODULES, query_name:string, object_address_from:string | number) : GuardMaker {        
-        let query_index = GUARD_QUERIES.findIndex((q) => { 
+        const query = GUARD_QUERIES.filter((q) => { 
             return q.module ==  module && q.query_name  == query_name
         })
+        if (query.length !== 1)  {
+            ERROR(Errors.InvalidParam, 'add_query2:'+query_name);
+        }
+        return this.add_query2(query[0].query_id, object_address_from)
+    }
+
+    // object_address_from: string for static address; number as identifier  inconstant
+    add_query2(query_id:number, object_address_from:string | number) : GuardMaker {        
+        const query_index = GUARD_QUERIES.findIndex((q) => { 
+            return q.query_id ==  query_id
+        })
         if (query_index == -1)  {
-            ERROR(Errors.InvalidParam, 'query_name:'+query_name);
+            ERROR(Errors.InvalidParam, 'query_id:'+query_id);
         }
 
         if (typeof(object_address_from) == 'number' ) {
             if (!GuardMaker.IsValidIndentifier(object_address_from)) {
-                ERROR(Errors.InvalidParam, 'object_address_from:'+query_name);
+                ERROR(Errors.InvalidParam, 'object_address_from:'+query_id);
             }
         } else {
             if (!IsValidAddress(object_address_from)) {
-                ERROR(Errors.InvalidParam, 'object_address_from:'+query_name);
+                ERROR(Errors.InvalidParam, 'object_address_from:'+query_id);
             }
         }
 
         let offset = this.type_validator.length - GUARD_QUERIES[query_index].parameters.length;
         if (offset < 0) { 
-            ERROR(Errors.InvalidParam, 'offset:'+query_name);
+            ERROR(Errors.InvalidParam, 'offset:'+query_id);
         }
 
         let types = this.type_validator.slice(offset);
         if (!array_equal(types, GUARD_QUERIES[query_index].parameters)) { // type validate 
-            ERROR(Errors.Fail, 'array_equal:'+query_name);
+            ERROR(Errors.Fail, 'array_equal:'+query_id);
         }
         
         this.data.push(Bcs.getInstance().ser(ValueType.TYPE_U8, OperatorType.TYPE_QUERY)); // QUERY TYPE
@@ -591,12 +601,12 @@ export class GuardMaker {
             this.data.push(Bcs.getInstance().ser(ValueType.TYPE_ADDRESS, object_address_from)); // object address            
         } else {
             let v =  this.constant.get(object_address_from);
-            if (!v) ERROR(Errors.Fail, 'object_address_from not in constant:'+query_name);
+            if (!v) ERROR(Errors.Fail, 'object_address_from not in constant:'+query_id);
             if (v?.type == ValueType.TYPE_ADDRESS) {
                 this.data.push(Bcs.getInstance().ser(ValueType.TYPE_U8, ContextType.TYPE_CONSTANT));
                 this.data.push(Bcs.getInstance().ser(ValueType.TYPE_U8, object_address_from)); // object identifer in constants
             } else {
-                ERROR(Errors.Fail, 'type bWitness not match:'+query_name)
+                ERROR(Errors.Fail, 'type bWitness not match:'+query_id)
             }
         }
 
