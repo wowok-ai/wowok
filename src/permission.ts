@@ -10,18 +10,7 @@ export enum PermissionIndex {
     repository_mode = 102,
     repository_policies = 103,
     repository_reference = 104,
-/*
-    vote = 150,
-    vote_description = 151,
-    vote_reference = 152, 
-    vote_guard = 153,
-    vote_option = 155,
-    vote_max_choice_count = 157,
-    vote_open_voting = 158,
-    vote_lock_deadline = 159,
-    vote_expand_deadline = 160,
-    vote_lock_guard = 161,
-*/
+
     service = 200,
     service_description = 201,
     service_sales = 202,
@@ -41,16 +30,6 @@ export enum PermissionIndex {
     service_treasury = 216,
     service_arbitration = 217,
 
-/*
-    reward = 240,
-    reward_refund = 241,
-    reward_expand_time = 242,
-    reward_guard = 243,
-    reward_description = 245,
-    reward_lock_guards = 246,
-    reward_claim_repeatably = 247,
-    reward_allow_claiming = 248,
-*/
     demand = 260,
     demand_refund = 261,
     demand_expand_time = 262,
@@ -105,39 +84,13 @@ export interface PermissionInfoType {
     module: string;
     guard?: string;
 }
-
-export interface PermissionAnswer {
-    who: string;
-    owner?: boolean;
-    admin?: boolean;
-    items?: PermissionAnswerItem[]; // items === undefined, while errors
-    object: string; // permission object
-}
-export interface PermissionAnswerItem {
-    query: PermissionIndexType;
-    permission: boolean;
-    guard?: string;
-}
-export type OnPermissionAnswer = (answer: PermissionAnswer) => void;
-
 export const PermissionInfo : PermissionInfoType[] = [
     {index:PermissionIndex.repository, name:'Repository', description:'Launch new Repository', module: MODULES.repository},
     {index:PermissionIndex.repository_description, name:'Description', description:'Set Repository description', module: MODULES.repository},
     {index:PermissionIndex.repository_mode, name:'Policy mode', description:'Set Repository mode', module: MODULES.repository},
     {index:PermissionIndex.repository_policies, name:'Policy', description:'Set Repository policies', module: MODULES.repository},
     {index:PermissionIndex.repository_reference, name:'Reference', description:'Set Repository reference', module: MODULES.repository},
-/*
-    {index:PermissionIndex.vote, name:'Vote', description:'Launch new Vote', module: 'vote'},
-    {index:PermissionIndex.vote_description, name:'Description', description:'Set Vote description', module: 'vote'},
-    {index:PermissionIndex.vote_reference, name:'Reference', description:'Set Vote reference', module: 'vote'},
-    {index:PermissionIndex.vote_guard, name:'Guard', description:'Set Vote guards', module: 'vote'},
-    {index:PermissionIndex.vote_option, name:'Option', description:'Set Vote options', module: 'vote'},
-    {index:PermissionIndex.vote_max_choice_count, name:'Choice count', description:'Set Vote max choice count', module: 'vote'},
-    {index:PermissionIndex.vote_open_voting, name:'Open voting', description:'Open voting', module: 'vote'},
-    {index:PermissionIndex.vote_lock_deadline, name:'Lock deadline', description:'Set Vote deadline immutable', module: 'vote'},
-    {index:PermissionIndex.vote_expand_deadline, name:'Expand deadline', description:'Expand Vote deadline', module: 'vote'},
-    {index:PermissionIndex.vote_lock_guard, name:'Lock Guard', description:'Set Vote guards immutable', module: 'vote'},
-*/
+
     {index:PermissionIndex.service, name:'Service', description:'Launch new Service', module: MODULES.service},
     {index:PermissionIndex.service_description, name:'Description', description:'Set Service description', module: MODULES.service},
     {index:PermissionIndex.service_sales, name:'Sales', description:'Set Service sales items', module: MODULES.service},
@@ -152,21 +105,10 @@ export const PermissionInfo : PermissionInfoType[] = [
     {index:PermissionIndex.service_publish, name:'Publish', description:'Allowing the creation of Order', module: MODULES.service},
     {index:PermissionIndex.service_clone, name:'Clone', description:'Clone Service', module: MODULES.service},
     {index:PermissionIndex.service_customer_required, name:'Buyer info', description:'Set Service buyer info required', module: MODULES.service},
-    //{index:PermissionIndex.service_change_order_required_pubkey, name:'Order pubkey', description:'Update Serivce order pubkey', module: MODULES.service},
     {index:PermissionIndex.service_pause, name:'Pause', description:'Pause/Unpause Service', module: MODULES.service},
     {index:PermissionIndex.service_treasury, name:'Treasury', description:'Externally withdrawable treasury for compensation or rewards', module: MODULES.service},
     {index:PermissionIndex.service_arbitration, name:'Arbitration', description:'Add/Remove arbitration that allows refunds from orders at any time based on arbitration results', module: MODULES.service},
 
-    /*
-    {index:PermissionIndex.reward, name:'reward', description:'Launch new reward', module: 'reward'},
-    {index:PermissionIndex.reward_refund, name:'Refund', description:'Refund from reward', module: 'reward'},
-    {index:PermissionIndex.reward_expand_time, name:'Expand deadline', description:'Expand reward deadline', module: 'reward'},
-    {index:PermissionIndex.reward_guard, name:'Guard', description:'Set reward guard', module: 'reward'},
-    {index:PermissionIndex.reward_description, name:'Description', description:'Set reward description', module: 'reward'},
-    {index:PermissionIndex.reward_lock_guards, name:'Lock Guard', description:'Set reward guard immutable', module: 'reward'},
-    {index:PermissionIndex.reward_claim_repeatably, name:'Claim repeatably', description:'Allow claimming repeatably', module: 'reward'},
-    {index:PermissionIndex.reward_allow_claiming, name:'Allow claiming', description:'Allow claiming', module: 'reward'},
-*/
     {index:PermissionIndex.demand, name:'Demand', description:'Launch new Demand', module: MODULES.demand},
     {index:PermissionIndex.demand_refund, name:'Refund', description:'Refund from Demand', module: MODULES.demand},
     {index:PermissionIndex.demand_expand_time, name:'Expand deadline', description:'Expand Demand deadline', module: MODULES.demand},
@@ -211,6 +153,22 @@ export const PermissionInfo : PermissionInfoType[] = [
     {index:PermissionIndex.arbitration_withdraw, name: 'Withdraw', description:'Withdraw the arbitration fee', module: MODULES.arbitration},
     {index:PermissionIndex.arbitration_treasury, name: 'Withdraw', description:'Set Treasury that fees was collected at the time of withdrawal', module: MODULES.arbitration},
 ]
+
+export interface PermissionAnswer {
+    who: string;
+    owner?: boolean;
+    admin?: boolean;
+    items?: PermissionAnswerItem[]; // items === undefined, while errors
+    object: string; // permission object
+}
+export interface PermissionAnswerItem {
+    query: PermissionIndexType;
+    permission: boolean;
+    guard?: string;
+}
+export type OnPermissionAnswer = (answer: PermissionAnswer) => void;
+
+
 
 export type PermissionIndexType = PermissionIndex | number;
 
