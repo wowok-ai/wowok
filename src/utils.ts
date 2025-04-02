@@ -623,8 +623,7 @@ export interface query_object_param {
 }
 
 export const uint2address = (value: number) : string => {
-    const buf = Bcs.getInstance().ser(ValueType.TYPE_U256, value);
-    return normalizeSuiAddress(toHEX(buf)); 
+    return normalizeSuiAddress(value.toString(16)); 
 }
 
 export const query_object = (param:query_object_param) => {
