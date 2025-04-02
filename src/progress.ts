@@ -25,8 +25,7 @@ export type ProgressNext = {
 export type ParentProgress = {
     parent_id: string;
     parent_session_id: number;
-    next_node: string;
-    forward: string;
+    operation: ProgressNext;
 }
 
 export type CurrentSessionId = TransactionResult;
@@ -225,7 +224,7 @@ export class Progress {
         if (!IsValidAddress(parent.parent_id) || !IsValidInt(parent.parent_session_id)) {
             ERROR(Errors.InvalidParam, 'parent')
         }
-        if (!parent.next_node || !parent.forward) {
+        if (!parent.operation.next_node_name || !parent.operation.forward) {
             ERROR(Errors.InvalidParam, 'parent')
         }
 
@@ -235,8 +234,8 @@ export class Progress {
                 arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, this.machine), 
                     this.txb.object(parent.parent_id), 
                     this.txb.pure.u64(parent.parent_session_id), 
-                    this.txb.pure.string(parent.next_node),
-                    this.txb.pure.string(parent.forward),
+                    this.txb.pure.string(parent.operation.next_node_name),
+                    this.txb.pure.string(parent.operation.forward),
                     Protocol.TXB_OBJECT(this.txb, this.permission)],
             })  
         } else {
@@ -245,8 +244,8 @@ export class Progress {
                 arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, this.machine), 
                     this.txb.object(parent.parent_id), 
                     this.txb.pure.u64(parent.parent_session_id), 
-                    this.txb.pure.string(parent.next_node),
-                    this.txb.pure.string(parent.forward),
+                    this.txb.pure.string(parent.operation.next_node_name),
+                    this.txb.pure.string(parent.operation.forward),
                     Protocol.TXB_OBJECT(this.txb, this.permission)],
             })  
         }

@@ -1,7 +1,7 @@
-import { BCS, getSuiMoveConfig, } from '@mysten/bcs';
+import { BCS, getSuiMoveConfig, toHEX, } from '@mysten/bcs';
 import { SuiObjectResponse, DynamicFieldPage } from '@mysten/sui/client';
 import { ERROR, Errors } from './exception';
-import { isValidSuiAddress} from '@mysten/sui/utils'
+import { isValidSuiAddress, normalizeSuiAddress} from '@mysten/sui/utils'
 import { RepositoryValueType, ValueType, Protocol, ContextType, OperatorType } from './protocol'
 
 export const MAX_U8 = BigInt('255');
@@ -620,6 +620,11 @@ export interface query_object_param {
     onObjectErr?:(id:string, err:any)=>void;
     onDynamicErr?:(id:string, err:any)=>void;
     onFieldsErr?:(id:string, err:any)=>void;
+}
+
+export const uint2address = (value: number) : string => {
+    const buf = Bcs.getInstance().ser(ValueType.TYPE_U256, value);
+    return normalizeSuiAddress(toHEX(buf)); 
 }
 
 export const query_object = (param:query_object_param) => {

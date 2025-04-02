@@ -9,7 +9,7 @@ import { Transaction as TransactionBlock,  } from '@mysten/sui/transactions';
 
 export interface VotingGuard {
     guard: GuardObject,
-    voting_weight:string, // bigint
+    voting_weight:string | number | bigint, // bigint
 }
 
 export interface Vote {
@@ -34,7 +34,7 @@ export interface Dispute {
 
 export interface WithdrawFee {
     treasury: TreasuryObject,
-    index: bigint,
+    index: bigint | string | number,
     remark: string,
     for_object?: string,
     for_guard?: GuardObject,

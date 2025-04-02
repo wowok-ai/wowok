@@ -29,7 +29,7 @@ export type Service_Discount = {
     off: number;
     duration_minutes: number;
     time_start?: number; // current time if undefined
-    price_greater?: bigint;
+    price_greater?: bigint | string | number;
 }
 
 export type Service_Buy_RequiredInfo = {
@@ -1014,7 +1014,7 @@ export class Service {
     }
 
     update_order_required_info(order:OrderObject, customer_info_crypto: Customer_RequiredInfo) {
-        if (!customer_info_crypto.customer_pubkey || customer_info_crypto.customer_info_crypt.length === 0) {
+        if (!customer_info_crypto.customer_pubkey) {
             return 
         }
 

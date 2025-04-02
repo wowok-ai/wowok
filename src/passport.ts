@@ -40,11 +40,11 @@ export interface DeGuardData extends DeGuardInput {
 
 export interface WitnessFill {
     guard: string;
-    witness: any;
+    witness?: any;
     cmd: number[];
     cited: number;
     type: ValueType;
-    identifier?: number;
+    identifier: number;
 }
 
 export interface PassportQuery {

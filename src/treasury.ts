@@ -25,11 +25,11 @@ export interface DepositParam {
 
 export interface WithdrawItem {
     address: string,
-    amount: bigint,
+    amount: bigint | number | string,
 }
 export interface WithdrawParam {
     items: WithdrawItem[],
-    index: bigint,
+    index: bigint | number | string,
     remark: string,
     for_object?: string,
     for_guard?: string,

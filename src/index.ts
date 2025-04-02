@@ -4,7 +4,9 @@ export * from './utils'
 export * from './permission'
 export * from './guard'
 export * from './repository'
-export * from './protocol'
+export * from './protocol';
+//export type { PermissionInfoType } from './permission';
+//export { PermissionInfo, PermissionIndex } from './permission';
 export * from './passport'
 export * from './machine'
 export * from './service'
