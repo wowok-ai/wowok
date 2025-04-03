@@ -604,7 +604,7 @@ export class Passport {
     get_object () { return this.passport }
     // return passport object used
     // bObject(true) in cmd env; (false) in service env
-    constructor (txb:TransactionBlock, query:PassportQuery, bObject:boolean=false)  {
+    constructor (txb:TransactionBlock, query:PassportQuery)  {
         if (query.info.length === 0 || query.info.length > Passport.MAX_GUARD_COUNT)   {
             ERROR(Errors.InvalidParam, 'guards' )
         }
@@ -645,7 +645,7 @@ export class Passport {
             }); 
             this.txb.moveCall({
                 target: q.target as FnCallType,
-                arguments: [ bObject ? this.txb.object(q.object) : this.txb.object(q.id), this.passport],
+                arguments: [ this.txb.object(q.id), this.passport],
                 typeArguments: q.types,
             })
         }) 
