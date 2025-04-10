@@ -1,4 +1,4 @@
-import { GuardObject, PassportObject, PermissionObject, RepositoryObject, MachineObject, ServiceAddress, ServiceObject, DiscountObject, OrderObject, OrderAddress, CoinObject, TxbObject, TreasuryObject, PaymentAddress, ArbObject, ArbitrationObject, ProgressObject, ProgressAddress } from './protocol';
+import { GuardObject, PassportObject, PermissionObject, RepositoryObject, MachineObject, ServiceAddress, ServiceObject, DiscountObject, OrderObject, OrderAddress, CoinObject, TxbObject, TreasuryObject, PaymentAddress, ArbObject, ArbitrationObject, ProgressObject, ProgressAddress } from './protocol.js';
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 import { SuiObjectData } from '@mysten/sui/client';
 export type Service_Guard_Percent = {
@@ -12,7 +12,7 @@ export type Service_Sale = {
     endpoint?: string | null;
 };
 export declare enum Service_Discount_Type {
-    ratio = 0,// -off%
+    ratio = 0,
     minus = 1
 }
 export type Service_Discount = {
@@ -21,7 +21,7 @@ export type Service_Discount = {
     off: number;
     duration_minutes: number;
     time_start?: number;
-    price_greater?: bigint;
+    price_greater?: bigint | string | number;
 };
 export type Service_Buy_RequiredInfo = {
     pubkey: string;

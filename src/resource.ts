@@ -1,8 +1,8 @@
-import { Protocol, FnCallType, TxbObject, TxbAddress} from './protocol';
-import { IsValidDesription, IsValidAddress, IsValidName, IsValidArray,  } from './utils';
-import { ERROR, Errors } from './exception';
+import { Protocol, FnCallType, TxbObject, TxbAddress} from './protocol.js';
+import { IsValidDesription, IsValidAddress, IsValidName, IsValidArray,  } from './utils.js';
+import { ERROR, Errors } from './exception.js';
 import { type TransactionResult, Transaction as TransactionBlock } from '@mysten/sui/transactions';
-import { Entity } from './entity';
+import { Entity } from './entity.js';
 
 export interface Tags { // tag am address
     address: string; // address to tag

@@ -1,6 +1,6 @@
-import { Protocol, LogicsInfo, MODULES, ContextType, ValueType, OperatorType } from './protocol';
-import { concatenate, array_equal, IsValidU8, IsValidDesription, Bcs, IsValidAddress, FirstLetterUppercase, insertAtHead } from './utils';
-import { ERROR, Errors } from './exception';
+import { Protocol, LogicsInfo, MODULES, ContextType, ValueType, OperatorType } from './protocol.js';
+import { concatenate, array_equal, IsValidU8, IsValidDesription, Bcs, IsValidAddress, FirstLetterUppercase, insertAtHead } from './utils.js';
+import { ERROR, Errors } from './exception.js';
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 export const GUARD_QUERIES = [
     // module, 'name', 'id', [input], output
@@ -214,10 +214,6 @@ export const GuardFunctions = [
     { from: 'type', name: 'PositiveNumber Mod (%)', value: OperatorType.TYPE_NUMBER_MOD, group: FunctionGroup.number, return: 'number' },
 ];
 export class Guard {
-    static MAX_INPUT_LENGTH = 10240;
-    //    static MAX_PAYLOADS_LENGTH = 4096;
-    txb;
-    object;
     get_object() { return this.object; }
     static From(txb, object) {
         let d = new Guard(txb);
@@ -308,89 +304,85 @@ export class Guard {
             onQueryAnswer({ err: e, txb: txb, identifiers: [] });
         });
     }
-    static BoolCmd = GUARD_QUERIES.filter(q => q.return === ValueType.TYPE_BOOL);
-    static IsBoolCmd = (cmd) => { return Guard.BoolCmd.some((q) => { return q.query_id == cmd; }); };
-    static CmdFilter = (retType) => { return GUARD_QUERIES.filter((q) => q.return === retType); };
-    static GetCmd = (cmd) => {
-        return GUARD_QUERIES.find((q) => { return q.query_id == cmd; });
-    };
-    static GetCmdOption = (cmd) => {
-        const r = Guard.GetCmd(cmd);
-        if (!r)
-            return r;
-        return { from: 'query', name: r.query_name, value: r.query_id, group: FirstLetterUppercase(r.module), return: r.return };
-    };
-    static GetInputParams = (cmd) => {
-        const r = Guard.GetCmd(cmd);
-        if (!r)
-            return [];
-        return r.parameters;
-    };
-    static GetModuleName = (cmd) => {
-        let r = Guard.GetCmd(cmd);
-        if (!r)
-            return '';
-        return FirstLetterUppercase(r.module);
-    };
-    static NumberOptions = () => {
-        const r = [...Guard.CmdFilter(ValueType.TYPE_U8), ...Guard.CmdFilter(ValueType.TYPE_U64),
-            ...Guard.CmdFilter(ValueType.TYPE_U128), ...Guard.CmdFilter(ValueType.TYPE_U256)].map((v) => {
-            return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return };
-        });
-        return r.concat(Guard.Crunchings);
-    };
-    static Signer = GuardFunctions.find(v => v.name === 'Txn Signer' && v.value === ContextType.TYPE_SIGNER);
-    static Time = GuardFunctions.find(v => v.name === 'Txn Time' && v.value === ContextType.TYPE_CLOCK);
-    static Guard = GuardFunctions.find(v => v.name === 'Guard Address' && v.value === ContextType.TYPE_GUARD);
-    static Logics = () => LogicsInfo.map((v) => { return { from: 'type', name: v[1], value: v[0], group: FunctionGroup.logic, return: ValueType.TYPE_BOOL }; });
-    static Crunchings = GuardFunctions.filter(v => v.value === OperatorType.TYPE_NUMBER_ADD ||
-        v.value === OperatorType.TYPE_NUMBER_SUBTRACT || v.value === OperatorType.TYPE_NUMBER_MULTIPLY ||
-        v.value === OperatorType.TYPE_NUMBER_DEVIDE || v.value === OperatorType.TYPE_NUMBER_MOD || v.value === OperatorType.TYPE_NUMBER_ADDRESS);
-    static CommonOptions = (retType) => {
-        return Guard.CmdFilter(retType).map((v) => { return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return }; });
-    };
-    static AllOptions = () => {
-        var r = GUARD_QUERIES.map((v) => { return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return }; });
-        return [...r, ...GuardFunctions];
-    };
-    static StringOptions = () => {
-        return [...Guard.CmdFilter(ValueType.TYPE_STRING)].map((v) => {
-            return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return };
-        });
-    };
-    static BoolOptions = () => {
-        const n1 = Guard.BoolCmd.map((v) => { return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return }; });
-        return [...n1, ...Guard.Logics()];
-    };
-    static AddressOptions = () => {
-        const n1 = GUARD_QUERIES.filter(q => q.return === ValueType.TYPE_ADDRESS).map((v) => { return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return }; });
-        return [...n1, ...GuardFunctions.filter(v => v.return === ValueType.TYPE_ADDRESS)];
-    };
-    static Options = (ret_type) => {
-        if (ret_type === 'number') {
-            return Guard.NumberOptions();
-        }
-        else if (ret_type === 'any') {
-            return Guard.AllOptions();
-        }
-        switch (ret_type) {
-            case ValueType.TYPE_BOOL:
-                return Guard.BoolOptions();
-            case ValueType.TYPE_STRING:
-                return Guard.StringOptions();
-        }
-        return Guard.CommonOptions(ret_type);
-    };
 }
+Guard.MAX_INPUT_LENGTH = 10240;
+Guard.BoolCmd = GUARD_QUERIES.filter(q => q.return === ValueType.TYPE_BOOL);
+Guard.IsBoolCmd = (cmd) => { return Guard.BoolCmd.some((q) => { return q.query_id == cmd; }); };
+Guard.CmdFilter = (retType) => { return GUARD_QUERIES.filter((q) => q.return === retType); };
+Guard.GetCmd = (cmd) => {
+    return GUARD_QUERIES.find((q) => { return q.query_id == cmd; });
+};
+Guard.GetCmdOption = (cmd) => {
+    const r = Guard.GetCmd(cmd);
+    if (!r)
+        return r;
+    return { from: 'query', name: r.query_name, value: r.query_id, group: FirstLetterUppercase(r.module), return: r.return };
+};
+Guard.GetInputParams = (cmd) => {
+    const r = Guard.GetCmd(cmd);
+    if (!r)
+        return [];
+    return r.parameters;
+};
+Guard.GetModuleName = (cmd) => {
+    let r = Guard.GetCmd(cmd);
+    if (!r)
+        return '';
+    return FirstLetterUppercase(r.module);
+};
+Guard.NumberOptions = () => {
+    const r = [...Guard.CmdFilter(ValueType.TYPE_U8), ...Guard.CmdFilter(ValueType.TYPE_U64),
+        ...Guard.CmdFilter(ValueType.TYPE_U128), ...Guard.CmdFilter(ValueType.TYPE_U256)].map((v) => {
+        return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return };
+    });
+    return r.concat(Guard.Crunchings);
+};
+Guard.Signer = GuardFunctions.find(v => v.name === 'Txn Signer' && v.value === ContextType.TYPE_SIGNER);
+Guard.Time = GuardFunctions.find(v => v.name === 'Txn Time' && v.value === ContextType.TYPE_CLOCK);
+Guard.Guard = GuardFunctions.find(v => v.name === 'Guard Address' && v.value === ContextType.TYPE_GUARD);
+Guard.Logics = () => LogicsInfo.map((v) => { return { from: 'type', name: v[1], value: v[0], group: FunctionGroup.logic, return: ValueType.TYPE_BOOL }; });
+Guard.Crunchings = GuardFunctions.filter(v => v.value === OperatorType.TYPE_NUMBER_ADD ||
+    v.value === OperatorType.TYPE_NUMBER_SUBTRACT || v.value === OperatorType.TYPE_NUMBER_MULTIPLY ||
+    v.value === OperatorType.TYPE_NUMBER_DEVIDE || v.value === OperatorType.TYPE_NUMBER_MOD || v.value === OperatorType.TYPE_NUMBER_ADDRESS);
+Guard.CommonOptions = (retType) => {
+    return Guard.CmdFilter(retType).map((v) => { return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return }; });
+};
+Guard.AllOptions = () => {
+    var r = GUARD_QUERIES.map((v) => { return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return }; });
+    return [...r, ...GuardFunctions];
+};
+Guard.StringOptions = () => {
+    return [...Guard.CmdFilter(ValueType.TYPE_STRING)].map((v) => {
+        return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return };
+    });
+};
+Guard.BoolOptions = () => {
+    const n1 = Guard.BoolCmd.map((v) => { return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return }; });
+    return [...n1, ...Guard.Logics()];
+};
+Guard.AddressOptions = () => {
+    const n1 = GUARD_QUERIES.filter(q => q.return === ValueType.TYPE_ADDRESS).map((v) => { return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return }; });
+    return [...n1, ...GuardFunctions.filter(v => v.return === ValueType.TYPE_ADDRESS)];
+};
+Guard.Options = (ret_type) => {
+    if (ret_type === 'number') {
+        return Guard.NumberOptions();
+    }
+    else if (ret_type === 'any') {
+        return Guard.AllOptions();
+    }
+    switch (ret_type) {
+        case ValueType.TYPE_BOOL:
+            return Guard.BoolOptions();
+        case ValueType.TYPE_STRING:
+            return Guard.StringOptions();
+    }
+    return Guard.CommonOptions(ret_type);
+};
 export const IsValidGuardIdentifier = (identifier) => {
     return IsValidU8(identifier) && identifier !== 0;
 };
 export class GuardMaker {
-    data = [];
-    type_validator = [];
-    constant = new Map();
-    static _witness_index = 1;
-    static _const_index = 255;
     static GetWitnessIndex() {
         if (this._witness_index >= this._const_index) {
             ERROR(Errors.Fail, 'too many witness');
@@ -403,12 +395,11 @@ export class GuardMaker {
         }
         return GuardMaker._const_index--;
     }
-    static IsValidIndentifier = (identifier) => {
-        if (!IsValidU8(identifier) || identifier < 1)
-            return false;
-        return true;
-    };
-    constructor() { }
+    constructor() {
+        this.data = [];
+        this.type_validator = [];
+        this.constant = new Map();
+    }
     // undefined value means witness
     add_constant(type, value, identifier, bNeedSerialize = true) {
         if (identifier === undefined) {
@@ -734,3 +725,11 @@ export class GuardMaker {
             type === OperatorType.TYPE_NUMBER_MOD);
     }
 }
+GuardMaker._witness_index = 1;
+GuardMaker._const_index = 255;
+GuardMaker.IsValidIndentifier = (identifier) => {
+    if (!IsValidU8(identifier) || identifier < 1)
+        return false;
+    return true;
+};
+//# sourceMappingURL=guard.js.map

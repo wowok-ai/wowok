@@ -1,10 +1,10 @@
 import { Transaction as TransactionBlock, TransactionObjectArgument, type TransactionResult } from '@mysten/sui/transactions';
-import { Protocol, FnCallType, PermissionObject, RepositoryObject,  PassportObject, MachineObject, MachineAddress,  GuardObject, TxbObject, ServiceObject} from './protocol';
+import { Protocol, FnCallType, PermissionObject, RepositoryObject,  PassportObject, MachineObject, MachineAddress,  GuardObject, TxbObject, ServiceObject} from './protocol.js';
 import { IsValidInt, array_unique, IsValidArray, IsValidAddress, IsValidName, IsValidName_AllowEmpty, 
     IsValidEndpoint, IsValidDesription, IsValidU64, 
-    IsValidTokenType} from './utils'
-import { Permission, PermissionIndexType } from './permission';
-import { Errors, ERROR}  from './exception'
+    IsValidTokenType} from './utils.js'
+import { Permission, PermissionIndexType } from './permission.js';
+import { Errors, ERROR}  from './exception.js'
 
 export interface ServiceWrap {
     object: ServiceObject,

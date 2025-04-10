@@ -1,7 +1,7 @@
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
-import { FnCallType, Protocol, PassportObject, PermissionObject, GuardObject, DemandAddress, TxbObject, ServiceObject } from './protocol';
-import { IsValidDesription, IsValidAddress, IsValidArgType, IsValidU64, parseObjectType, IsValidU8 } from './utils'
-import { Errors, ERROR}  from './exception'
+import { FnCallType, Protocol, PassportObject, PermissionObject, GuardObject, DemandAddress, TxbObject, ServiceObject } from './protocol.js';
+import { IsValidDesription, IsValidAddress, IsValidArgType, IsValidU64, parseObjectType, IsValidU8 } from './utils.js'
+import { Errors, ERROR}  from './exception.js'
 
 export class Demand {
     protected bounty_type;

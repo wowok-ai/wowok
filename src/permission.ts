@@ -1,6 +1,6 @@
-import { FnCallType, TxbObject, PermissionObject, PermissionAddress, GuardObject, Protocol, MODULES} from './protocol';
-import { array_unique, IsValidAddress, IsValidArray,  IsValidDesription, Bcs, IsValidName, IsValidU64} from './utils';
-import { ERROR, Errors } from './exception';
+import { FnCallType, TxbObject, PermissionObject, PermissionAddress, GuardObject, Protocol, MODULES} from './protocol.js';
+import { array_unique, IsValidAddress, IsValidArray,  IsValidDesription, Bcs, IsValidName, IsValidU64} from './utils.js';
+import { ERROR, Errors } from './exception.js';
 import { BCS } from '@mysten/bcs';
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 

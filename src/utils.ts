@@ -1,8 +1,8 @@
 import { BCS, getSuiMoveConfig, toHEX, } from '@mysten/bcs';
 import { SuiObjectResponse, DynamicFieldPage } from '@mysten/sui/client';
-import { ERROR, Errors } from './exception';
+import { ERROR, Errors } from './exception.js';
 import { isValidSuiAddress, normalizeSuiAddress} from '@mysten/sui/utils'
-import { RepositoryValueType, ValueType, Protocol, ContextType, OperatorType } from './protocol'
+import { RepositoryValueType, ValueType, Protocol, ContextType, OperatorType } from './protocol.js'
 
 export const MAX_U8 = BigInt('255');
 export const MAX_U64 = BigInt('18446744073709551615');

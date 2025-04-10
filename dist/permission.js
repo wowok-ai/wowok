@@ -1,6 +1,6 @@
-import { Protocol, MODULES } from './protocol';
-import { array_unique, IsValidAddress, IsValidArray, IsValidDesription, Bcs, IsValidName, IsValidU64 } from './utils';
-import { ERROR, Errors } from './exception';
+import { Protocol, MODULES } from './protocol.js';
+import { array_unique, IsValidAddress, IsValidArray, IsValidDesription, Bcs, IsValidName, IsValidU64 } from './utils.js';
+import { ERROR, Errors } from './exception.js';
 import { BCS } from '@mysten/bcs';
 export var PermissionIndex;
 (function (PermissionIndex) {
@@ -132,8 +132,6 @@ export const PermissionInfo = [
     { index: PermissionIndex.arbitration_treasury, name: 'Withdraw', description: 'Set Treasury that fees was collected at the time of withdrawal', module: MODULES.arbitration },
 ];
 export class Permission {
-    txb;
-    object;
     get_object() { return this.object; }
     constructor(txb) {
         this.txb = txb;
@@ -434,24 +432,25 @@ export class Permission {
         }
         return undefined; // basic: !== false ; otherwise: !
     }
-    static MAX_ADMIN_COUNT = 64;
-    static MAX_ENTITY_COUNT = 2000;
-    static MAX_PERMISSION_INDEX_COUNT = 200;
-    static MAX_PERSONAL_PERMISSION_COUNT = 200;
-    static PERMISSION_NORMAL = 0;
-    static PERMISSION_OWNER = 1;
-    static PERMISSION_ADMIN = 2;
-    static PERMISSION_OWNER_AND_ADMIN = 3;
-    static BUSINESS_PERMISSIONS_START = PermissionIndex.user_defined_start;
-    static IsValidBizPermissionIndex = (index) => {
-        return index >= Permission.BUSINESS_PERMISSIONS_START && IsValidU64(index);
-    };
-    static IsValidPermissionIndex = (index) => {
-        //console.log(index)
-        if (Object.values(PermissionIndex).includes(index)) {
-            return true;
-        }
-        //console.log(Object.keys(PermissionIndex))
-        return Permission.IsValidBizPermissionIndex(index);
-    };
 }
+Permission.MAX_ADMIN_COUNT = 64;
+Permission.MAX_ENTITY_COUNT = 2000;
+Permission.MAX_PERMISSION_INDEX_COUNT = 200;
+Permission.MAX_PERSONAL_PERMISSION_COUNT = 200;
+Permission.PERMISSION_NORMAL = 0;
+Permission.PERMISSION_OWNER = 1;
+Permission.PERMISSION_ADMIN = 2;
+Permission.PERMISSION_OWNER_AND_ADMIN = 3;
+Permission.BUSINESS_PERMISSIONS_START = PermissionIndex.user_defined_start;
+Permission.IsValidBizPermissionIndex = (index) => {
+    return index >= Permission.BUSINESS_PERMISSIONS_START && IsValidU64(index);
+};
+Permission.IsValidPermissionIndex = (index) => {
+    //console.log(index)
+    if (Object.values(PermissionIndex).includes(index)) {
+        return true;
+    }
+    //console.log(Object.keys(PermissionIndex))
+    return Permission.IsValidBizPermissionIndex(index);
+};
+//# sourceMappingURL=permission.js.map

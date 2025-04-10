@@ -1,11 +1,7 @@
-import { Protocol } from './protocol';
-import { IsValidDesription, IsValidAddress, IsValidArgType, IsValidU64, parseObjectType, IsValidU8 } from './utils';
-import { Errors, ERROR } from './exception';
+import { Protocol } from './protocol.js';
+import { IsValidDesription, IsValidAddress, IsValidArgType, IsValidU64, parseObjectType, IsValidU8 } from './utils.js';
+import { Errors, ERROR } from './exception.js';
 export class Demand {
-    bounty_type;
-    permission;
-    object;
-    txb;
     get_bounty_type() { return this.bounty_type; }
     get_object() { return this.object; }
     static From(txb, bounty_type, permission, object) {
@@ -248,9 +244,10 @@ export class Demand {
         });
         this.permission = new_permission;
     }
-    static parseObjectType = (chain_type) => {
-        return parseObjectType(chain_type, 'demand::Demand<');
-    };
-    static MAX_BOUNTY_COUNT = 300;
-    static MAX_PRESENTERS_COUNT = 200;
 }
+Demand.parseObjectType = (chain_type) => {
+    return parseObjectType(chain_type, 'demand::Demand<');
+};
+Demand.MAX_BOUNTY_COUNT = 300;
+Demand.MAX_PRESENTERS_COUNT = 200;
+//# sourceMappingURL=demand.js.map

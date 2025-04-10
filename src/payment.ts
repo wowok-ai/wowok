@@ -1,6 +1,6 @@
-import { CoinObject, FnCallType, PaymentAddress, Protocol, TxbObject} from './protocol';
-import { IsValidDesription, IsValidAddress, IsValidArray, } from './utils';
-import { ERROR, Errors } from './exception';
+import { CoinObject, FnCallType, PaymentAddress, Protocol, TxbObject} from './protocol.js';
+import { IsValidDesription, IsValidAddress, IsValidArray, } from './utils.js';
+import { ERROR, Errors } from './exception.js';
 import { Transaction as TransactionBlock} from '@mysten/sui/transactions';
 
 export interface Payment_Receiver {

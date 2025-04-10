@@ -1,9 +1,7 @@
-import { Protocol } from './protocol';
-import { IsValidDesription, IsValidAddress, IsValidName, IsValidU64, } from './utils';
-import { ERROR, Errors } from './exception';
+import { Protocol } from './protocol.js';
+import { IsValidDesription, IsValidAddress, IsValidName, IsValidU64, } from './utils.js';
+import { ERROR, Errors } from './exception.js';
 export class Wowok {
-    object;
-    txb;
     get_object() { return this.object; }
     constructor(txb) {
         this.txb = txb;
@@ -48,7 +46,7 @@ export class Wowok {
         if (!IsValidU64(amount))
             ERROR(Errors.IsValidU64, 'mint');
         this.txb.moveCall({
-            target: Protocol.Instance().baseWowokFn('mint'), //@ base package
+            target: Protocol.Instance().baseWowokFn('mint'),
             arguments: [Protocol.TXB_OBJECT(this.txb, Protocol.Instance().objectTreasuryCap()), this.txb.pure.u64(amount),
                 this.txb.pure.address(recipient)]
         });
@@ -59,9 +57,10 @@ export class Wowok {
         if (!Protocol.IsValidObjects([permission]))
             ERROR(Errors.IsValidObjects, 'oracle.permission');
         return this.txb.moveCall({
-            target: Protocol.Instance().wowokFn('oracle_repository'), //@ base package
+            target: Protocol.Instance().wowokFn('oracle_repository'),
             arguments: [Protocol.TXB_OBJECT(this.txb, Protocol.Instance().objectOracle()), this.txb.pure.string(description),
                 this.txb.object(permission)]
         });
     }
 }
+//# sourceMappingURL=wowok.js.map

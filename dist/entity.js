@@ -1,9 +1,7 @@
-import { Protocol } from './protocol';
-import { IsValidDesription, IsValidAddress, IsValidName, isValidHttpUrl, Bcs, } from './utils';
-import { ERROR, Errors } from './exception';
+import { Protocol } from './protocol.js';
+import { IsValidDesription, IsValidAddress, IsValidName, isValidHttpUrl, Bcs, } from './utils.js';
+import { ERROR, Errors } from './exception.js';
 export class Entity {
-    object;
-    txb;
     get_object() { return this.object; }
     constructor(txb) {
         this.txb = txb;
@@ -93,3 +91,4 @@ export class Entity {
         });
     }
 }
+//# sourceMappingURL=entity.js.map

@@ -1,8 +1,8 @@
 import { type TransactionResult, Transaction as TransactionBlock } from '@mysten/sui/transactions';
 import { FnCallType, Protocol, PassportObject, PermissionObject, TreasuryAddress, TxbObject, CoinObject, PaymentObject,
-    ReceivedObject } from './protocol';
-import { IsValidDesription, IsValidU64, IsValidAddress, IsValidArgType, IsValidArray, parseObjectType} from './utils'
-import { Errors, ERROR}  from './exception'
+    ReceivedObject } from './protocol.js';
+import { IsValidDesription, IsValidU64, IsValidAddress, IsValidArgType, IsValidArray, parseObjectType} from './utils.js'
+import { Errors, ERROR}  from './exception.js'
 
 export enum Treasury_WithdrawMode {
     PERMISSION = 0,

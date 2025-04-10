@@ -1,22 +1,22 @@
-export * from './demand'
-export * from './progress'
-export * from './utils'
-export * from './permission'
-export * from './guard'
-export * from './repository'
-export * from './protocol';
+export * from './demand.js'
+export * from './progress.js'
+export * from './utils.js'
+export * from './permission.js'
+export * from './guard.js'
+export * from './repository.js'
+export * from './protocol.js';
 //export type { PermissionInfoType } from './permission';
 //export { PermissionInfo, PermissionIndex } from './permission';
-export * from './passport'
-export * from './machine'
-export * from './service'
-export * from './entity'
-export * from './wowok'
-export * from './resource'
-export * from './treasury'
-export * from './payment'
-export * from './arbitration'
-export * from './exception'
+export * from './passport.js'
+export * from './machine.js'
+export * from './service.js'
+export * from './entity.js'
+export * from './wowok.js'
+export * from './resource.js'
+export * from './treasury.js'
+export * from './payment.js'
+export * from './arbitration.js'
+export * from './exception.js'
 
 export { BCS, getSuiMoveConfig, } from '@mysten/bcs';
 export { Transaction as TransactionBlock } from '@mysten/sui/transactions';

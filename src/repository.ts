@@ -1,8 +1,8 @@
-import { Protocol, FnCallType, ValueType, RepositoryValueType, RepositoryAddress, PermissionObject, PassportObject, TxbObject, } from './protocol';
-import { PermissionIndexType, Permission } from './permission'
-import { Bcs, array_unique, IsValidDesription, IsValidAddress, IsValidArray, IsValidName,  ValueTypeConvert} from './utils';
-import { ERROR, Errors } from './exception';
-import { MAX_U8, MAX_U128, MAX_U256, MAX_U64, parseObjectType } from './utils';
+import { Protocol, FnCallType, ValueType, RepositoryValueType, RepositoryAddress, PermissionObject, PassportObject, TxbObject, } from './protocol.js';
+import { PermissionIndexType, Permission } from './permission.js'
+import { Bcs, array_unique, IsValidDesription, IsValidAddress, IsValidArray, IsValidName,  ValueTypeConvert} from './utils.js';
+import { ERROR, Errors } from './exception.js';
+import { MAX_U8, MAX_U128, MAX_U256, MAX_U64, parseObjectType } from './utils.js';
 import { type TransactionResult, Transaction as TransactionBlock } from '@mysten/sui/transactions';
 
 export enum Repository_Policy_Mode {

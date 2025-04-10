@@ -1,8 +1,8 @@
 
 
-import { Protocol, LogicsInfo, GuardAddress, FnCallType, Data_Type, MODULES, ContextType, ValueType,  OperatorType, TxbObject, GuardObject, IsValidOperatorType} from './protocol';
-import { concatenate, array_equal, IsValidU8, IsValidDesription, Bcs, IsValidAddress, FirstLetterUppercase, insertAtHead } from './utils';
-import { ERROR, Errors } from './exception';
+import { Protocol, LogicsInfo, GuardAddress, FnCallType, Data_Type, MODULES, ContextType, ValueType,  OperatorType, TxbObject, GuardObject, IsValidOperatorType} from './protocol.js';
+import { concatenate, array_equal, IsValidU8, IsValidDesription, Bcs, IsValidAddress, FirstLetterUppercase, insertAtHead } from './utils.js';
+import { ERROR, Errors } from './exception.js';
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 
 export type GuardConstant = Map<number, Guard_Variable>;

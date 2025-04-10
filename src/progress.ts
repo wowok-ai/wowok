@@ -1,10 +1,10 @@
 
 import { FnCallType, PermissionObject, RepositoryObject, PassportObject, MachineObject, 
     ProgressObject, ProgressAddress, Protocol, TxbObject,
-    OrderObject} from './protocol';
-import { Machine } from './machine';
-import { Bcs, array_unique,IsValidName, IsValidAddress, IsValidArray, IsValidInt, IsValidDesription, IsValidTokenType  } from './utils'
-import { ERROR, Errors } from './exception';
+    OrderObject} from './protocol.js';
+import { Machine } from './machine.js';
+import { Bcs, array_unique,IsValidName, IsValidAddress, IsValidArray, IsValidInt, IsValidDesription, IsValidTokenType  } from './utils.js'
+import { ERROR, Errors } from './exception.js';
 import { type TransactionResult, Transaction as TransactionBlock,  } from '@mysten/sui/transactions';
 
 export interface OrderWrap {

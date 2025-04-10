@@ -1,11 +1,11 @@
 import { IsValidArray, IsValidPercent, IsValidName_AllowEmpty, parseObjectType, array_unique, IsValidTokenType, IsValidDesription, 
     IsValidAddress, IsValidEndpoint, IsValidU64,
-    IsValidName, } from './utils'
+    IsValidName, } from './utils.js'
 import { FnCallType, GuardObject, PassportObject, PermissionObject, RepositoryObject, MachineObject, ServiceAddress, 
     ServiceObject, DiscountObject, OrderObject, OrderAddress, CoinObject, Protocol, ValueType,
     TxbObject, TreasuryObject, PaymentAddress, ArbObject,
-    ArbitrationObject, ProgressObject, ProgressAddress} from './protocol';
-import { ERROR, Errors } from './exception';
+    ArbitrationObject, ProgressObject, ProgressAddress} from './protocol.js';
+import { ERROR, Errors } from './exception.js';
 import { Transaction as TransactionBlock,  } from '@mysten/sui/transactions';
 import { SuiObjectData } from '@mysten/sui/client';
 

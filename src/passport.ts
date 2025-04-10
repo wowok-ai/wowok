@@ -1,10 +1,10 @@
 import { type TransactionObjectInput, Inputs, Transaction as TransactionBlock, TransactionResult, CallArg} from '@mysten/sui/transactions';
 import { SuiObjectResponse } from '@mysten/sui/client';
 import { FnCallType, GuardObject, Protocol, ContextType, OperatorType, Data_Type,
-    ValueType, SER_VALUE, IsValidOperatorType } from './protocol';
-import { parse_object_type, array_unique, Bcs, ulebDecode, IsValidAddress, IsValidArray, insertAtHead, readOption, readOptionString } from './utils';
-import { ERROR, Errors } from './exception';
-import { Guard, GuardMaker } from './guard';
+    ValueType, SER_VALUE, IsValidOperatorType } from './protocol.js';
+import { parse_object_type, array_unique, Bcs, ulebDecode, IsValidAddress, IsValidArray, insertAtHead, readOption, readOptionString } from './utils.js';
+import { ERROR, Errors } from './exception.js';
+import { Guard, GuardMaker } from './guard.js';
 
 export type Guard_Query_Object = {
     target: FnCallType, // object fnCall

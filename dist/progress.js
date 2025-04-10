@@ -1,13 +1,10 @@
-import { Protocol } from './protocol';
-import { Machine } from './machine';
-import { Bcs, array_unique, IsValidName, IsValidAddress, IsValidArray, IsValidInt, IsValidDesription, IsValidTokenType } from './utils';
-import { ERROR, Errors } from './exception';
+var _a;
+import { Protocol } from './protocol.js';
+import { Machine } from './machine.js';
+import { Bcs, array_unique, IsValidName, IsValidAddress, IsValidArray, IsValidInt, IsValidDesription, IsValidTokenType } from './utils.js';
+import { ERROR, Errors } from './exception.js';
 import { Transaction as TransactionBlock, } from '@mysten/sui/transactions';
 export class Progress {
-    permission;
-    machine;
-    object;
-    txb;
     get_object() { return this.object; }
     constructor(txb, machine, permission) {
         this.permission = permission;
@@ -16,7 +13,7 @@ export class Progress {
         this.object = '';
     }
     static From(txb, machine, permission, object) {
-        let p = new Progress(txb, machine, permission);
+        let p = new _a(txb, machine, permission);
         p.object = Protocol.TXB_OBJECT(txb, object);
         return p;
     }
@@ -24,7 +21,7 @@ export class Progress {
         if (!Protocol.IsValidObjects([machine, permission])) {
             ERROR(Errors.IsValidObjects, 'machine & permission');
         }
-        let p = new Progress(txb, machine, permission);
+        let p = new _a(txb, machine, permission);
         let t = txb.pure.option('address', task ? task : undefined);
         if (passport) {
             p.object = txb.moveCall({
@@ -53,7 +50,7 @@ export class Progress {
         if (name === Machine.OPERATOR_ORDER_PAYER) {
             ERROR(Errors.InvalidParam, 'name cannot be ' + Machine.OPERATOR_ORDER_PAYER);
         }
-        if (addresses.length > Progress.MAX_NAMED_OPERATOR_COUNT || !IsValidArray(addresses, IsValidAddress)) {
+        if (addresses.length > _a.MAX_NAMED_OPERATOR_COUNT || !IsValidArray(addresses, IsValidAddress)) {
             ERROR(Errors.InvalidParam, 'addresses');
         }
         if (passport) {
@@ -129,7 +126,7 @@ export class Progress {
         }
     }
     unhold(next, passport) {
-        if (!Progress.IsValidProgressNext(next)) {
+        if (!_a.IsValidProgressNext(next)) {
             ERROR(Errors.InvalidParam, 'unhold');
         }
         const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
@@ -170,7 +167,7 @@ export class Progress {
         if (!IsValidAddress(parent.parent_id) || !IsValidInt(parent.parent_session_id)) {
             ERROR(Errors.InvalidParam, 'parent');
         }
-        if (!parent.next_node || !parent.forward) {
+        if (!parent.operation.next_node_name || !parent.operation.forward) {
             ERROR(Errors.InvalidParam, 'parent');
         }
         if (passport) {
@@ -179,8 +176,8 @@ export class Progress {
                 arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, this.machine),
                     this.txb.object(parent.parent_id),
                     this.txb.pure.u64(parent.parent_session_id),
-                    this.txb.pure.string(parent.next_node),
-                    this.txb.pure.string(parent.forward),
+                    this.txb.pure.string(parent.operation.next_node_name),
+                    this.txb.pure.string(parent.operation.forward),
                     Protocol.TXB_OBJECT(this.txb, this.permission)],
             });
         }
@@ -190,8 +187,8 @@ export class Progress {
                 arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, this.machine),
                     this.txb.object(parent.parent_id),
                     this.txb.pure.u64(parent.parent_session_id),
-                    this.txb.pure.string(parent.next_node),
-                    this.txb.pure.string(parent.forward),
+                    this.txb.pure.string(parent.operation.next_node_name),
+                    this.txb.pure.string(parent.operation.forward),
                     Protocol.TXB_OBJECT(this.txb, this.permission)],
             });
         }
@@ -220,7 +217,7 @@ export class Progress {
         return d;
     }
     next(next, deliverable, passport) {
-        if (!Progress.IsValidProgressNext(next)) {
+        if (!_a.IsValidProgressNext(next)) {
             ERROR(Errors.InvalidParam, 'next');
         }
         const d = this.deliverable(deliverable);
@@ -243,7 +240,7 @@ export class Progress {
         }
     }
     hold(next, hold) {
-        if (!Progress.IsValidProgressNext(next)) {
+        if (!_a.IsValidProgressNext(next)) {
             ERROR(Errors.InvalidParam, 'hold');
         }
         const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
@@ -253,49 +250,51 @@ export class Progress {
                 this.txb.pure.string(next.forward), this.txb.pure.bool(hold), Protocol.TXB_OBJECT(this.txb, this.permission), this.txb.object(clock)],
         });
     }
-    static QueryForwardGuard = async (progress, machine, sender, next_node, forward) => {
-        if (!progress || !machine || !next_node || !forward) { // prior_node maybe ''
-            ERROR(Errors.InvalidParam, 'QueryForwardGuard');
-            return;
-        }
-        const txb = new TransactionBlock();
-        txb.moveCall({
-            target: Protocol.Instance().progressFn('query_guard'),
-            arguments: [Protocol.TXB_OBJECT(txb, progress), Protocol.TXB_OBJECT(txb, machine),
-                txb.pure.string(next_node), txb.pure.string(forward)],
-        });
-        const res = await Protocol.Client().devInspectTransactionBlock({ sender: sender, transactionBlock: txb });
-        if (res.results?.length === 1 && res.results[0].returnValues?.length === 1) {
-            const guard = Bcs.getInstance().de('Option<address>', Uint8Array.from(res.results[0].returnValues[0][0]));
-            return guard?.some ? ('0x' + guard?.some) : undefined;
-        }
-    };
-    static DeSessions = (session) => {
-        let sessions = [];
-        session?.fields?.contents?.forEach((v) => {
-            var s = { next_node: v.fields.key, holders: [], weights: v.fields.value.fields.weights, threshold: v.fields.value.fields.threshold };
-            v.fields.value.fields.forwards.fields.contents.forEach((i) => {
-                s.holders.push({ forward: i.fields.key, accomplished: i.fields.value.fields.accomplished, time: i.fields.value.fields.time,
-                    who: i.fields.value.fields.who, deliverable: { msg: i.fields.value.fields.msg, orders: i.fields.value.fields.orders ?? [] },
-                });
-            });
-            sessions.push(s);
-        });
-        return sessions;
-    };
-    static DeHistories = (fields) => {
-        return fields?.map((v) => {
-            return Progress.DeHistory(v?.data?.content?.fields);
-        });
-    };
-    static DeHistory = (data) => {
-        return { id: parseInt(data?.name), node: data?.value?.fields?.node, next_node: data?.value?.fields?.next_node,
-            sessions: Progress.DeSessions(data?.value.fields?.session), time: data?.value?.fields?.time
-        };
-    };
-    static MAX_NAMED_OPERATOR_COUNT = 20;
-    static MAX_DELEVERABLE_ORDER_COUNT = 20;
-    static IsValidProgressNext = (next) => {
-        return IsValidName(next.forward) && IsValidName(next.next_node_name);
-    };
 }
+_a = Progress;
+Progress.QueryForwardGuard = async (progress, machine, sender, next_node, forward) => {
+    if (!progress || !machine || !next_node || !forward) { // prior_node maybe ''
+        ERROR(Errors.InvalidParam, 'QueryForwardGuard');
+        return;
+    }
+    const txb = new TransactionBlock();
+    txb.moveCall({
+        target: Protocol.Instance().progressFn('query_guard'),
+        arguments: [Protocol.TXB_OBJECT(txb, progress), Protocol.TXB_OBJECT(txb, machine),
+            txb.pure.string(next_node), txb.pure.string(forward)],
+    });
+    const res = await Protocol.Client().devInspectTransactionBlock({ sender: sender, transactionBlock: txb });
+    if (res.results?.length === 1 && res.results[0].returnValues?.length === 1) {
+        const guard = Bcs.getInstance().de('Option<address>', Uint8Array.from(res.results[0].returnValues[0][0]));
+        return guard?.some ? ('0x' + guard?.some) : undefined;
+    }
+};
+Progress.DeSessions = (session) => {
+    let sessions = [];
+    session?.fields?.contents?.forEach((v) => {
+        var s = { next_node: v.fields.key, holders: [], weights: v.fields.value.fields.weights, threshold: v.fields.value.fields.threshold };
+        v.fields.value.fields.forwards.fields.contents.forEach((i) => {
+            s.holders.push({ forward: i.fields.key, accomplished: i.fields.value.fields.accomplished, time: i.fields.value.fields.time,
+                who: i.fields.value.fields.who, deliverable: { msg: i.fields.value.fields.msg, orders: i.fields.value.fields.orders ?? [] },
+            });
+        });
+        sessions.push(s);
+    });
+    return sessions;
+};
+Progress.DeHistories = (fields) => {
+    return fields?.map((v) => {
+        return _a.DeHistory(v?.data?.content?.fields);
+    });
+};
+Progress.DeHistory = (data) => {
+    return { id: parseInt(data?.name), node: data?.value?.fields?.node, next_node: data?.value?.fields?.next_node,
+        sessions: _a.DeSessions(data?.value.fields?.session), time: data?.value?.fields?.time
+    };
+};
+Progress.MAX_NAMED_OPERATOR_COUNT = 20;
+Progress.MAX_DELEVERABLE_ORDER_COUNT = 20;
+Progress.IsValidProgressNext = (next) => {
+    return IsValidName(next.forward) && IsValidName(next.next_node_name);
+};
+//# sourceMappingURL=progress.js.map

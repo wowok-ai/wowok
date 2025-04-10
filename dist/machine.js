@@ -1,11 +1,8 @@
-import { Protocol } from './protocol';
-import { IsValidInt, array_unique, IsValidArray, IsValidAddress, IsValidName, IsValidName_AllowEmpty, IsValidEndpoint, IsValidDesription, IsValidU64, IsValidTokenType } from './utils';
-import { Permission } from './permission';
-import { Errors, ERROR } from './exception';
+import { Protocol } from './protocol.js';
+import { IsValidInt, array_unique, IsValidArray, IsValidAddress, IsValidName, IsValidName_AllowEmpty, IsValidEndpoint, IsValidDesription, IsValidU64, IsValidTokenType } from './utils.js';
+import { Permission } from './permission.js';
+import { Errors, ERROR } from './exception.js';
 export class Machine {
-    txb;
-    object;
-    permission;
     get_object() { return this.object; }
     static From(txb, permission, object) {
         let d = new Machine(txb, permission);
@@ -513,6 +510,7 @@ export class Machine {
             return 'Weight invalid';
         return '';
     }
-    static INITIAL_NODE_NAME = '';
-    static OPERATOR_ORDER_PAYER = 'OrderPayer';
 }
+Machine.INITIAL_NODE_NAME = '';
+Machine.OPERATOR_ORDER_PAYER = 'OrderPayer';
+//# sourceMappingURL=machine.js.map

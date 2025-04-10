@@ -1,7 +1,7 @@
-import { BCS, getSuiMoveConfig, toHEX, } from '@mysten/bcs';
-import { ERROR, Errors } from './exception';
+import { BCS, getSuiMoveConfig, } from '@mysten/bcs';
+import { ERROR, Errors } from './exception.js';
 import { isValidSuiAddress, normalizeSuiAddress } from '@mysten/sui/utils';
-import { RepositoryValueType, ValueType, Protocol } from './protocol';
+import { RepositoryValueType, ValueType, Protocol } from './protocol.js';
 export const MAX_U8 = BigInt('255');
 export const MAX_U64 = BigInt('18446744073709551615');
 export const MAX_U128 = BigInt('340282366920938463463374607431768211455');
@@ -154,9 +154,8 @@ export function parse_object_type(object_data) {
     return object_type;
 }
 export class Bcs {
-    bcs = new BCS(getSuiMoveConfig());
-    static _instance;
     constructor() {
+        this.bcs = new BCS(getSuiMoveConfig());
         this.bcs.registerEnumType('Option<T>', {
             'none': null,
             'some': 'T',
@@ -582,8 +581,7 @@ export function isValidHttpUrl(url) {
     return r.protocol === "http:" || r.protocol === "https:" || r.protocol === 'ipfs:';
 }
 export const uint2address = (value) => {
-    const buf = Bcs.getInstance().ser(ValueType.TYPE_U256, value);
-    return normalizeSuiAddress(toHEX(buf));
+    return normalizeSuiAddress(value.toString(16));
 };
 export const query_object = (param) => {
     if (param.id) {
@@ -631,3 +629,4 @@ export const FirstLetterUppercase = (str) => {
 export function hasDuplicates(array) {
     return array.some((item, index) => array.findIndex(i => i === item) !== index);
 }
+//# sourceMappingURL=utils.js.map

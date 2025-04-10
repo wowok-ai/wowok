@@ -1,7 +1,7 @@
-import { Protocol } from './protocol';
-import { IsValidAddress, IsValidName, } from './utils';
-import { ERROR, Errors } from './exception';
-import { Entity } from './entity';
+import { Protocol } from './protocol.js';
+import { IsValidAddress, IsValidName, } from './utils.js';
+import { ERROR, Errors } from './exception.js';
+import { Entity } from './entity.js';
 export var TagName;
 (function (TagName) {
     TagName["Like"] = "like";
@@ -11,12 +11,6 @@ export var TagName;
     TagName["Payment"] = "payment";
 })(TagName || (TagName = {}));
 export class Resource {
-    static MAX_ADDRESS_COUNT_FOR_TAG = 1000; // max address count
-    static MAX_TAG_COUNT_FOR_ADDRESS = 64; // max tag count for an address
-    //static MAX_ADDRESS_COUNT_FOR_MARK = 200; // max address count for a mark
-    //static MAX_MARK_COUNT = 600; // max mark count
-    object;
-    txb;
     get_object() { return this.object; }
     constructor(txb) {
         this.txb = txb;
@@ -128,3 +122,6 @@ export class Resource {
         return tags;
     }
 }
+Resource.MAX_ADDRESS_COUNT_FOR_TAG = 1000; // max address count
+Resource.MAX_TAG_COUNT_FOR_ADDRESS = 64; // max tag count for an address
+//# sourceMappingURL=resource.js.map

@@ -1,6 +1,6 @@
-import { Protocol } from './protocol';
-import { IsValidDesription, IsValidU64, IsValidAddress, IsValidArgType, IsValidArray, parseObjectType } from './utils';
-import { Errors, ERROR } from './exception';
+import { Protocol } from './protocol.js';
+import { IsValidDesription, IsValidU64, IsValidAddress, IsValidArgType, IsValidArray, parseObjectType } from './utils.js';
+import { Errors, ERROR } from './exception.js';
 export var Treasury_WithdrawMode;
 (function (Treasury_WithdrawMode) {
     Treasury_WithdrawMode[Treasury_WithdrawMode["PERMISSION"] = 0] = "PERMISSION";
@@ -14,10 +14,6 @@ export var Treasury_Operation;
     Treasury_Operation[Treasury_Operation["RECEIVE"] = 4] = "RECEIVE";
 })(Treasury_Operation || (Treasury_Operation = {}));
 export class Treasury {
-    token_type;
-    permission;
-    object;
-    txb;
     get_token_type() { return this.token_type; }
     get_object() { return this.object; }
     static From(txb, token_type, permission, object) {
@@ -389,8 +385,9 @@ export class Treasury {
         });
         this.permission = new_permission;
     }
-    static parseObjectType = (chain_type) => {
-        return parseObjectType(chain_type, 'treasury::Treasury<');
-    };
-    static MAX_WITHDRAW_GUARD_COUNT = 16;
 }
+Treasury.parseObjectType = (chain_type) => {
+    return parseObjectType(chain_type, 'treasury::Treasury<');
+};
+Treasury.MAX_WITHDRAW_GUARD_COUNT = 16;
+//# sourceMappingURL=treasury.js.map

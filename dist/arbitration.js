@@ -1,11 +1,7 @@
-import { IsValidArray, array_unique, IsValidTokenType, IsValidDesription, parseObjectType, IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, } from './utils';
-import { Protocol } from './protocol';
-import { ERROR, Errors } from './exception';
+import { IsValidArray, array_unique, IsValidTokenType, IsValidDesription, parseObjectType, IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, } from './utils.js';
+import { Protocol } from './protocol.js';
+import { ERROR, Errors } from './exception.js';
 export class Arbitration {
-    pay_token_type;
-    permission;
-    object;
-    txb;
     //static token2coin = (token:string) => { return '0x2::coin::Coin<' + token + '>'};
     get_pay_type() { return this.pay_token_type; }
     get_object() { return this.object; }
@@ -471,14 +467,15 @@ export class Arbitration {
         });
         this.permission = new_permission;
     }
-    static parseObjectType = (chain_type) => {
-        return parseObjectType(chain_type, 'arbitration::Arbitration<');
-    };
-    static parseArbObjectType = (chain_type) => {
-        return parseObjectType(chain_type, 'arb::Arb<');
-    };
-    static queryArbVoted = () => {
-    };
-    static MAX_PROPOSITION_COUNT = 16;
-    static MAX_VOTING_GUARD_COUNT = 16;
 }
+Arbitration.parseObjectType = (chain_type) => {
+    return parseObjectType(chain_type, 'arbitration::Arbitration<');
+};
+Arbitration.parseArbObjectType = (chain_type) => {
+    return parseObjectType(chain_type, 'arb::Arb<');
+};
+Arbitration.queryArbVoted = () => {
+};
+Arbitration.MAX_PROPOSITION_COUNT = 16;
+Arbitration.MAX_VOTING_GUARD_COUNT = 16;
+//# sourceMappingURL=arbitration.js.map

@@ -32,3 +32,4 @@ export const ERROR = (error, info) => {
     const e = error.toString() + (info ? (' ' + info) : '');
     throw e;
 };
+//# sourceMappingURL=exception.js.map

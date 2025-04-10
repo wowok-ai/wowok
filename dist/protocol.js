@@ -2,7 +2,7 @@ import { SuiClient } from '@mysten/sui/client';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
 import { fromHEX } from '@mysten/bcs';
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
-import { capitalize, IsValidAddress, IsValidArray, IsValidU128, IsValidU256, IsValidU64, IsValidU8 } from './utils';
+import { capitalize, IsValidAddress, IsValidArray, IsValidU128, IsValidU256, IsValidU64, IsValidU8 } from './utils.js';
 import { isValidSuiObjectId } from '@mysten/sui/utils';
 export var MODULES;
 (function (MODULES) {
@@ -171,17 +171,172 @@ const MAINNET = {
     oracle_object: '',
 };
 export class Protocol {
-    network = '';
-    packages = new Map();
-    signer = '';
-    wowok_object = '';
-    entity_object = '';
-    treasury_cap = '';
-    oracle_object = '';
-    //protected graphql = '';
-    txb;
-    static _instance;
     constructor(network = ENTRYPOINT.testnet) {
+        this.network = '';
+        this.packages = new Map();
+        this.signer = '';
+        this.wowok_object = '';
+        this.entity_object = '';
+        this.treasury_cap = '';
+        this.oracle_object = '';
+        this.machineFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.machine}::${fn}`; };
+        this.progressFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.progress}::${fn}`; };
+        this.repositoryFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.repository}::${fn}`; };
+        this.permissionFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.permission}::${fn}`; };
+        this.passportFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.passport}::${fn}`; };
+        this.demandFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.demand}::${fn}`; };
+        this.orderFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.order}::${fn}`; };
+        this.serviceFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.service}::${fn}`; };
+        this.resourceFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.resource}::${fn}`; };
+        this.entityFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.entity}::${fn}`; };
+        this.wowokFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.wowok}::${fn}`; };
+        this.treasuryFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.treasury}::${fn}`; };
+        this.paymentFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.payment}::${fn}`; };
+        this.guardFn = (fn) => { return `${this.packages.get('base')}::${MODULES.guard}::${fn}`; };
+        this.baseWowokFn = (fn) => { return `${this.packages.get('base')}::${MODULES.wowok}::${fn}`; };
+        this.arbitrationFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.arbitration}::${fn}`; };
+        this.arbFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.arb}::${fn}`; };
+        this.query = async (objects, options = { showContent: true }) => {
+            const client = new SuiClient({ url: this.networkUrl() });
+            const ids = objects.map((value) => value.objectid);
+            const res = await client.call('sui_multiGetObjects', [ids, options]);
+            let ret = [];
+            for (let i = 0; i < res.length; i++) {
+                objects.forEach((object) => {
+                    object.callback(this, res[i], object, options);
+                });
+            }
+            return res;
+        };
+        this.query_raw = async (objects, options = { showContent: true }) => {
+            const client = new SuiClient({ url: this.networkUrl() });
+            return await client.call('sui_multiGetObjects', [objects, options]);
+        };
+        this.new_session = () => {
+            this.txb = new TransactionBlock();
+            return this.txb;
+        };
+        this.sessionCurrent = () => { return this.txb ? this.txb : this.new_session(); };
+        this.sign_excute = async (exes, priv_key, param, options = { showObjectChanges: true }) => {
+            const client = new SuiClient({ url: this.networkUrl() });
+            exes.forEach((e) => { e(this, param); });
+            const privkey = fromHEX(priv_key);
+            const keypair = Ed25519Keypair.fromSecretKey(privkey);
+            const response = await client.signAndExecuteTransaction({
+                transaction: this.sessionCurrent(),
+                signer: keypair,
+                options,
+            });
+            this.txb = undefined; // reset the txb to undefine
+            return response;
+        };
+        this.WOWOK_TOKEN_TYPE = () => { return this.packages.get('base') + '::wowok::WOWOK'; };
+        this.WOWOK_COIN_TYPE = () => { return '0x2::coin::Coin<' + this.packages.get('base') + '::wowok::WOWOK>'; };
+        this.COINS_TYPE = () => {
+            switch (this.network) {
+                case ENTRYPOINT.testnet:
+                    return this.CoinTypes_Testnet.filter((v) => v.alias !== true);
+                case ENTRYPOINT.mainnet:
+                    return this.CoinTypes_Mainnet.filter((v) => v.alias !== true);
+            }
+            ;
+            return [];
+        };
+        this.update_coinType = (token_type, decimals, symbol) => {
+            if (!symbol || !token_type)
+                return;
+            switch (this.network) {
+                case ENTRYPOINT.testnet:
+                    var r = this.CoinTypes_Testnet.filter((v) => v?.type !== token_type);
+                    r.push({ symbol: symbol, type: token_type, decimals: decimals });
+                    this.CoinTypes_Testnet = r;
+                    break;
+                case ENTRYPOINT.mainnet:
+                    var r = this.CoinTypes_Mainnet.filter((v) => v?.type !== token_type);
+                    r.push({ symbol: symbol, type: token_type, decimals: decimals });
+                    this.CoinTypes_Mainnet = r;
+                    break;
+            }
+            ;
+        };
+        this.explorerUrl = (objectid, type = 'object') => {
+            if (this.network === ENTRYPOINT.testnet) {
+                return 'https://testnet.suivision.xyz/' + type + '/' + objectid;
+            }
+            else if (this.network === ENTRYPOINT.mainnet) {
+                return 'https://suivision.xyz/' + type + '/' + objectid;
+            }
+            ;
+            return '';
+        };
+        this.CoinTypes_Testnet = [
+            { symbol: 'SUI', type: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI', decimals: 9, alias: true },
+            { symbol: 'SUI', type: '0x2::sui::SUI', decimals: 9, },
+            { symbol: 'WOW', type: TESTNET.base + '::wowok::WOWOK', decimals: 9 },
+        ];
+        this.CoinTypes_Mainnet = [
+            { symbol: 'SUI', type: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI', decimals: 9, alias: true },
+            { symbol: 'SUI', type: '0x2::sui::SUI', decimals: 9, },
+            { symbol: 'WOW', type: TESTNET.base + '::wowok::WOWOK', decimals: 9 },
+            { symbol: 'USDT', type: '0xc060006111016b8a020ad5b33834984a437aaa7d3c74c18e09a95d48aceab08c::coin::COIN', decimals: 6 },
+            { symbol: 'USDC', type: '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN', decimals: 6 },
+            { symbol: 'WETH', type: '0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN', decimals: 8 },
+            { symbol: 'WBNB', type: '0xb848cce11ef3a8f62eccea6eb5b35a12c4c2b1ee1af7755d02d7bd6218e8226f::coin::COIN', decimals: 8 },
+        ];
+        this.coinTypeInfo = (token_type, handler) => {
+            if (!token_type)
+                return 'loading';
+            let r = this.COINS_TYPE().find((v) => v?.type === token_type);
+            if (!r) {
+                Protocol.Client().getCoinMetadata({ coinType: token_type }).then((res) => {
+                    if (res?.decimals && res?.symbol) {
+                        this.update_coinType(token_type, res?.decimals, res?.symbol);
+                        handler({ symbol: res.symbol, decimals: res.decimals, type: token_type });
+                    }
+                }).catch((e) => {
+                    console.log(e);
+                });
+            }
+            else {
+                return r;
+            }
+            ;
+            return 'loading';
+        };
+        this.WOWOK_OBJECTS_TYPE = () => Object.keys(MODULES).map((key) => { let i = (key === MODULES.guard ? this.packages.get('base') : this.packages.get('wowok')) + '::' + key + '::'; return i + capitalize(key); });
+        this.WOWOK_OBJECTS_PREFIX_TYPE = () => Object.keys(MODULES).map((key) => { return (key === MODULES.guard ? this.packages.get('base') : this.packages.get('wowok')) + '::' + key + '::'; });
+        this.object_name_from_type_repr = (type_repr) => {
+            if (!type_repr)
+                return '';
+            let i = type_repr.indexOf('::');
+            if (i > 0 && this.hasPackage(type_repr.slice(0, i))) {
+                i = type_repr.indexOf('<');
+                if (i > 0) {
+                    type_repr = type_repr.slice(0, i);
+                }
+                let n = type_repr.lastIndexOf('::');
+                if (n > 0) {
+                    return type_repr.slice(n + 2);
+                }
+            }
+            return '';
+        };
+        this.module_object_name_from_type_repr = (type_repr) => {
+            if (!type_repr)
+                return '';
+            let i = type_repr.indexOf('::');
+            if (i > 0 && this.hasPackage(type_repr.slice(0, i))) {
+                i = type_repr.indexOf('<');
+                if (i > 0) {
+                    type_repr = type_repr.slice(0, i);
+                }
+                let n = type_repr.indexOf('::');
+                if (n > 0) {
+                    return type_repr.slice(n + 2);
+                }
+            }
+            return '';
+        };
         this.use_network(network);
         this.new_session();
     }
@@ -250,152 +405,11 @@ export class Protocol {
         return "";
     }
     ;
-    machineFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.machine}::${fn}`; };
-    progressFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.progress}::${fn}`; };
-    repositoryFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.repository}::${fn}`; };
-    permissionFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.permission}::${fn}`; };
-    passportFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.passport}::${fn}`; };
-    demandFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.demand}::${fn}`; };
-    orderFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.order}::${fn}`; };
-    serviceFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.service}::${fn}`; };
-    resourceFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.resource}::${fn}`; };
-    entityFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.entity}::${fn}`; };
-    wowokFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.wowok}::${fn}`; };
-    treasuryFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.treasury}::${fn}`; };
-    paymentFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.payment}::${fn}`; };
-    guardFn = (fn) => { return `${this.packages.get('base')}::${MODULES.guard}::${fn}`; };
-    baseWowokFn = (fn) => { return `${this.packages.get('base')}::${MODULES.wowok}::${fn}`; };
-    arbitrationFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.arbitration}::${fn}`; };
-    arbFn = (fn) => { return `${this.packages.get('wowok')}::${MODULES.arb}::${fn}`; };
-    query = async (objects, options = { showContent: true }) => {
-        const client = new SuiClient({ url: this.networkUrl() });
-        const ids = objects.map((value) => value.objectid);
-        const res = await client.call('sui_multiGetObjects', [ids, options]);
-        let ret = [];
-        for (let i = 0; i < res.length; i++) {
-            objects.forEach((object) => {
-                object.callback(this, res[i], object, options);
-            });
-        }
-        return res;
-    };
-    query_raw = async (objects, options = { showContent: true }) => {
-        const client = new SuiClient({ url: this.networkUrl() });
-        return await client.call('sui_multiGetObjects', [objects, options]);
-    };
-    new_session = () => {
-        this.txb = new TransactionBlock();
-        return this.txb;
-    };
-    sessionCurrent = () => { return this.txb ? this.txb : this.new_session(); };
-    sign_excute = async (exes, priv_key, param, options = { showObjectChanges: true }) => {
-        const client = new SuiClient({ url: this.networkUrl() });
-        exes.forEach((e) => { e(this, param); });
-        const privkey = fromHEX(priv_key);
-        const keypair = Ed25519Keypair.fromSecretKey(privkey);
-        const response = await client.signAndExecuteTransaction({
-            transaction: this.sessionCurrent(),
-            signer: keypair,
-            options,
-        });
-        this.txb = undefined; // reset the txb to undefine
-        return response;
-    };
-    // used in service, discount, order, because service has COIN wrapper for TOKEN
-    static SUI_TOKEN_TYPE = '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI'; // TOKEN_TYPE
-    // used in demand, reward, ...
-    static SUI_COIN_TYPE = '0x0000000000000000000000000000000000000000000000000000000000000002::coin::Coin<0x2::sui::SUI>'; // COIN TYPE
-    WOWOK_TOKEN_TYPE = () => { return this.packages.get('base') + '::wowok::WOWOK'; };
-    WOWOK_COIN_TYPE = () => { return '0x2::coin::Coin<' + this.packages.get('base') + '::wowok::WOWOK>'; };
-    COINS_TYPE = () => {
-        switch (this.network) {
-            case ENTRYPOINT.testnet:
-                return this.CoinTypes_Testnet.filter((v) => v.alias !== true);
-            case ENTRYPOINT.mainnet:
-                return this.CoinTypes_Mainnet.filter((v) => v.alias !== true);
-        }
-        ;
-        return [];
-    };
-    update_coinType = (token_type, decimals, symbol) => {
-        if (!symbol || !token_type)
-            return;
-        switch (this.network) {
-            case ENTRYPOINT.testnet:
-                var r = this.CoinTypes_Testnet.filter((v) => v?.type !== token_type);
-                r.push({ symbol: symbol, type: token_type, decimals: decimals });
-                this.CoinTypes_Testnet = r;
-                break;
-            case ENTRYPOINT.mainnet:
-                var r = this.CoinTypes_Mainnet.filter((v) => v?.type !== token_type);
-                r.push({ symbol: symbol, type: token_type, decimals: decimals });
-                this.CoinTypes_Mainnet = r;
-                break;
-        }
-        ;
-    };
-    explorerUrl = (objectid, type = 'object') => {
-        if (this.network === ENTRYPOINT.testnet) {
-            return 'https://testnet.suivision.xyz/' + type + '/' + objectid;
-        }
-        else if (this.network === ENTRYPOINT.mainnet) {
-            return 'https://suivision.xyz/' + type + '/' + objectid;
-        }
-        ;
-        return '';
-    };
-    CoinTypes_Testnet = [
-        { symbol: 'SUI', type: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI', decimals: 9, alias: true },
-        { symbol: 'SUI', type: '0x2::sui::SUI', decimals: 9, },
-        { symbol: 'WOW', type: TESTNET.base + '::wowok::WOWOK', decimals: 9 },
-    ];
-    CoinTypes_Mainnet = [
-        { symbol: 'SUI', type: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI', decimals: 9, alias: true },
-        { symbol: 'SUI', type: '0x2::sui::SUI', decimals: 9, },
-        { symbol: 'WOW', type: TESTNET.base + '::wowok::WOWOK', decimals: 9 },
-        { symbol: 'USDT', type: '0xc060006111016b8a020ad5b33834984a437aaa7d3c74c18e09a95d48aceab08c::coin::COIN', decimals: 6 },
-        { symbol: 'USDC', type: '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN', decimals: 6 },
-        { symbol: 'WETH', type: '0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN', decimals: 8 },
-        { symbol: 'WBNB', type: '0xb848cce11ef3a8f62eccea6eb5b35a12c4c2b1ee1af7755d02d7bd6218e8226f::coin::COIN', decimals: 8 },
-    ];
-    coinTypeInfo = (token_type, handler) => {
-        if (!token_type)
-            return 'loading';
-        let r = this.COINS_TYPE().find((v) => v?.type === token_type);
-        if (!r) {
-            Protocol.Client().getCoinMetadata({ coinType: token_type }).then((res) => {
-                if (res?.decimals && res?.symbol) {
-                    this.update_coinType(token_type, res?.decimals, res?.symbol);
-                    handler({ symbol: res.symbol, decimals: res.decimals, type: token_type });
-                }
-            }).catch((e) => {
-                console.log(e);
-            });
-        }
-        else {
-            return r;
-        }
-        ;
-        return 'loading';
-    };
-    static CLOCK_OBJECT = { objectId: '0x6', mutable: false, initialSharedVersion: 1 };
     static TXB_OBJECT(txb, arg) {
         if (typeof (arg) == 'string')
             return txb.object(arg);
         return arg;
     }
-    static IsValidObjects = (arr) => {
-        return IsValidArray(arr, (v) => {
-            if (!v)
-                return false;
-            if (typeof (v) === 'string' && !isValidSuiObjectId(v)) {
-                return false;
-            }
-            return true;
-        });
-    };
-    WOWOK_OBJECTS_TYPE = () => Object.keys(MODULES).map((key) => { let i = (key === MODULES.guard ? this.packages.get('base') : this.packages.get('wowok')) + '::' + key + '::'; return i + capitalize(key); });
-    WOWOK_OBJECTS_PREFIX_TYPE = () => Object.keys(MODULES).map((key) => { return (key === MODULES.guard ? this.packages.get('base') : this.packages.get('wowok')) + '::' + key + '::'; });
     hasPackage(pack) {
         for (let value of this.packages.values()) {
             if (pack.includes(value)) {
@@ -404,72 +418,56 @@ export class Protocol {
         }
         return false;
     }
-    object_name_from_type_repr = (type_repr) => {
-        if (!type_repr)
-            return '';
-        let i = type_repr.indexOf('::');
-        if (i > 0 && this.hasPackage(type_repr.slice(0, i))) {
-            i = type_repr.indexOf('<');
-            if (i > 0) {
-                type_repr = type_repr.slice(0, i);
-            }
-            let n = type_repr.lastIndexOf('::');
-            if (n > 0) {
-                return type_repr.slice(n + 2);
-            }
-        }
-        return '';
-    };
-    module_object_name_from_type_repr = (type_repr) => {
-        if (!type_repr)
-            return '';
-        let i = type_repr.indexOf('::');
-        if (i > 0 && this.hasPackage(type_repr.slice(0, i))) {
-            i = type_repr.indexOf('<');
-            if (i > 0) {
-                type_repr = type_repr.slice(0, i);
-            }
-            let n = type_repr.indexOf('::');
-            if (n > 0) {
-                return type_repr.slice(n + 2);
-            }
-        }
-        return '';
-    };
 }
+// used in service, discount, order, because service has COIN wrapper for TOKEN
+Protocol.SUI_TOKEN_TYPE = '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI'; // TOKEN_TYPE
+// used in demand, reward, ...
+Protocol.SUI_COIN_TYPE = '0x0000000000000000000000000000000000000000000000000000000000000002::coin::Coin<0x2::sui::SUI>'; // COIN TYPE
+Protocol.CLOCK_OBJECT = { objectId: '0x6', mutable: false, initialSharedVersion: 1 };
+Protocol.IsValidObjects = (arr) => {
+    return IsValidArray(arr, (v) => {
+        if (!v)
+            return false;
+        if (typeof (v) === 'string' && !isValidSuiObjectId(v)) {
+            return false;
+        }
+        return true;
+    });
+};
 export class RpcResultParser {
-    static Object_Type_Extra = () => {
-        let names = Object.keys(MODULES).map((key) => { return key + '::' + capitalize(key); });
-        names.push('order::Discount');
-        return names;
-    };
-    static objectids_from_response = (protocol, response, concat_result) => {
-        //console.log(response)
-        let ret = new Map();
-        if (response?.objectChanges) {
-            response.objectChanges.forEach((change) => {
-                RpcResultParser.Object_Type_Extra().forEach((name) => {
-                    if (change.type == 'created' && protocol.module_object_name_from_type_repr(change.objectType) === name) {
-                        if (ret.has(name)) {
-                            ret.get(name)?.push(change.objectId);
-                        }
-                        else {
-                            ret.set(name, [change.objectId]);
-                        }
-                    }
-                });
-            });
-        }
-        if (concat_result) {
-            ret.forEach((value, key) => {
-                if (concat_result.has(key)) {
-                    concat_result.set(key, concat_result.get(key).concat(value));
-                }
-                else {
-                    concat_result.set(key, value);
-                }
-            });
-        }
-        return ret;
-    };
 }
+RpcResultParser.Object_Type_Extra = () => {
+    let names = Object.keys(MODULES).map((key) => { return key + '::' + capitalize(key); });
+    names.push('order::Discount');
+    return names;
+};
+RpcResultParser.objectids_from_response = (protocol, response, concat_result) => {
+    //console.log(response)
+    let ret = new Map();
+    if (response?.objectChanges) {
+        response.objectChanges.forEach((change) => {
+            RpcResultParser.Object_Type_Extra().forEach((name) => {
+                if (change.type == 'created' && protocol.module_object_name_from_type_repr(change.objectType) === name) {
+                    if (ret.has(name)) {
+                        ret.get(name)?.push(change.objectId);
+                    }
+                    else {
+                        ret.set(name, [change.objectId]);
+                    }
+                }
+            });
+        });
+    }
+    if (concat_result) {
+        ret.forEach((value, key) => {
+            if (concat_result.has(key)) {
+                concat_result.set(key, concat_result.get(key).concat(value));
+            }
+            else {
+                concat_result.set(key, value);
+            }
+        });
+    }
+    return ret;
+};
+//# sourceMappingURL=protocol.js.map

@@ -1,6 +1,6 @@
-import { Protocol } from './protocol';
-import { IsValidDesription, IsValidAddress, IsValidArray, } from './utils';
-import { ERROR, Errors } from './exception';
+import { Protocol } from './protocol.js';
+import { IsValidDesription, IsValidAddress, IsValidArray, } from './utils.js';
+import { ERROR, Errors } from './exception.js';
 export const PAYMENT_MAX_RECEIVER_COUNT = 200;
 export function create_payment(txb, pay_token_type, param) {
     if (!pay_token_type)
@@ -39,3 +39,4 @@ export function create_payment(txb, pay_token_type, param) {
         });
     }
 }
+//# sourceMappingURL=payment.js.map

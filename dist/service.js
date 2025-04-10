@@ -1,6 +1,6 @@
-import { IsValidArray, IsValidPercent, IsValidName_AllowEmpty, parseObjectType, array_unique, IsValidTokenType, IsValidDesription, IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, } from './utils';
-import { Protocol } from './protocol';
-import { ERROR, Errors } from './exception';
+import { IsValidArray, IsValidPercent, IsValidName_AllowEmpty, parseObjectType, array_unique, IsValidTokenType, IsValidDesription, IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, } from './utils.js';
+import { Protocol } from './protocol.js';
+import { ERROR, Errors } from './exception.js';
 export var Service_Discount_Type;
 (function (Service_Discount_Type) {
     Service_Discount_Type[Service_Discount_Type["ratio"] = 0] = "ratio";
@@ -14,10 +14,6 @@ export var BuyRequiredEnum;
     BuyRequiredEnum["postcode"] = "postcode";
 })(BuyRequiredEnum || (BuyRequiredEnum = {}));
 export class Service {
-    pay_token_type;
-    permission;
-    object;
-    txb;
     //static token2coin = (token:string) => { return '0x2::coin::Coin<' + token + '>'};
     get_pay_type() { return this.pay_token_type; }
     get_object() { return this.object; }
@@ -961,7 +957,7 @@ export class Service {
         }
     }
     update_order_required_info(order, customer_info_crypto) {
-        if (!customer_info_crypto.customer_pubkey || customer_info_crypto.customer_info_crypt.length === 0) {
+        if (!customer_info_crypto.customer_pubkey) {
             return;
         }
         if (!Protocol.IsValidObjects([order])) {
@@ -1155,93 +1151,94 @@ export class Service {
     change_order_payer(order, new_addr, orderProgress) {
         Service.ChangeOrderPayer(this.txb, this.pay_token_type, order, new_addr, orderProgress);
     }
-    static MAX_DISCOUNT_COUNT_ONCE = 200;
-    static MAX_DISCOUNT_RECEIVER_COUNT = 20;
-    static MAX_GUARD_COUNT = 16;
-    static MAX_REPOSITORY_COUNT = 32;
-    static MAX_ITEM_NAME_LENGTH = 256;
-    static MAX_TREASURY_COUNT = 8;
-    static MAX_ORDER_AGENT_COUNT = 8;
-    static MAX_ORDER_ARBS_COUNT = 8;
-    static MAX_ARBITRATION_COUNT = 8;
-    static MAX_REQUIRES_COUNT = 16;
-    static MAX_PUBKEY_SIZE = 3000;
     static IsValidItemName(name) {
         if (!name)
             return false;
         return new TextEncoder().encode(name).length <= Service.MAX_ITEM_NAME_LENGTH;
     }
-    static parseObjectType = (chain_type) => {
-        return parseObjectType(chain_type, 'service::Service<');
-    };
-    static parseOrderObjectType = (chain_type) => {
-        return parseObjectType(chain_type, 'order::Order<');
-    };
-    static endpoint = (service_endpoint, item_endpoint, item_name) => {
-        if (item_endpoint) {
-            return item_endpoint;
-        }
-        else if (service_endpoint) {
-            return service_endpoint + '/sales/' + encodeURI(item_name);
-        }
-    };
-    static DiscountObjects = (owner, handleDiscountObject) => {
-        Protocol.Client().getOwnedObjects({ owner: owner,
-            filter: { MoveModule: { module: 'order', package: Protocol.Instance().package('wowok') } },
-            options: { showContent: true, showType: true } }).then((res) => {
-            handleDiscountObject(owner, res.data.map((v) => v.data));
-        }).catch((e) => {
-            console.log(e);
-        });
-    };
-    // The agent has the same order operation power as the order payer; The agent can only be set by the order payer.
-    static SetOrderAgent = (txb, order_token_type, order, agent, order_progress) => {
-        if (!IsValidTokenType(order_token_type)) {
-            ERROR(Errors.IsValidTokenType, 'SetOrderAgent.order_token_type');
-        }
-        if (!Protocol.IsValidObjects([order])) {
-            ERROR(Errors.IsValidObjects, 'SetOrderAgent.order');
-        }
-        if (!IsValidArray(agent, IsValidAddress)) {
-            ERROR(Errors.IsValidArray, 'SetOrderAgent.agent');
-        }
-        if (array_unique(agent).length > Service.MAX_ORDER_AGENT_COUNT) {
-            ERROR(Errors.Fail, 'SetOrderAgent.agent count');
-        }
-        txb.moveCall({
-            target: Protocol.Instance().orderFn('agent_set'),
-            arguments: [txb.object(order), txb.pure.vector('address', array_unique(agent))],
-            typeArguments: [order_token_type]
-        });
-        if (order_progress) {
-            txb.moveCall({
-                target: Protocol.Instance().orderFn('order_ops_to_progress'),
-                arguments: [txb.object(order), txb.object(order_progress)],
-                typeArguments: [order_token_type]
-            });
-        }
-    };
-    static ChangeOrderPayer = (txb, order_token_type, order, new_addr, order_progress) => {
-        if (!IsValidTokenType(order_token_type)) {
-            ERROR(Errors.IsValidTokenType, 'ChangeOrderPayer.order_token_type');
-        }
-        if (!Protocol.IsValidObjects([order])) {
-            ERROR(Errors.IsValidObjects, 'ChangeOrderPayer.order');
-        }
-        if (!IsValidAddress(new_addr)) {
-            ERROR(Errors.IsValidAddress, 'ChangeOrderPayer.new_addr');
-        }
-        txb.moveCall({
-            target: Protocol.Instance().orderFn('payer_change'),
-            arguments: [txb.object(order), txb.pure.address(new_addr)],
-            typeArguments: [order_token_type]
-        });
-        if (order_progress) {
-            txb.moveCall({
-                target: Protocol.Instance().orderFn('order_ops_to_progress'),
-                arguments: [txb.object(order), txb.object(order_progress)],
-                typeArguments: [order_token_type]
-            });
-        }
-    };
 }
+Service.MAX_DISCOUNT_COUNT_ONCE = 200;
+Service.MAX_DISCOUNT_RECEIVER_COUNT = 20;
+Service.MAX_GUARD_COUNT = 16;
+Service.MAX_REPOSITORY_COUNT = 32;
+Service.MAX_ITEM_NAME_LENGTH = 256;
+Service.MAX_TREASURY_COUNT = 8;
+Service.MAX_ORDER_AGENT_COUNT = 8;
+Service.MAX_ORDER_ARBS_COUNT = 8;
+Service.MAX_ARBITRATION_COUNT = 8;
+Service.MAX_REQUIRES_COUNT = 16;
+Service.MAX_PUBKEY_SIZE = 3000;
+Service.parseObjectType = (chain_type) => {
+    return parseObjectType(chain_type, 'service::Service<');
+};
+Service.parseOrderObjectType = (chain_type) => {
+    return parseObjectType(chain_type, 'order::Order<');
+};
+Service.endpoint = (service_endpoint, item_endpoint, item_name) => {
+    if (item_endpoint) {
+        return item_endpoint;
+    }
+    else if (service_endpoint) {
+        return service_endpoint + '/sales/' + encodeURI(item_name);
+    }
+};
+Service.DiscountObjects = (owner, handleDiscountObject) => {
+    Protocol.Client().getOwnedObjects({ owner: owner,
+        filter: { MoveModule: { module: 'order', package: Protocol.Instance().package('wowok') } },
+        options: { showContent: true, showType: true } }).then((res) => {
+        handleDiscountObject(owner, res.data.map((v) => v.data));
+    }).catch((e) => {
+        console.log(e);
+    });
+};
+// The agent has the same order operation power as the order payer; The agent can only be set by the order payer.
+Service.SetOrderAgent = (txb, order_token_type, order, agent, order_progress) => {
+    if (!IsValidTokenType(order_token_type)) {
+        ERROR(Errors.IsValidTokenType, 'SetOrderAgent.order_token_type');
+    }
+    if (!Protocol.IsValidObjects([order])) {
+        ERROR(Errors.IsValidObjects, 'SetOrderAgent.order');
+    }
+    if (!IsValidArray(agent, IsValidAddress)) {
+        ERROR(Errors.IsValidArray, 'SetOrderAgent.agent');
+    }
+    if (array_unique(agent).length > Service.MAX_ORDER_AGENT_COUNT) {
+        ERROR(Errors.Fail, 'SetOrderAgent.agent count');
+    }
+    txb.moveCall({
+        target: Protocol.Instance().orderFn('agent_set'),
+        arguments: [txb.object(order), txb.pure.vector('address', array_unique(agent))],
+        typeArguments: [order_token_type]
+    });
+    if (order_progress) {
+        txb.moveCall({
+            target: Protocol.Instance().orderFn('order_ops_to_progress'),
+            arguments: [txb.object(order), txb.object(order_progress)],
+            typeArguments: [order_token_type]
+        });
+    }
+};
+Service.ChangeOrderPayer = (txb, order_token_type, order, new_addr, order_progress) => {
+    if (!IsValidTokenType(order_token_type)) {
+        ERROR(Errors.IsValidTokenType, 'ChangeOrderPayer.order_token_type');
+    }
+    if (!Protocol.IsValidObjects([order])) {
+        ERROR(Errors.IsValidObjects, 'ChangeOrderPayer.order');
+    }
+    if (!IsValidAddress(new_addr)) {
+        ERROR(Errors.IsValidAddress, 'ChangeOrderPayer.new_addr');
+    }
+    txb.moveCall({
+        target: Protocol.Instance().orderFn('payer_change'),
+        arguments: [txb.object(order), txb.pure.address(new_addr)],
+        typeArguments: [order_token_type]
+    });
+    if (order_progress) {
+        txb.moveCall({
+            target: Protocol.Instance().orderFn('order_ops_to_progress'),
+            arguments: [txb.object(order), txb.object(order_progress)],
+            typeArguments: [order_token_type]
+        });
+    }
+};
+//# sourceMappingURL=service.js.map

@@ -1,6 +1,6 @@
 import { BCS } from '@mysten/bcs';
 import { SuiObjectResponse, DynamicFieldPage } from '@mysten/sui/client';
-import { RepositoryValueType, ValueType, ContextType } from './protocol';
+import { RepositoryValueType, ValueType, ContextType } from './protocol.js';
 export declare const MAX_U8: bigint;
 export declare const MAX_U64: bigint;
 export declare const MAX_U128: bigint;
@@ -43,10 +43,10 @@ export declare class Bcs {
     de_tags(data: Uint8Array | undefined): any;
     de_perms(data: Uint8Array | undefined): any;
 }
-export declare function stringToUint8Array(str: string): Uint8Array<ArrayBufferLike>;
+export declare function stringToUint8Array(str: string): Uint8Array;
 export declare function numToUint8Array(num: number): Uint8Array;
 export declare const isArr: (origin: any) => boolean;
-export declare const deepClone: <T>(origin: T, target?: Record<string, any> | T) => T;
+export declare const deepClone: <T>(origin: T, target?: T | Record<string, any> | undefined) => T;
 export declare const MAX_DESCRIPTION_LENGTH = 4000;
 export declare const MAX_NAME_LENGTH = 64;
 export declare const MAX_ENDPOINT_LENGTH = 1024;
@@ -75,7 +75,7 @@ export type ArgType = {
     token: string;
 };
 export declare const ParseType: (type: string) => ArgType;
-export declare function insertAtHead(array: Uint8Array, value: number): Uint8Array<ArrayBuffer>;
+export declare function insertAtHead(array: Uint8Array, value: number): Uint8Array;
 export declare function toFixed(x: number): string;
 export declare function isValidHttpUrl(url: string): boolean;
 export interface query_object_param {
@@ -88,7 +88,7 @@ export interface query_object_param {
     onDynamicErr?: (id: string, err: any) => void;
     onFieldsErr?: (id: string, err: any) => void;
 }
-export declare const uint2address: (value: number) => string;
+export declare const uint2address: (value: number | bigint) => string;
 export declare const query_object: (param: query_object_param) => void;
 export declare const FirstLetterUppercase: (str: string | undefined | null) => string;
 export declare function hasDuplicates<T>(array: T[]): boolean;

@@ -1,10 +1,10 @@
 
 import { IsValidArray,  array_unique, IsValidTokenType, IsValidDesription, parseObjectType,
-    IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, } from './utils'
+    IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, } from './utils.js'
 import { FnCallType, GuardObject, PassportObject, PermissionObject, CoinObject, Protocol,
     TxbObject, ArbitrationAddress, OrderObject, ArbObject, PaymentAddress, TreasuryObject,
-    ArbAddress} from './protocol';
-import { ERROR, Errors } from './exception';
+    ArbAddress} from './protocol.js';
+import { ERROR, Errors } from './exception.js';
 import { Transaction as TransactionBlock,  } from '@mysten/sui/transactions';
 
 export interface VotingGuard {

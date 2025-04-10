@@ -1,4 +1,4 @@
-import { GuardAddress, Data_Type, MODULES, ContextType, ValueType, OperatorType, TxbObject, GuardObject } from './protocol';
+import { GuardAddress, Data_Type, MODULES, ContextType, ValueType, OperatorType, TxbObject, GuardObject } from './protocol.js';
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 export type GuardConstant = Map<number, Guard_Variable>;
 export interface Guard_Variable {
@@ -64,7 +64,7 @@ export declare class Guard {
     static StringOptions: () => Guard_Options[];
     static BoolOptions: () => Guard_Options[];
     static AddressOptions: () => Guard_Options[];
-    static Options: (ret_type: ValueType | "number" | "any") => Guard_Options[];
+    static Options: (ret_type: ValueType | 'number' | 'any') => Guard_Options[];
 }
 export declare const IsValidGuardIdentifier: (identifier: number | undefined) => boolean;
 export declare class GuardMaker {
@@ -87,7 +87,7 @@ export declare class GuardMaker {
     IsReady(): boolean;
     combine(otherBuilt: GuardMaker, bAnd?: boolean, bCombinConstant?: boolean): GuardMaker;
     get_constant(): GuardConstant;
-    get_input(): Uint8Array<ArrayBufferLike>[];
+    get_input(): Uint8Array[];
     static input_combine(input1: Uint8Array, input2: Uint8Array, bAnd?: boolean): Uint8Array;
     static input_not(input: Uint8Array): Uint8Array;
     static match_u256(type: number): boolean;

@@ -1,6 +1,6 @@
-import { Protocol, FnCallType, TxbObject, ResourceAddress, PermissionObject, RepositoryAddress} from './protocol';
-import { IsValidDesription, IsValidAddress, IsValidName, IsValidArray, IsValidU64,  } from './utils';
-import { ERROR, Errors } from './exception';
+import { Protocol, FnCallType, TxbObject, ResourceAddress, PermissionObject, RepositoryAddress} from './protocol.js';
+import { IsValidDesription, IsValidAddress, IsValidName, IsValidArray, IsValidU64,  } from './utils.js';
+import { ERROR, Errors } from './exception.js';
 import { Transaction as TransactionBlock} from '@mysten/sui/transactions';
 
 export class Wowok {

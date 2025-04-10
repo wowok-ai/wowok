@@ -1,7 +1,7 @@
-import { Protocol, FnCallType, TxbObject, ResourceAddress, ResourceObject} from './protocol';
-import { IsValidDesription, IsValidAddress, IsValidName, isValidHttpUrl, Bcs, } from './utils';
-import { ERROR, Errors } from './exception';
-import { TagName, Resource } from './resource';
+import { Protocol, FnCallType, TxbObject, ResourceAddress, ResourceObject} from './protocol.js';
+import { IsValidDesription, IsValidAddress, IsValidName, isValidHttpUrl, Bcs, } from './utils.js';
+import { ERROR, Errors } from './exception.js';
+import { TagName, Resource } from './resource.js';
 import { Transaction as TransactionBlock, TransactionResult } from '@mysten/sui/transactions';
 
 
