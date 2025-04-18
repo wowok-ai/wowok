@@ -636,7 +636,7 @@ export const query_object = (param:query_object_param) => {
             if(param?.onObjectRes) param.onObjectRes(param.id, res);
         }
       }).catch((err) => {
-        console.log(err)
+        //console.log(err)
         if (param?.onObjectErr) param.onObjectErr(param.id, err);
       });
 
@@ -647,12 +647,12 @@ export const query_object = (param:query_object_param) => {
           Protocol.Client().multiGetObjects({ids:res.data.map(v => v.objectId), options:{showContent:true}}).then((fields) => {
             if (param?.onFieldsRes) param.onFieldsRes(param.id, fields);
           }).catch((err) => {
-            console.log(err)
+            //console.log(err)
             if (param?.onFieldsErr) param.onFieldsErr(param.id, err);
           })          
         } 
       }).catch((err) => {
-        console.log(err)
+        //console.log(err)
         if (param?.onDynamicErr) param.onDynamicErr(param.id, err);
       })
     }

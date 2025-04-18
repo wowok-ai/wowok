@@ -19,7 +19,8 @@ export enum TagName {
     Dislike = "dislike",
     Launch = 'launch',
     Order = 'order',
-    Payment = 'payment'
+    Payment = 'payment',
+    Account = 'account',
 }
 
 export class Resource {

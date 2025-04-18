@@ -597,7 +597,7 @@ export const query_object = (param) => {
                     param.onObjectRes(param.id, res);
             }
         }).catch((err) => {
-            console.log(err);
+            //console.log(err)
             if (param?.onObjectErr)
                 param.onObjectErr(param.id, err);
         });
@@ -609,13 +609,13 @@ export const query_object = (param) => {
                     if (param?.onFieldsRes)
                         param.onFieldsRes(param.id, fields);
                 }).catch((err) => {
-                    console.log(err);
+                    //console.log(err)
                     if (param?.onFieldsErr)
                         param.onFieldsErr(param.id, err);
                 });
             }
         }).catch((err) => {
-            console.log(err);
+            //console.log(err)
             if (param?.onDynamicErr)
                 param.onDynamicErr(param.id, err);
         });
