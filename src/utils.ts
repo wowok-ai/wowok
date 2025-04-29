@@ -415,7 +415,7 @@ export const IsValidName_AllowEmpty = (name:string) : boolean => { return IsVali
 export const IsValidEndpoint = (endpoint:string) : boolean => { 
     return (endpoint.length > 0 && endpoint.length <= MAX_ENDPOINT_LENGTH && isValidHttpUrl(endpoint)) ;
 }
-export const IsValidAddress = (addr:string | undefined) : boolean => { 
+export const IsValidAddress = (addr:string | undefined | null) : boolean => { 
     if (!addr || !isValidSuiAddress(addr)) {
         return false; 
     }
