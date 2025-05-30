@@ -111,7 +111,7 @@ export declare class Service {
     order_launch(order: OrderResult): BuyResult;
     buy(buy_items: Service_Buy[], coin: CoinObject, discount?: DiscountObject, machine?: MachineObject, customer_info_crypto?: Customer_RequiredInfo, passport?: PassportObject): BuyResult;
     order_bind_machine(order: OrderObject, machine: MachineObject): ProgressObject;
-    add_treasury(treasury_token_type: string, treasury: TreasuryObject, passport?: PassportObject): void;
+    add_treasury(treasury: TreasuryObject, treasury_token_type: string, passport?: PassportObject): void;
     remove_treasury(treasury: string[], removeall?: boolean, passport?: PassportObject): void;
     change_permission(new_permission: PermissionObject): void;
     set_order_agent(order: OrderObject, agent: string[], orderProgress?: ProgressObject): void;

@@ -1,6 +1,5 @@
 
 # WoWok
-
 Create, collaborate, and transact on your own terms with the AI-driven web3 collaboration protocol.
 
 Github: [https://github.com/wowok-ai/wowok](https://github.com/wowok-ai/wowok)   

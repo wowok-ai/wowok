@@ -14,6 +14,13 @@ export interface Entity_Info {
     homepage?: string;
 }
 
+export interface EntityData {
+    info?: Entity_Info
+    resource_object?: string,
+    like?: number,
+    dislike?: number,
+    address?:string,
+}
 export class Entity {
     protected object:TxbObject;
     protected txb;
@@ -101,7 +108,6 @@ export class Entity {
                 this.txb.pure.address(new_address)]
         })   
     }
-
     query_ent(address_queried:string) {
         if (!IsValidAddress(address_queried)) {
             ERROR(Errors.InvalidParam, 'query_ent');    
@@ -112,4 +118,23 @@ export class Entity {
             arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.address(address_queried)]
         })   
     }
+
+    static EntityData = async (address:string) : Promise<EntityData|undefined>=> {
+        if (IsValidAddress(address)) {
+            const txb = new TransactionBlock(); 
+            txb.moveCall({
+                target:Protocol.Instance().entityFn('QueryEnt') as FnCallType,
+                arguments:[Protocol.TXB_OBJECT(txb, Protocol.Instance().objectEntity()), 
+                    txb.pure.address(address)]
+            }) ;
+
+            const res = await Protocol.Client().devInspectTransactionBlock({sender:address, transactionBlock:txb});
+            if (res.results?.length === 1 && res.results[0].returnValues?.length === 1 )  {
+                const r1 = Bcs.getInstance().de_ent(Uint8Array.from(res.results[0].returnValues[0][0]));
+                return {info: Bcs.getInstance().de_entInfo(Uint8Array.from(r1.avatar)),
+                    resource_object: r1.resource?.some ?? undefined, 
+                    like: r1.like, dislike:r1.dislike, address:address};
+            }
+        }
+  } 
 }

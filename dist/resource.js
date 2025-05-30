@@ -9,7 +9,7 @@ export var TagName;
     TagName["Launch"] = "launch";
     TagName["Order"] = "order";
     TagName["Payment"] = "payment";
-    TagName["Account"] = "account";
+    //Account = 'account',
 })(TagName || (TagName = {}));
 export class Resource {
     get_object() { return this.object; }

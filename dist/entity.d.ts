@@ -9,6 +9,13 @@ export interface Entity_Info {
     discord?: string;
     homepage?: string;
 }
+export interface EntityData {
+    info?: Entity_Info;
+    resource_object?: string;
+    like?: number;
+    dislike?: number;
+    address?: string;
+}
 export declare class Entity {
     protected object: TxbObject;
     protected txb: TransactionBlock;
@@ -23,5 +30,6 @@ export declare class Entity {
     use_resource(resource: Resource): TransactionResult;
     transfer_resource(resource: Resource, new_address: string): TransactionResult;
     query_ent(address_queried: string): void;
+    static EntityData: (address: string) => Promise<EntityData | undefined>;
 }
 //# sourceMappingURL=entity.d.ts.map

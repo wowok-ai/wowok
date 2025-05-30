@@ -20,7 +20,7 @@ export enum TagName {
     Launch = 'launch',
     Order = 'order',
     Payment = 'payment',
-    Account = 'account',
+    //Account = 'account',
 }
 
 export class Resource {

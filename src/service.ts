@@ -1132,7 +1132,7 @@ export class Service {
         })    
     }
 
-    add_treasury(treasury_token_type:string, treasury:TreasuryObject, passport?:PassportObject) {
+    add_treasury(treasury:TreasuryObject, treasury_token_type:string, passport?:PassportObject) {
         if (!Protocol.IsValidObjects([treasury])) {
             ERROR(Errors.IsValidObjects, 'add_treasury.treasury')
         }

@@ -1076,7 +1076,7 @@ export class Service {
             typeArguments: [this.pay_token_type]
         });
     }
-    add_treasury(treasury_token_type, treasury, passport) {
+    add_treasury(treasury, treasury_token_type, passport) {
         if (!Protocol.IsValidObjects([treasury])) {
             ERROR(Errors.IsValidObjects, 'add_treasury.treasury');
         }

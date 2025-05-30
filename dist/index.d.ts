@@ -26,6 +26,7 @@ export { normalizeSuiAddress } from '@mysten/sui/utils';
 import * as WowokTxn from '@mysten/sui/transactions';
 export type TransactionArgument = WowokTxn.TransactionArgument;
 export type TransactionResult = WowokTxn.TransactionResult;
+export type TransactionObjectArgument = WowokTxn.TransactionObjectArgument;
 import * as WowokClt from '@mysten/sui/client';
 export type ObjectResponse = WowokClt.SuiObjectResponse;
 export type DynamicFieldPage = WowokClt.DynamicFieldPage;
