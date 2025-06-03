@@ -17,7 +17,7 @@ export declare class Demand {
     set_description(description: string, passport?: PassportObject): void;
     yes(service_address: string, passport?: PassportObject): void;
     deposit(bounty: TxbObject): void;
-    present(service: ServiceObject | number, service_pay_type: string, tips: string, passport?: PassportObject): void;
+    present(service: ServiceObject | number, service_pay_type?: string | null, tips?: string, passport?: PassportObject): void;
     change_permission(new_permission: PermissionObject): void;
     static parseObjectType: (chain_type?: string | null) => string;
     static MAX_BOUNTY_COUNT: number;

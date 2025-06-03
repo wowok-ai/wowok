@@ -23,6 +23,17 @@ export interface DepositParam {
     for_guard?: string,
 }
 
+export interface TreasuryReceivedObject {
+    id: string;
+    balance: string;
+    payment: string;
+}
+
+export interface TreasuryReceived {
+    balance: string;
+    received: TreasuryReceivedObject[];
+}
+
 export interface WithdrawItem {
     address: string,
     amount: bigint | number | string,
@@ -419,6 +430,22 @@ export class Treasury {
         return parseObjectType(chain_type, 'treasury::Treasury<')
     }
     
+    static GetTreasuryRecievedObject = async (treasury_address:string, token_type:string) : Promise<TreasuryReceived|undefined> => {
+        const type = Protocol.Instance().package('wowok')+'::payment::CoinWrapper<'+token_type+'>';
+        const r = await Protocol.Client().getOwnedObjects({owner:treasury_address, filter:{StructType: type}, options:{showContent:true, showType:true}});
+        try {
+          let receive = BigInt(0);
+          const res: TreasuryReceivedObject[] = r.data.map((v:any) => {
+            const i = v?.data?.content?.fields;
+            receive += BigInt(i?.coin?.fields?.balance);
+            return {payment:i?.payment, balance:i?.coin?.fields?.balance, id:v?.data?.objectId} 
+          });
+
+          return {balance:receive.toString(), received:res};
+        } catch (e) {
+          //console.log(e)
+        }
+    }
     static MAX_WITHDRAW_GUARD_COUNT = 16;
 }
 

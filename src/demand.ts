@@ -203,7 +203,8 @@ export class Demand {
         })    
     }
     
-    present(service: ServiceObject | number, service_pay_type:string, tips:string, passport?:PassportObject) {
+    present(service: ServiceObject | number, service_pay_type?:string | null, tips?:string, passport?:PassportObject) {
+        tips = tips ?? '';
         if (!IsValidDesription(tips)) {
             ERROR(Errors.IsValidDesription, 'present.tips')
         }
@@ -228,21 +229,27 @@ export class Demand {
                     typeArguments:[this.bounty_type],
                 })  
             } else {
+                if (!service_pay_type) {
+                    ERROR(Errors.InvalidParam, 'present.service_pay_type')  
+                }
                 this.txb.moveCall({
                     target:Protocol.Instance().demandFn('present_with_passport') as FnCallType,
                     arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, service), 
                         this.txb.pure.string(tips)],
-                    typeArguments:[this.bounty_type, service_pay_type],
+                    typeArguments:[this.bounty_type, service_pay_type!],
                 })  
             }
  
         } else {
             if (typeof(service) !== 'number') {
+                if(!service_pay_type) {
+                    ERROR(Errors.InvalidParam, 'present.service_pay_type')  
+                }
                 this.txb.moveCall({
                     target:Protocol.Instance().demandFn('present') as FnCallType,
                     arguments:[Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, service), 
                         this.txb.pure.string(tips)],
-                    typeArguments:[this.bounty_type, service_pay_type],
+                    typeArguments:[this.bounty_type, service_pay_type!],
                 })                   
             }
         } 

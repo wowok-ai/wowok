@@ -189,6 +189,7 @@ export class Demand {
         });
     }
     present(service, service_pay_type, tips, passport) {
+        tips = tips ?? '';
         if (!IsValidDesription(tips)) {
             ERROR(Errors.IsValidDesription, 'present.tips');
         }
@@ -214,6 +215,9 @@ export class Demand {
                 });
             }
             else {
+                if (!service_pay_type) {
+                    ERROR(Errors.InvalidParam, 'present.service_pay_type');
+                }
                 this.txb.moveCall({
                     target: Protocol.Instance().demandFn('present_with_passport'),
                     arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, service),
@@ -224,6 +228,9 @@ export class Demand {
         }
         else {
             if (typeof (service) !== 'number') {
+                if (!service_pay_type) {
+                    ERROR(Errors.InvalidParam, 'present.service_pay_type');
+                }
                 this.txb.moveCall({
                     target: Protocol.Instance().demandFn('present'),
                     arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, service),

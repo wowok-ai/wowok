@@ -421,7 +421,7 @@ export const IsValidAddress = (addr:string | undefined | null) : boolean => {
     }
     return true
 }
-export const IsValidCoinType = (coin_type:string | undefined) : boolean => { 
+export const IsValidCoinType = (coin_type?:string | null) : boolean => { 
     if (!coin_type) {
         return false; 
     }
@@ -461,7 +461,7 @@ export const IsValidU256 = (value:string | number | undefined | bigint, min=0) :
     return IsValidBigint(value, MAX_U256, BigInt(min))
 }
 
-export const IsValidTokenType = (argType: string) : boolean => { 
+export const IsValidTokenType = (argType?: string) : boolean => { 
     if (!argType || argType.length === 0) {
         return false; 
     }
@@ -474,7 +474,7 @@ export const IsValidTokenType = (argType: string) : boolean => {
     }
     return true;
 }
-export const IsValidArgType = (argType: string) : boolean => { 
+export const IsValidArgType = (argType?: string) : boolean => { 
     if (!argType || argType.length === 0) {
         return false; 
     }
