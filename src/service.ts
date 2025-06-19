@@ -1044,7 +1044,7 @@ export class Service {
             names.push(v.item)
         })
         if (!bValid) {
-            ERROR(Errors.InvalidParam, 'buy_items invalid')
+            ERROR(Errors.InvalidParam, 'order.buy_items invalid')
         }
 
         let name:string[] = []; let price:bigint[] = [];    let stock:bigint[] = []; let order;
@@ -1247,7 +1247,7 @@ export class Service {
             options:{showContent:true, showType:true}}).then((res) => {
             handleDiscountObject(owner, res.data.map((v)=>v.data));
         }).catch((e) => {
-            console.log(e);
+            //console.log(e);
         })       
     }
 

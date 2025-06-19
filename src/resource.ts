@@ -20,6 +20,7 @@ export enum TagName {
     Launch = 'launch',
     Order = 'order',
     Payment = 'payment',
+    Progress = 'progress',
     //Account = 'account',
 }
 
