@@ -43,14 +43,14 @@ export class Service {
         if (passport) {
             s.object = txb.moveCall({
                 target: Protocol.Instance().serviceFn('new_with_passport'),
-                arguments: [passport, txb.pure.string(description), txb.object(payee_treasury), Protocol.TXB_OBJECT(txb, permission)],
+                arguments: [passport, txb.pure.string(description), Protocol.TXB_OBJECT(txb, payee_treasury), Protocol.TXB_OBJECT(txb, permission)],
                 typeArguments: [pay_token_type],
             });
         }
         else {
             s.object = txb.moveCall({
                 target: Protocol.Instance().serviceFn('new'),
-                arguments: [txb.pure.string(description), txb.object(payee_treasury), Protocol.TXB_OBJECT(txb, permission)],
+                arguments: [txb.pure.string(description), Protocol.TXB_OBJECT(txb, payee_treasury), Protocol.TXB_OBJECT(txb, permission)],
                 typeArguments: [pay_token_type],
             });
         }
@@ -218,14 +218,14 @@ export class Service {
         if (passport) {
             this.txb.moveCall({
                 target: Protocol.Instance().serviceFn('payee_set_with_passport'),
-                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(payee), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, payee), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.pay_token_type]
             });
         }
         else {
             this.txb.moveCall({
                 target: Protocol.Instance().serviceFn('payee_set'),
-                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(payee), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, payee), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.pay_token_type]
             });
         }
@@ -657,8 +657,8 @@ export class Service {
         if (param.for_guard) {
             return this.txb.moveCall({
                 target: Protocol.Instance().serviceFn('withdraw_forGuard_with_passport'),
-                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), this.txb.object(param.withdraw_guard),
-                    this.txb.object(param.treasury), for_obj, this.txb.object(param.for_guard), this.txb.pure.u64(param.index), this.txb.pure.string(param.remark),
+                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), Protocol.TXB_OBJECT(this.txb, param.withdraw_guard),
+                    Protocol.TXB_OBJECT(this.txb, param.treasury), for_obj, Protocol.TXB_OBJECT(this.txb, param.for_guard), this.txb.pure.u64(param.index), this.txb.pure.string(param.remark),
                     this.txb.object(clock), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.pay_token_type]
             });
@@ -666,8 +666,8 @@ export class Service {
         else {
             return this.txb.moveCall({
                 target: Protocol.Instance().serviceFn('withdraw_with_passport'),
-                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), this.txb.object(param.withdraw_guard),
-                    this.txb.object(param.treasury), for_obj, this.txb.pure.u64(param.index), this.txb.pure.string(param.remark),
+                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), Protocol.TXB_OBJECT(this.txb, param.withdraw_guard),
+                    Protocol.TXB_OBJECT(this.txb, param.treasury), for_obj, this.txb.pure.u64(param.index), this.txb.pure.string(param.remark),
                     this.txb.object(clock), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.pay_token_type]
             });
@@ -925,7 +925,7 @@ export class Service {
         const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
         this.txb.moveCall({
             target: Protocol.Instance().serviceFn('refund_with_arb'),
-            arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), this.txb.object(arb), this.txb.object(clock)],
+            arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), Protocol.TXB_OBJECT(this.txb, arb), this.txb.object(clock)],
             typeArguments: [this.pay_token_type, arb_type]
         });
     }
@@ -943,7 +943,7 @@ export class Service {
         if (passport && refund_guard) {
             this.txb.moveCall({
                 target: Protocol.Instance().serviceFn('refund_with_passport'),
-                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), this.txb.object(refund_guard),
+                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), Protocol.TXB_OBJECT(this.txb, refund_guard),
                     passport, this.txb.object(clock)],
                 typeArguments: [this.pay_token_type]
             });
@@ -1086,14 +1086,14 @@ export class Service {
         if (passport) {
             this.txb.moveCall({
                 target: Protocol.Instance().serviceFn('treasury_add_with_passport'),
-                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(treasury), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, treasury), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.pay_token_type, treasury_token_type]
             });
         }
         else {
             this.txb.moveCall({
                 target: Protocol.Instance().serviceFn('treasury_add'),
-                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(treasury), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, treasury), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.pay_token_type, treasury_token_type]
             });
         }
@@ -1207,13 +1207,13 @@ Service.SetOrderAgent = (txb, order_token_type, order, agent, order_progress) =>
     }
     txb.moveCall({
         target: Protocol.Instance().orderFn('agent_set'),
-        arguments: [txb.object(order), txb.pure.vector('address', array_unique(agent))],
+        arguments: [Protocol.TXB_OBJECT(txb, order), txb.pure.vector('address', array_unique(agent))],
         typeArguments: [order_token_type]
     });
     if (order_progress) {
         txb.moveCall({
             target: Protocol.Instance().orderFn('order_ops_to_progress'),
-            arguments: [txb.object(order), txb.object(order_progress)],
+            arguments: [Protocol.TXB_OBJECT(txb, order), Protocol.TXB_OBJECT(txb, order_progress)],
             typeArguments: [order_token_type]
         });
     }
@@ -1230,13 +1230,13 @@ Service.ChangeOrderPayer = (txb, order_token_type, order, new_addr, order_progre
     }
     txb.moveCall({
         target: Protocol.Instance().orderFn('payer_change'),
-        arguments: [txb.object(order), txb.pure.address(new_addr)],
+        arguments: [Protocol.TXB_OBJECT(txb, order), txb.pure.address(new_addr)],
         typeArguments: [order_token_type]
     });
     if (order_progress) {
         txb.moveCall({
             target: Protocol.Instance().orderFn('order_ops_to_progress'),
-            arguments: [txb.object(order), txb.object(order_progress)],
+            arguments: [Protocol.TXB_OBJECT(txb, order), Protocol.TXB_OBJECT(txb, order_progress)],
             typeArguments: [order_token_type]
         });
     }

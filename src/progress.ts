@@ -269,7 +269,7 @@ export class Progress {
             }
             this.txb.moveCall({ 
                 target:Protocol.Instance().orderFn('as_deliverable') as FnCallType,
-                arguments: [this.txb.object(v.object), d],
+                arguments: [Protocol.TXB_OBJECT(this.txb, v.object), d],
                 typeArguments:[v.pay_token_type]
             })   
         })

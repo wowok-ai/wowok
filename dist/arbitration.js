@@ -34,14 +34,14 @@ export class Arbitration {
         if (passport) {
             obj.object = txb.moveCall({
                 target: Protocol.Instance().arbitrationFn('new_with_passport'),
-                arguments: [passport, txb.pure.string(description), txb.pure.u64(fee), txb.object(withdrawTreasury), Protocol.TXB_OBJECT(txb, permission)],
+                arguments: [passport, txb.pure.string(description), txb.pure.u64(fee), Protocol.TXB_OBJECT(txb, withdrawTreasury), Protocol.TXB_OBJECT(txb, permission)],
                 typeArguments: [pay_token_type],
             });
         }
         else {
             obj.object = txb.moveCall({
                 target: Protocol.Instance().arbitrationFn('new'),
-                arguments: [txb.pure.string(description), txb.pure.u64(fee), txb.object(withdrawTreasury), Protocol.TXB_OBJECT(txb, permission)],
+                arguments: [txb.pure.string(description), txb.pure.u64(fee), Protocol.TXB_OBJECT(txb, withdrawTreasury), Protocol.TXB_OBJECT(txb, permission)],
                 typeArguments: [pay_token_type],
             });
         }
@@ -139,7 +139,7 @@ export class Arbitration {
             guard.forEach(v => {
                 this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('voting_guard_add_with_passport'),
-                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(v.guard),
+                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, v.guard),
                         this.txb.pure.u64(v.voting_weight), Protocol.TXB_OBJECT(this.txb, this.permission)],
                     typeArguments: [this.pay_token_type]
                 });
@@ -149,7 +149,7 @@ export class Arbitration {
             guard.forEach(v => {
                 this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('voting_guard_add'),
-                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(v.guard),
+                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, v.guard),
                         this.txb.pure.u64(v.voting_weight), Protocol.TXB_OBJECT(this.txb, this.permission)],
                     typeArguments: [this.pay_token_type]
                 });
@@ -265,8 +265,8 @@ export class Arbitration {
             if (param.voting_guard) {
                 this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('vote_with_passport'),
-                    arguments: [passport, this.txb.object(param.voting_guard), Protocol.TXB_OBJECT(this.txb, this.object),
-                        this.txb.object(param.arb), this.txb.pure.vector('u8', param.agrees),
+                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, param.voting_guard), Protocol.TXB_OBJECT(this.txb, this.object),
+                        Protocol.TXB_OBJECT(this.txb, param.arb), this.txb.pure.vector('u8', param.agrees),
                         this.txb.object(clock), Protocol.TXB_OBJECT(this.txb, this.permission)],
                     typeArguments: [this.pay_token_type]
                 });
@@ -274,7 +274,7 @@ export class Arbitration {
             else {
                 this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('vote2_with_passport'),
-                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(param.arb), this.txb.pure.vector('u8', param.agrees),
+                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.arb), this.txb.pure.vector('u8', param.agrees),
                         this.txb.object(clock), Protocol.TXB_OBJECT(this.txb, this.permission)],
                     typeArguments: [this.pay_token_type]
                 });
@@ -283,7 +283,7 @@ export class Arbitration {
         else {
             this.txb.moveCall({
                 target: Protocol.Instance().arbitrationFn('vote'),
-                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(param.arb), this.txb.pure.vector('u8', param.agrees),
+                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.arb), this.txb.pure.vector('u8', param.agrees),
                     this.txb.object(clock), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.pay_token_type]
             });
@@ -304,7 +304,7 @@ export class Arbitration {
             this.txb.moveCall({
                 target: Protocol.Instance().arbitrationFn('arbitration_with_passport'),
                 arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object),
-                    this.txb.object(param.arb), this.txb.pure.string(param.feedback), ind, Protocol.TXB_OBJECT(this.txb, this.permission)],
+                    Protocol.TXB_OBJECT(this.txb, param.arb), this.txb.pure.string(param.feedback), ind, Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.pay_token_type]
             });
         }
@@ -312,7 +312,7 @@ export class Arbitration {
             this.txb.moveCall({
                 target: Protocol.Instance().arbitrationFn('arbitration'),
                 arguments: [Protocol.TXB_OBJECT(this.txb, this.object),
-                    this.txb.object(param.arb), this.txb.pure.string(param.feedback), ind, Protocol.TXB_OBJECT(this.txb, this.permission)],
+                    Protocol.TXB_OBJECT(this.txb, param.arb), this.txb.pure.string(param.feedback), ind, Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.pay_token_type]
             });
         }
@@ -339,8 +339,8 @@ export class Arbitration {
             if (param.for_guard) {
                 return this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('withdraw_forGuard_with_passport'),
-                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(arb), this.txb.object(param.treasury),
-                        for_obj, this.txb.object(param.for_guard), this.txb.pure.u64(param.index), this.txb.pure.string(param.remark), this.txb.object(clock),
+                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, arb), Protocol.TXB_OBJECT(this.txb, param.treasury),
+                        for_obj, Protocol.TXB_OBJECT(this.txb, param.for_guard), this.txb.pure.u64(param.index), this.txb.pure.string(param.remark), this.txb.object(clock),
                         Protocol.TXB_OBJECT(this.txb, this.permission)],
                     typeArguments: [this.pay_token_type]
                 });
@@ -348,7 +348,7 @@ export class Arbitration {
             else {
                 return this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('withdraw_with_passport'),
-                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(arb), this.txb.object(param.treasury),
+                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, arb), Protocol.TXB_OBJECT(this.txb, param.treasury),
                         for_obj, this.txb.pure.u64(param.index), this.txb.pure.string(param.remark), this.txb.object(clock), Protocol.TXB_OBJECT(this.txb, this.permission)],
                     typeArguments: [this.pay_token_type]
                 });
@@ -358,8 +358,8 @@ export class Arbitration {
             if (param.for_guard) {
                 return this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('withdraw_forGuard'),
-                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(arb), this.txb.object(param.treasury),
-                        for_obj, this.txb.object(param.for_guard), this.txb.pure.u64(param.index), this.txb.pure.string(param.remark), this.txb.object(clock),
+                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, arb), Protocol.TXB_OBJECT(this.txb, param.treasury),
+                        for_obj, Protocol.TXB_OBJECT(this.txb, param.for_guard), this.txb.pure.u64(param.index), this.txb.pure.string(param.remark), this.txb.object(clock),
                         Protocol.TXB_OBJECT(this.txb, this.permission)],
                     typeArguments: [this.pay_token_type]
                 });
@@ -367,7 +367,7 @@ export class Arbitration {
             else {
                 return this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('withdraw'),
-                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(arb), this.txb.object(param.treasury),
+                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, arb), Protocol.TXB_OBJECT(this.txb, param.treasury),
                         for_obj, this.txb.pure.u64(param.index), this.txb.pure.string(param.remark), this.txb.object(clock), Protocol.TXB_OBJECT(this.txb, this.permission)],
                     typeArguments: [this.pay_token_type]
                 });
@@ -382,7 +382,7 @@ export class Arbitration {
             this.txb.moveCall({
                 target: Protocol.Instance().arbitrationFn('withdraw_treasury_set_with_passport'),
                 arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object),
-                    this.txb.object(treasury), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                    Protocol.TXB_OBJECT(this.txb, treasury), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.pay_token_type]
             });
         }
@@ -390,7 +390,7 @@ export class Arbitration {
             this.txb.moveCall({
                 target: Protocol.Instance().arbitrationFn('withdraw_treasury_set'),
                 arguments: [Protocol.TXB_OBJECT(this.txb, this.object),
-                    this.txb.object(treasury), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                    Protocol.TXB_OBJECT(this.txb, treasury), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.pay_token_type]
             });
         }
@@ -412,15 +412,15 @@ export class Arbitration {
             if (param.fee) {
                 return this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('dispute_with_passport'),
-                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(param.order), this.txb.pure.string(param.description),
-                        this.txb.pure.vector('string', array_unique(param.votable_proposition)), this.txb.object(param.fee)],
+                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.order), this.txb.pure.string(param.description),
+                        this.txb.pure.vector('string', array_unique(param.votable_proposition)), Protocol.TXB_OBJECT(this.txb, param.fee)],
                     typeArguments: [this.pay_token_type, param.order_token_type]
                 });
             }
             else {
                 return this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('free_dispute_with_passport'),
-                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(param.order), this.txb.pure.string(param.description),
+                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.order), this.txb.pure.string(param.description),
                         this.txb.pure.vector('string', array_unique(param.votable_proposition))],
                     typeArguments: [this.pay_token_type, param.order_token_type]
                 });
@@ -430,15 +430,15 @@ export class Arbitration {
             if (param.fee) {
                 return this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('dispute'),
-                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(param.order), this.txb.pure.string(param.description),
-                        this.txb.pure.vector('string', array_unique(param.votable_proposition)), this.txb.object(param.fee)],
+                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.order), this.txb.pure.string(param.description),
+                        this.txb.pure.vector('string', array_unique(param.votable_proposition)), Protocol.TXB_OBJECT(this.txb, param.fee)],
                     typeArguments: [this.pay_token_type, param.order_token_type]
                 });
             }
             else {
                 return this.txb.moveCall({
                     target: Protocol.Instance().arbitrationFn('free_dispute'),
-                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(param.order), this.txb.pure.string(param.description),
+                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.order), this.txb.pure.string(param.description),
                         this.txb.pure.vector('string', array_unique(param.votable_proposition))],
                     typeArguments: [this.pay_token_type, param.order_token_type]
                 });

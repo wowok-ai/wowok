@@ -5,8 +5,6 @@ export * from './permission.js'
 export * from './guard.js'
 export * from './repository.js'
 export * from './protocol.js';
-//export type { PermissionInfoType } from './permission';
-//export { PermissionInfo, PermissionIndex } from './permission';
 export * from './passport.js'
 export * from './machine.js'
 export * from './service.js'
@@ -24,7 +22,7 @@ export { SuiClient } from '@mysten/sui/client';
 export { Ed25519Keypair,  } from '@mysten/sui/keypairs/ed25519';
 export { fromHEX, toHEX } from '@mysten/bcs';
 export { decodeSuiPrivateKey, encodeSuiPrivateKey } from '@mysten/sui/cryptography';
-export { getFaucetHost, requestSuiFromFaucetV0,  requestSuiFromFaucetV1} from '@mysten/sui/faucet';
+export { getFaucetHost, requestSuiFromFaucetV2 } from '@mysten/sui/faucet';
 export { normalizeSuiAddress } from '@mysten/sui/utils'
 
 import * as WowokTxn from '@mysten/sui/transactions';

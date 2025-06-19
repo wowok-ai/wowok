@@ -98,7 +98,7 @@ export class Machine {
             if (forward?.guard) {
                 f = this.txb.moveCall({
                     target: Protocol.Instance().machineFn('forward'),
-                    arguments: [this.txb.pure.string(forward.namedOperator), this.txb.pure.u16(weight), this.txb.object(Protocol.TXB_OBJECT(this.txb, forward.guard))]
+                    arguments: [this.txb.pure.string(forward.namedOperator), this.txb.pure.u16(weight), Protocol.TXB_OBJECT(this.txb, forward.guard)]
                 });
             }
             else {
@@ -112,7 +112,7 @@ export class Machine {
             if (forward?.guard) {
                 f = this.txb.moveCall({
                     target: Protocol.Instance().machineFn('forward3'),
-                    arguments: [this.txb.pure.u64(forward.permission), this.txb.pure.u16(weight), this.txb.object(Protocol.TXB_OBJECT(this.txb, forward.guard))]
+                    arguments: [this.txb.pure.u64(forward.permission), this.txb.pure.u16(weight), Protocol.TXB_OBJECT(this.txb, forward.guard)]
                 });
             }
             else {
@@ -131,7 +131,7 @@ export class Machine {
             }
             this.txb.moveCall({
                 target: Protocol.Instance().serviceFn('add_to'),
-                arguments: [this.txb.object(v.object), this.txb.pure.bool(v.bRequired ?? false), f],
+                arguments: [Protocol.TXB_OBJECT(this.txb, v.object), this.txb.pure.bool(v.bRequired ?? false), f],
                 typeArguments: [v.pay_token_type]
             });
         });
@@ -141,7 +141,7 @@ export class Machine {
     add_node2(nodes, passport) {
         if (nodes.length === 0)
             return;
-        let n = nodes.map((v) => Protocol.TXB_OBJECT(this.txb, v));
+        let n = nodes.map((v) => { return Protocol.TXB_OBJECT(this.txb, v); });
         if (passport) {
             this.txb.moveCall({
                 target: Protocol.Instance().machineFn('node_add_with_passport'),

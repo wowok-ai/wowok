@@ -29,6 +29,17 @@ type BatchStatusFaucetResponse = {
 	error?: string | null;
 };
 
+type FaucetResponseV2 = {
+	status: 'Success' | FaucetFailure;
+	coins_sent: FaucetCoinInfo[] | null;
+};
+
+type FaucetFailure = {
+	Failure: {
+		internal: string;
+	};
+};
+
 type FaucetRequest = {
 	host: string;
 	path: string;
@@ -37,7 +48,7 @@ type FaucetRequest = {
 	method: 'GET' | 'POST';
 };
 
-async function faucetRequest({ host, path, body, headers, method }: FaucetRequest) {
+async function faucetRequest<T>({ host, path, body, headers, method }: FaucetRequest): Promise<T> {
 	const endpoint = new URL(path, host).toString();
 	const res = await fetch(endpoint, {
 		method,
@@ -56,10 +67,7 @@ async function faucetRequest({ host, path, body, headers, method }: FaucetReques
 
 	try {
 		const parsed = await res.json();
-		if (parsed.error) {
-			throw new Error(`Faucet returns error: ${parsed.error}`);
-		}
-		return parsed;
+		return parsed as T;
 	} catch (e) {
 		throw new Error(
 			`Encountered error when parsing response from faucet, error: ${e}, status ${res.status}, response ${res}`,
@@ -67,12 +75,15 @@ async function faucetRequest({ host, path, body, headers, method }: FaucetReques
 	}
 }
 
+/**
+ * @deprecated("Use requestSuiFromFaucetV2 instead")
+ */
 export async function requestSuiFromFaucetV0(input: {
 	host: string;
 	recipient: string;
 	headers?: HeadersInit;
 }): Promise<FaucetResponse> {
-	return faucetRequest({
+	const response = await faucetRequest<FaucetResponse>({
 		host: input.host,
 		path: '/gas',
 		body: {
@@ -83,14 +94,23 @@ export async function requestSuiFromFaucetV0(input: {
 		headers: input.headers,
 		method: 'POST',
 	});
+
+	if (response.error) {
+		throw new Error(`Faucet request failed: ${response.error}`);
+	}
+
+	return response;
 }
 
+/**
+ * @deprecated("Use requestSuiFromFaucetV2 instead")
+ */
 export async function requestSuiFromFaucetV1(input: {
 	host: string;
 	recipient: string;
 	headers?: HeadersInit;
 }): Promise<BatchFaucetResponse> {
-	return faucetRequest({
+	const response = await faucetRequest<BatchFaucetResponse>({
 		host: input.host,
 		path: '/v1/gas',
 		body: {
@@ -101,19 +121,58 @@ export async function requestSuiFromFaucetV1(input: {
 		headers: input.headers,
 		method: 'POST',
 	});
+
+	if (response.error) {
+		throw new Error(`Faucet request failed: ${response.error}`);
+	}
+
+	return response;
 }
 
+export async function requestSuiFromFaucetV2(input: {
+	host: string;
+	recipient: string;
+	headers?: HeadersInit;
+}) {
+	const response = await faucetRequest<FaucetResponseV2>({
+		host: input.host,
+		path: '/v2/gas',
+		body: {
+			FixedAmountRequest: {
+				recipient: input.recipient,
+			},
+		},
+		headers: input.headers,
+		method: 'POST',
+	});
+
+	if (response.status !== 'Success') {
+		throw new Error(`Faucet request failed: ${response.status.Failure.internal}`);
+	}
+
+	return response;
+}
+
+/**
+ * @deprecated("Use requestSuiFromFaucetV2 which returns directly a success or failure status")
+ */
 export async function getFaucetRequestStatus(input: {
 	host: string;
 	taskId: string;
 	headers?: HeadersInit;
-}): Promise<BatchStatusFaucetResponse> {
-	return faucetRequest({
+}) {
+	const response = await faucetRequest<BatchStatusFaucetResponse>({
 		host: input.host,
 		path: `/v1/status/${input.taskId}`,
 		headers: input.headers,
 		method: 'GET',
 	});
+
+	if (response.error) {
+		throw new Error(`Faucet request failed: ${response.error}`);
+	}
+
+	return response;
 }
 
 export function getFaucetHost(network: 'testnet' | 'devnet' | 'localnet') {

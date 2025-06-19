@@ -137,7 +137,7 @@ export class Machine {
             if (forward?.guard) {
                 f = this.txb.moveCall({ 
                     target:Protocol.Instance().machineFn('forward') as FnCallType,
-                        arguments:[this.txb.pure.string(forward.namedOperator), this.txb.pure.u16(weight), this.txb.object(Protocol.TXB_OBJECT(this.txb, forward.guard))]
+                        arguments:[this.txb.pure.string(forward.namedOperator), this.txb.pure.u16(weight), Protocol.TXB_OBJECT(this.txb, forward.guard)]
                 });                        
             } else {
                 f = this.txb.moveCall({ 
@@ -149,7 +149,7 @@ export class Machine {
             if (forward?.guard) {
                 f = this.txb.moveCall({ 
                     target:Protocol.Instance().machineFn('forward3') as FnCallType,
-                        arguments:[this.txb.pure.u64(forward.permission), this.txb.pure.u16(weight), this.txb.object(Protocol.TXB_OBJECT(this.txb, forward.guard))]
+                        arguments:[this.txb.pure.u64(forward.permission), this.txb.pure.u16(weight), Protocol.TXB_OBJECT(this.txb, forward.guard)]
                 });    
             } else {
                 f = this.txb.moveCall({ 
@@ -167,7 +167,7 @@ export class Machine {
             }
             this.txb.moveCall({ 
                 target:Protocol.Instance().serviceFn('add_to') as FnCallType,
-                    arguments:[this.txb.object(v.object), this.txb.pure.bool(v.bRequired ?? false), f],
+                    arguments:[Protocol.TXB_OBJECT(this.txb, v.object), this.txb.pure.bool(v.bRequired ?? false), f],
                     typeArguments:[v.pay_token_type]
             });  
         })
@@ -177,7 +177,7 @@ export class Machine {
     // move MachineNodeObject to the machine from signer-owned MachineNode object 
     add_node2(nodes:TxbObject[], passport?:PassportObject) {
         if (nodes.length === 0)  return;
-        let n: TransactionObjectArgument[] = nodes.map((v)=>Protocol.TXB_OBJECT(this.txb, v));
+        let n: TransactionObjectArgument[] = nodes.map((v)=>{ return Protocol.TXB_OBJECT(this.txb, v) as any});
         if (passport) {
             this.txb.moveCall({ // add node
                 target:Protocol.Instance().machineFn('node_add_with_passport') as FnCallType,

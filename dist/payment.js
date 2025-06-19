@@ -25,7 +25,7 @@ export function create_payment(txb, pay_token_type, param) {
     if (param.for_guard) {
         return txb.moveCall({
             target: Protocol.Instance().paymentFn('create_withGuard'),
-            arguments: [txb.pure.vector('address', param.receiver.map((i) => i.address)), txb.makeMoveVec({ elements: param.receiver.map((i) => i.coin) }),
+            arguments: [txb.pure.vector('address', param.receiver.map((i) => i.address)), txb.makeMoveVec({ elements: param.receiver.map((i) => { return i.coin; }) }),
                 obj, txb.object(param.for_guard), txb.pure.u64(param.business_index), txb.pure.string(param.business_remark), txb.object(clock)],
             typeArguments: [pay_token_type],
         });
@@ -33,7 +33,7 @@ export function create_payment(txb, pay_token_type, param) {
     else {
         return txb.moveCall({
             target: Protocol.Instance().paymentFn('create'),
-            arguments: [txb.pure.vector('address', param.receiver.map((i) => i.address)), txb.makeMoveVec({ elements: param.receiver.map((i) => i.coin) }),
+            arguments: [txb.pure.vector('address', param.receiver.map((i) => i.address)), txb.makeMoveVec({ elements: param.receiver.map((i) => { return i.coin; }) }),
                 obj, txb.pure.u64(param.business_index), txb.pure.string(param.business_remark), txb.object(clock)],
             typeArguments: [pay_token_type],
         });

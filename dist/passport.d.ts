@@ -56,11 +56,11 @@ export declare class GuardParser {
     }>;
     static ResolveData: (constants: DeGuardConstant[], stack: DeGuardData[], current: DeGuardData) => void;
     private static Parse_Guard_Helper;
-    static Create: (guards: string[], onGuardInfo?: ((parser: GuardParser | undefined) => void) | undefined) => Promise<GuardParser | undefined>;
+    static Create: (guards: string[], onGuardInfo?: (parser: GuardParser | undefined) => void) => Promise<GuardParser | undefined>;
     future_fills: () => WitnessFill[];
     static parse_constant: (constants: any) => DeGuardConstant[];
     static parse_bcs: (constants: DeGuardConstant[], chain_bytes: Uint8Array) => DeGuardInput[];
-    done: (fill?: WitnessFill[], onPassportQueryReady?: ((passport: PassportQuery | undefined) => void) | undefined) => Promise<PassportQuery | undefined>;
+    done: (fill?: WitnessFill[], onPassportQueryReady?: (passport: PassportQuery | undefined) => void) => Promise<PassportQuery | undefined>;
     private done_helper;
     private object_query;
 }

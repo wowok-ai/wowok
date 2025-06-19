@@ -168,7 +168,7 @@ export class Treasury {
         if (passport) {
             return this.txb.moveCall({
                 target: Protocol.Instance().treasuryFn('receive_with_passport'),
-                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(received), this.txb.object(payment),
+                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, received), Protocol.TXB_OBJECT(this.txb, payment),
                     this.txb.object(clock), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.token_type],
             });
@@ -176,7 +176,7 @@ export class Treasury {
         else {
             return this.txb.moveCall({
                 target: Protocol.Instance().treasuryFn('receive'),
-                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(received), this.txb.object(payment),
+                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, received), Protocol.TXB_OBJECT(this.txb, payment),
                     this.txb.object(clock), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments: [this.token_type],
             });
@@ -404,7 +404,7 @@ Treasury.GetTreasuryRecievedObject = async (treasury_address, token_type) => {
         return { balance: receive.toString(), received: res };
     }
     catch (e) {
-        console.log(e);
+        //console.log(e)
     }
 };
 Treasury.MAX_WITHDRAW_GUARD_COUNT = 16;

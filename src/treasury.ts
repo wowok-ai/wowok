@@ -208,14 +208,14 @@ export class Treasury {
         if (passport) {
             return this.txb.moveCall({
                 target:Protocol.Instance().treasuryFn('receive_with_passport') as FnCallType,
-                arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(received), this.txb.object(payment), 
+                arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, received), Protocol.TXB_OBJECT(this.txb, payment), 
                     this.txb.object(clock), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments:[this.token_type],
             })
         } else {
             return this.txb.moveCall({
                 target:Protocol.Instance().treasuryFn('receive') as FnCallType,
-                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(received), this.txb.object(payment), 
+                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, received), Protocol.TXB_OBJECT(this.txb, payment), 
                     this.txb.object(clock), Protocol.TXB_OBJECT(this.txb, this.permission)],
                 typeArguments:[this.token_type],
             })

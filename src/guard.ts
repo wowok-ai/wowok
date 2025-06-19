@@ -320,13 +320,13 @@ export class Guard {
                 const n = new Uint8Array(1); n.set([v.type], 0);
                 txb.moveCall({
                     target:Protocol.Instance().guardFn("constant_add") as FnCallType,
-                    arguments:[txb.object(g.object), txb.pure.u8(k), txb.pure.bool(true), txb.pure.vector('u8', [].slice.call(n)), txb.pure.bool(true)]
+                    arguments:[Protocol.TXB_OBJECT(txb, g.object), txb.pure.u8(k), txb.pure.bool(true), txb.pure.vector('u8', [].slice.call(n)), txb.pure.bool(true)]
                 }) 
             } else {
                 const n = insertAtHead(v.value!, v.type);
                 txb.moveCall({
                     target:Protocol.Instance().guardFn("constant_add") as FnCallType,
-                    arguments:[txb.object(g.object), txb.pure.u8(k), txb.pure.bool(false),  txb.pure.vector('u8', [].slice.call(n)), txb.pure.bool(true)]
+                    arguments:[Protocol.TXB_OBJECT(txb, g.object), txb.pure.u8(k), txb.pure.bool(false),  txb.pure.vector('u8', [].slice.call(n)), txb.pure.bool(true)]
                 }) 
             }
         });
@@ -336,7 +336,7 @@ export class Guard {
     launch() : GuardAddress  {
         return this.txb.moveCall({
             target:Protocol.Instance().guardFn("create") as FnCallType,
-            arguments:[this.txb.object(this.object)]
+            arguments:[Protocol.TXB_OBJECT(this.txb, this.object)]
         });
     }
     
@@ -351,7 +351,7 @@ export class Guard {
         const txb = new TransactionBlock();
         txb.moveCall({
             target: Protocol.Instance().guardFn('query_address_identifiers') as FnCallType,
-            arguments: [txb.object(guard)]
+            arguments: [Protocol.TXB_OBJECT(txb, guard)]
         })
 
         Protocol.Client().devInspectTransactionBlock({sender:sender, transactionBlock:txb}).then((res) => {

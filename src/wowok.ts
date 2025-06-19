@@ -63,7 +63,7 @@ export class Wowok {
         return this.txb.moveCall({
             target:Protocol.Instance().wowokFn('oracle_repository') as FnCallType, //@ base package
             arguments:[Protocol.TXB_OBJECT(this.txb, Protocol.Instance().objectOracle()), this.txb.pure.string(description), 
-                this.txb.object(permission)]
+                Protocol.TXB_OBJECT(this.txb, permission)]
         })
     }
 }

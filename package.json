@@ -1,6 +1,6 @@
 {
   "name": "wowok",
-  "version": "1.6.94",
+  "version": "1.6.95",
   "description": "Create, collaborate, and transact on your own terms with the AI-driven web3 collaboration protocol.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -54,6 +54,6 @@
   },
   "dependencies": {
     "@mysten/bcs": "^0.11.1",
-    "@mysten/sui": "^1.7.0"
+    "@mysten/sui": "^1.32.0"
   }
 }

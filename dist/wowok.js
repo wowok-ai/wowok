@@ -46,7 +46,7 @@ export class Wowok {
         if (!IsValidU64(amount))
             ERROR(Errors.IsValidU64, 'mint');
         this.txb.moveCall({
-            target: Protocol.Instance().baseWowokFn('mint'),
+            target: Protocol.Instance().baseWowokFn('mint'), //@ base package
             arguments: [Protocol.TXB_OBJECT(this.txb, Protocol.Instance().objectTreasuryCap()), this.txb.pure.u64(amount),
                 this.txb.pure.address(recipient)]
         });
@@ -57,9 +57,9 @@ export class Wowok {
         if (!Protocol.IsValidObjects([permission]))
             ERROR(Errors.IsValidObjects, 'oracle.permission');
         return this.txb.moveCall({
-            target: Protocol.Instance().wowokFn('oracle_repository'),
+            target: Protocol.Instance().wowokFn('oracle_repository'), //@ base package
             arguments: [Protocol.TXB_OBJECT(this.txb, Protocol.Instance().objectOracle()), this.txb.pure.string(description),
-                this.txb.object(permission)]
+                Protocol.TXB_OBJECT(this.txb, permission)]
         });
     }
 }

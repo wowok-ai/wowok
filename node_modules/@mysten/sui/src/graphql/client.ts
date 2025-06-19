@@ -5,6 +5,10 @@ import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import type { TadaDocumentNode } from 'gql.tada';
 import type { DocumentNode } from 'graphql';
 import { print } from 'graphql';
+import { Experimental_BaseClient } from '../experimental/index.js';
+import type { Experimental_SuiClientTypes } from '../experimental/index.js';
+import { GraphQLTransport } from '../experimental/transports/graphql.js';
+import type { TypedDocumentString } from './generated/queries.js';
 
 export type GraphQLDocument<
 	Result = Record<string, unknown>,
@@ -12,6 +16,7 @@ export type GraphQLDocument<
 > =
 	| string
 	| DocumentNode
+	| TypedDocumentString<Result, Variables>
 	| TypedDocumentNode<Result, Variables>
 	| TadaDocumentNode<Result, Variables>;
 
@@ -22,6 +27,7 @@ export type GraphQLQueryOptions<
 	query: GraphQLDocument<Result, Variables>;
 	operationName?: string;
 	extensions?: Record<string, unknown>;
+	signal?: AbortSignal;
 } & (Variables extends { [key: string]: never }
 	? { variables?: Variables }
 	: {
@@ -45,23 +51,31 @@ export interface SuiGraphQLClientOptions<Queries extends Record<string, GraphQLD
 	fetch?: typeof fetch;
 	headers?: Record<string, string>;
 	queries?: Queries;
+	network?: Experimental_SuiClientTypes.Network;
 }
 
 export class SuiGraphQLRequestError extends Error {}
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export class SuiGraphQLClient<Queries extends Record<string, GraphQLDocument> = {}> {
+export class SuiGraphQLClient<
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	Queries extends Record<string, GraphQLDocument> = {},
+> extends Experimental_BaseClient {
 	#url: string;
 	#queries: Queries;
 	#headers: Record<string, string>;
 	#fetch: typeof fetch;
+	core: GraphQLTransport = new GraphQLTransport(this);
 
 	constructor({
 		url,
 		fetch: fetchFn = fetch,
 		headers = {},
 		queries = {} as Queries,
+		network = 'unknown',
 	}: SuiGraphQLClientOptions<Queries>) {
+		super({
+			network,
+		});
 		this.#url = url;
 		this.#queries = queries;
 		this.#headers = headers;
@@ -78,11 +92,15 @@ export class SuiGraphQLClient<Queries extends Record<string, GraphQLDocument> = 
 				...this.#headers,
 			},
 			body: JSON.stringify({
-				query: typeof options.query === 'string' ? String(options.query) : print(options.query),
+				query:
+					typeof options.query === 'string' || options.query instanceof String
+						? String(options.query)
+						: print(options.query),
 				variables: options.variables,
 				extensions: options.extensions,
 				operationName: options.operationName,
 			}),
+			signal: options.signal,
 		});
 
 		if (!res.ok) {

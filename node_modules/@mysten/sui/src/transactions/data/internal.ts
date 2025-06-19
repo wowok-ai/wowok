@@ -25,17 +25,16 @@ import {
 } from 'valibot';
 
 import { isValidSuiAddress, normalizeSuiAddress } from '../../utils/sui-types.js';
-
-type Merge<T> = T extends object ? { [K in keyof T]: T[K] } : never;
+import type { Simplify } from '@mysten/utils';
 
 type EnumSchema<T extends Record<string, GenericSchema<any>>> = GenericSchema<
 	EnumInputShape<
-		Merge<{
+		Simplify<{
 			[K in keyof T]: InferInput<T[K]>;
 		}>
 	>,
 	EnumOutputShape<
-		Merge<{
+		Simplify<{
 			[K in keyof T]: InferOutput<T[K]>;
 		}>
 	>
