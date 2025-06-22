@@ -5,6 +5,7 @@ import { FnCallType, GuardObject, Protocol, ContextType, OperatorType, Data_Type
 import { parse_object_type, array_unique, Bcs, ulebDecode, IsValidAddress, IsValidArray, insertAtHead, readOption, readOptionString } from './utils.js';
 import { ERROR, Errors } from './exception.js';
 import { Guard, GuardMaker } from './guard.js';
+import { bcs } from '@mysten/sui/bcs';
 
 export type Guard_Query_Object = {
     target: FnCallType, // object fnCall
@@ -455,7 +456,7 @@ export class GuardParser {
                         let addr = '0x' + Bcs.getInstance().de(ValueType.TYPE_ADDRESS, Uint8Array.from(arr)).toString();
                         arr.splice(0, 32); // address            
                         value = addr;
-                        cmd = Bcs.getInstance().de('u16', Uint8Array.from(arr.splice(0, 2))) as number; // cmd(u16)
+                        cmd = bcs.u16().parse(Uint8Array.from(arr.splice(0, 2))) as number; // cmd(u16)
                     } else if (t[0] == ContextType.TYPE_CONSTANT) {
                         let id = arr.splice(0, 1); // key
                         let v = constants.find((v) => 
@@ -463,7 +464,7 @@ export class GuardParser {
                             ((v.type == ValueType.TYPE_ADDRESS)));
                         if (!v) { ERROR(Errors.Fail, 'GuardObject: indentifier not in  constant')}
                         identifier = id[0];
-                        cmd = Bcs.getInstance().de('u16', Uint8Array.from(arr.splice(0, 2))) as number; // cmd(u16)
+                        cmd = bcs.u16().parse(Uint8Array.from(arr.splice(0, 2))) as number; // cmd(u16)
                     } else {
                         ERROR(Errors.Fail, 'GuardObject: constant type invalid');
                     }
@@ -629,10 +630,10 @@ export class Passport {
                 txb.objectRef({objectId:g.id, version:g.version, digest:g.digest}) :
                 txb.object(g.id);
             //console.log(ids); console.log(values)
-            this.txb.moveCall({
+            this.txb.moveCall({ //@ vec vec u8
                 target:Protocol.Instance().passportFn('guard_add') as FnCallType,
                 arguments:[this.passport, guard, this.txb.pure.vector('u8', [].slice.call(ids)), 
-                    this.txb.pure(Bcs.getInstance().ser('vector<vector<u8>>', [...values]))]
+                    this.txb.pure(bcs.vector(bcs.vector(bcs.u8())).serialize([...values]).toBytes())]
             });      
         })
 
@@ -698,8 +699,8 @@ export class Passport {
             const v = res.results[i];
             if (v?.returnValues && v.returnValues.length === 2 && 
                 v.returnValues[0][1] === 'bool' && v.returnValues[1][1] === 'vector<address>') { // (bool, vector<address>)
-                const result = Bcs.getInstance().de('bool', Uint8Array.from(v.returnValues[0][0]));
-                const guards = Bcs.getInstance().de('vector<address>', Uint8Array.from(v.returnValues[1][0])).map((v:string)=>'0x'+v);
+                const result = bcs.bool().parse(Uint8Array.from(v.returnValues[0][0]));
+                const guards = bcs.vector(bcs.Address).parse(Uint8Array.from(v.returnValues[1][0])).map((v:string)=>'0x'+v);
                 return {txb:txb, result:result, guards:guards}
             }
         }

@@ -1,7 +1,7 @@
 import { Protocol, MODULES } from './protocol.js';
 import { array_unique, IsValidAddress, IsValidArray, IsValidDesription, Bcs, IsValidName, IsValidU64 } from './utils.js';
 import { ERROR, Errors } from './exception.js';
-import { BCS } from '@mysten/bcs';
+import { bcs } from '@mysten/sui/bcs';
 export var PermissionIndex;
 (function (PermissionIndex) {
     PermissionIndex[PermissionIndex["repository"] = 100] = "repository";
@@ -400,7 +400,7 @@ export class Permission {
                 onPermissionAnswer({ who: address_queried, object: permission });
                 return;
             }
-            const perm = Bcs.getInstance().de(BCS.U8, Uint8Array.from(res.results[0].returnValues[0][0]));
+            const perm = bcs.u8().parse(Uint8Array.from(res.results[0].returnValues[0][0]));
             if (perm === Permission.PERMISSION_ADMIN || perm === Permission.PERMISSION_OWNER_AND_ADMIN) {
                 onPermissionAnswer({ who: address_queried, admin: true, owner: perm % 2 === 1, items: [], object: permission });
             }

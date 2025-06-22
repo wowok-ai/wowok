@@ -9,6 +9,7 @@ export var TagName;
     TagName["Launch"] = "launch";
     TagName["Order"] = "order";
     TagName["Payment"] = "payment";
+    TagName["Progress"] = "progress";
     //Account = 'account',
 })(TagName || (TagName = {}));
 export class Resource {

@@ -1,14 +1,7 @@
 import { TxbObject, ResourceAddress, ResourceObject } from './protocol.js';
+import { Entity_Info } from './utils.js';
 import { TagName, Resource } from './resource.js';
 import { Transaction as TransactionBlock, TransactionResult } from '@mysten/sui/transactions';
-export interface Entity_Info {
-    name: string;
-    description?: string;
-    avatar?: string;
-    twitter?: string;
-    discord?: string;
-    homepage?: string;
-}
 export interface EntityData {
     info?: Entity_Info;
     resource_object?: string;

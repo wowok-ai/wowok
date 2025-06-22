@@ -2,6 +2,7 @@ import { Protocol, LogicsInfo, MODULES, ContextType, ValueType, OperatorType } f
 import { concatenate, array_equal, IsValidU8, IsValidDesription, Bcs, IsValidAddress, FirstLetterUppercase, insertAtHead } from './utils.js';
 import { ERROR, Errors } from './exception.js';
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
+import { bcs } from '@mysten/sui/bcs';
 export const GUARD_QUERIES = [
     // module, 'name', 'id', [input], output
     { module: MODULES.permission, query_name: 'Owner', query_id: 1, parameters: [], return: ValueType.TYPE_ADDRESS, description: "Owner's address." },
@@ -297,7 +298,7 @@ export class Guard {
                 onQueryAnswer({ err: 'not match', txb: txb, identifiers: [] });
                 return;
             }
-            const identifiers = Bcs.getInstance().de('vector<u8>', Uint8Array.from(res.results[0].returnValues[0][0]));
+            const identifiers = bcs.vector(bcs.u8()).parse(Uint8Array.from(res.results[0].returnValues[0][0]));
             onQueryAnswer({ identifiers: identifiers, txb: txb });
         }).catch((e) => {
             console.log(e);
@@ -536,7 +537,7 @@ export class GuardMaker {
                 ERROR(Errors.Fail, 'type bWitness not match:' + query_id);
             }
         }
-        this.data.push(Bcs.getInstance().ser('u16', GUARD_QUERIES[query_index].query_id)); // cmd(u16)
+        this.data.push(bcs.u16().serialize(GUARD_QUERIES[query_index].query_id).toBytes()); // cmd(u16)
         this.type_validator.splice(offset, GUARD_QUERIES[query_index].parameters.length); // delete type stack
         this.type_validator.push(GUARD_QUERIES[query_index].return); // add the return value type to type stack
         return this;

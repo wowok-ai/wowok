@@ -1,6 +1,6 @@
 var _a;
 import { Protocol } from './protocol.js';
-import { IsValidDesription, IsValidAddress, IsValidName, isValidHttpUrl, Bcs, } from './utils.js';
+import { IsValidDesription, IsValidAddress, IsValidName, isValidHttpUrl, Bcs } from './utils.js';
 import { ERROR, Errors } from './exception.js';
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 export class Entity {
@@ -37,14 +37,7 @@ export class Entity {
             ERROR(Errors.isValidHttpUrl, 'update:homepage');
         if (info?.discord && !IsValidName(info.discord))
             ERROR(Errors.IsValidName, 'update:discord');
-        const bytes = Bcs.getInstance().bcs.ser('PersonalInfo', {
-            name: info.name ? new TextEncoder().encode(info.name) : '',
-            description: info?.description ? new TextEncoder().encode(info.description) : '',
-            avatar: info?.avatar ?? '',
-            twitter: info?.twitter ?? '',
-            discord: info?.discord ?? '',
-            homepage: info?.homepage ?? '',
-        }).toBytes();
+        const bytes = Bcs.getInstance().se_entInfo(info);
         this.txb.moveCall({
             target: Protocol.Instance().entityFn('avatar_update'),
             arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.vector('u8', [].slice.call(bytes))]

@@ -1,8 +1,9 @@
-import { BCS, getSuiMoveConfig, toHEX, } from '@mysten/bcs';
+
 import { SuiObjectResponse, DynamicFieldPage } from '@mysten/sui/client';
 import { ERROR, Errors } from './exception.js';
 import { isValidSuiAddress, normalizeSuiAddress} from '@mysten/sui/utils'
 import { RepositoryValueType, ValueType, Protocol, ContextType, OperatorType } from './protocol.js'
+import { bcs } from '@mysten/sui/bcs';
 
 export const MAX_U8 = BigInt('255');
 export const MAX_U64 = BigInt('18446744073709551615');
@@ -162,48 +163,49 @@ export function parse_object_type(object_data:string) : string[] {
     return object_type;
 }
 
+export interface Entity_Info {
+    name: string;
+    description?: string;
+    avatar?: string;
+    twitter?: string;
+    discord?: string;
+    homepage?: string;
+}
+
 export class Bcs {
-    bcs = new BCS(getSuiMoveConfig());
     private static _instance : any;
-    private constructor() {
-        this.bcs.registerEnumType('Option<T>', {
-            'none': null,
-            'some': 'T',
-        });
-        this.bcs.registerStructType('EntStruct', {
-            'avatar': 'vector<u8>',
-            'resource': "Option<address>",
-            "safer_name": "vector<string>",
-            "safer_value": "vector<string>",
-            'like': BCS.U32,
-            'dislike': BCS.U32,
-        });
-        this.bcs.registerStructType('TagStruct', {
-            'nick': 'string',
-            'tags': "vector<string>",
-        })
-        this.bcs.registerStructType('PersonalInfo', {
-            'name': 'vector<u8>',
-            'description': 'vector<u8>',
-            'avatar': BCS.STRING,
-            'twitter': BCS.STRING,
-            'discord': BCS.STRING,
-            'homepage': BCS.STRING,
-        })
-        this.bcs.registerStructType('OptionAddress', {
-            'address': 'Option<address>',
-        })
-        this.bcs.registerStructType('Guards', {
-            'guards':'vector<OptionAddress>',
-        })
-        this.bcs.registerStructType('Perm', {
-            'index': BCS.U64,
-            'guard': 'Option<address>'
-        })
-        this.bcs.registerStructType('Perms', {
-            'perms':'vector<Perm>'
-        })
-    }
+    private EntStruct = bcs.struct('EntStruct', {
+        avatar: bcs.vector(bcs.u8()),
+        resource: bcs.option(bcs.Address),
+        safer_name: bcs.vector(bcs.string()),
+        safer_value: bcs.vector(bcs.string()),
+        like: bcs.u32(),
+        dislike: bcs.u32(),
+    });
+    private TagStruct = bcs.struct('TagStruct', {
+        nick: bcs.string(),
+        tags: bcs.vector(bcs.string()),
+    })
+    private PersonalInfo = bcs.struct('PersonalInfo', {
+        name: bcs.string(),
+        description: bcs.string(),
+        avatar: bcs.string(),
+        twitter: bcs.string(),
+        discord: bcs.string(),
+        homepage: bcs.string(),
+    })
+    private Guards = bcs.struct('Guards', {
+        address: bcs.option(bcs.Address),
+    })
+    private Perm = bcs.struct('Perm', {
+        index: bcs.u64(),
+        guard: bcs.option(bcs.Address)
+    })
+    private Perms = bcs.struct('Perms', {
+        perms: bcs.vector(this.Perm),
+    })
+
+    private constructor() { }
     static getInstance() : Bcs { 
         if (!Bcs._instance) {
             Bcs._instance =  new Bcs();
@@ -212,143 +214,140 @@ export class Bcs {
      }
 
     ser_option_u32(data:Uint8Array | any) : Uint8Array {
-        return this.bcs.ser('Option<u32>', {'some': data}).toBytes();
+        return bcs.option(bcs.u32()).serialize(data).toBytes();
     }
 
-    ser(type:ValueType | ContextType | string, data:Uint8Array | any) : Uint8Array {
-        if (typeof(type) === 'string') {
-            return this.bcs.ser(type, data).toBytes();
-        }
-
+    ser(type:ValueType | ContextType, data:Uint8Array | any) : Uint8Array {
         switch(type) {
             case ValueType.TYPE_BOOL:
-                return this.bcs.ser(BCS.BOOL, data).toBytes();
+                return bcs.bool().serialize(data).toBytes();
             case ValueType.TYPE_ADDRESS:
-                return this.bcs.ser(BCS.ADDRESS, data).toBytes();
+                return bcs.Address.serialize(data).toBytes();
             case ValueType.TYPE_U64:
-                return this.bcs.ser(BCS.U64, data).toBytes();
+                return bcs.u64().serialize(data).toBytes();
             case ValueType.TYPE_U8:
-                return this.bcs.ser(BCS.U8, data).toBytes();
+                return bcs.u8().serialize(data).toBytes();
             case ValueType.TYPE_VEC_U8:
-                return this.bcs.ser('vector<u8>', data).toBytes();
+                return bcs.vector(bcs.u8()).serialize(data).toBytes();
             case ValueType.TYPE_U128:
-                return this.bcs.ser(BCS.U128, data).toBytes();
+                return bcs.u128().serialize(data).toBytes();
             case ValueType.TYPE_VEC_ADDRESS:
-                return this.bcs.ser('vector<address>', data).toBytes();
+                return bcs.vector(bcs.Address).serialize(data).toBytes();
             case ValueType.TYPE_VEC_BOOL:
-                return this.bcs.ser('vector<bool>', data).toBytes();
+                return bcs.vector(bcs.bool()).serialize(data).toBytes();
             case ValueType.TYPE_VEC_VEC_U8:
-                return this.bcs.ser('vector<vector<u8>>', data).toBytes();
+                return bcs.vector(bcs.vector(bcs.u8())).serialize(data).toBytes();
             case ValueType.TYPE_VEC_U64:
-                return this.bcs.ser('vector<u64>', data).toBytes();
+                return bcs.vector(bcs.u64()).serialize(data).toBytes();
             case ValueType.TYPE_VEC_U128:
-                return this.bcs.ser('vector<u128>', data).toBytes();
+                return bcs.vector(bcs.u128()).serialize(data).toBytes();
             case ValueType.TYPE_OPTION_ADDRESS:
-                return this.bcs.ser('Option<address>', {'some': data}).toBytes();
+                return bcs.option(bcs.Address).serialize(data).toBytes();
             case ValueType.TYPE_OPTION_BOOL:
-                return this.bcs.ser('Option<bool>', {'some': data}).toBytes();
+                return bcs.option(bcs.bool()).serialize(data).toBytes();
             case ValueType.TYPE_OPTION_U8:
-                return this.bcs.ser('Option<u8>', {'some': data}).toBytes();
+                return bcs.option(bcs.u8()).serialize(data).toBytes();
             case ValueType.TYPE_OPTION_U64:
-                return this.bcs.ser('Option<u64>', {'some': data}).toBytes();
+                return bcs.option(bcs.u64()).serialize(data).toBytes();
             case ValueType.TYPE_OPTION_U128:
-                return this.bcs.ser('Option<u128>', {'some': data}).toBytes();
+                return bcs.option(bcs.u128()).serialize(data).toBytes();
             case ValueType.TYPE_OPTION_U256:
-                return this.bcs.ser('Option<u256>', {'some': data}).toBytes();
+                return bcs.option(bcs.u256()).serialize(data).toBytes();
             case ValueType.TYPE_OPTION_STRING:
-                return this.bcs.ser('Option<string>', {'some': data}).toBytes();
+                return bcs.option(bcs.string()).serialize(data).toBytes();
             case ValueType.TYPE_VEC_U256:
-                return this.bcs.ser('vector<u256>', data).toBytes();
+                return bcs.vector(bcs.u256()).serialize(data).toBytes();
             case ValueType.TYPE_U256:
-                return this.bcs.ser(BCS.U256, data).toBytes();
+                return bcs.u256().serialize(data).toBytes();
             case ValueType.TYPE_STRING:
-                const d = new TextEncoder().encode(data);
-                return this.bcs.ser('vector<u8>', d).toBytes();
+                return bcs.string().serialize(data).toBytes();
             case ValueType.TYPE_VEC_STRING:
-                return this.bcs.ser('vector<vector<u8>>', data.map((v:string)=>{return new TextEncoder().encode(v)})).toBytes();
+                return bcs.vector(bcs.string()).serialize(data).toBytes();
             default:
                 ERROR(Errors.bcsTypeInvalid, 'ser');
         }
         return new Uint8Array();
     }
 
-    de(type:ValueType | string,  data:Uint8Array | any) : any {
-        if (typeof(type) === 'string') {
-            return this.bcs.de(type, data);
-        }
-
+    de(type:ValueType,  data:Uint8Array | any) : any {
         switch(type) {
             case ValueType.TYPE_BOOL:
-                return this.bcs.de(BCS.BOOL, data);
+                return bcs.bool().parse(data);
             case ValueType.TYPE_ADDRESS:
-                return this.bcs.de(BCS.ADDRESS, data);
+                return bcs.Address.parse(data);
             case ValueType.TYPE_U64:
-                return this.bcs.de(BCS.U64, data);
+                return bcs.u64().parse(data);
             case ValueType.TYPE_U8:
-                return this.bcs.de(BCS.U8, data);
+                return bcs.u8().parse(data);
             case ValueType.TYPE_VEC_U8:
-                return this.bcs.de('vector<u8>', data);
+                return bcs.vector(bcs.u8()).parse(data);
             case ValueType.TYPE_U128:
-                return this.bcs.de(BCS.U128, data);
+                return bcs.u128().parse(data);
             case ValueType.TYPE_VEC_ADDRESS:
-                return this.bcs.de('vector<address>', data);
+                return bcs.vector(bcs.Address).parse(data);
             case ValueType.TYPE_VEC_BOOL:
-                return this.bcs.de('vector<bool>', data);
+                return bcs.vector(bcs.bool()).parse(data);
             case ValueType.TYPE_VEC_VEC_U8:
-                return this.bcs.de('vector<vector<u8>>', data);
+                return bcs.vector(bcs.vector(bcs.u8())).parse(data);
             case ValueType.TYPE_VEC_U64:
-                return this.bcs.de('vector<u64>', data);
+                return bcs.vector(bcs.u64()).parse(data);
             case ValueType.TYPE_VEC_U128:
-                return this.bcs.de('vector<u128>', data);
+                return bcs.vector(bcs.u128()).parse(data);  
             case ValueType.TYPE_OPTION_ADDRESS:
-                return this.bcs.de('Option<address>', data);
+                return bcs.option(bcs.Address).parse(data);
             case ValueType.TYPE_OPTION_BOOL:
-                return this.bcs.de('Option<bool>', data);
+                return bcs.option(bcs.bool()).parse(data);
             case ValueType.TYPE_OPTION_U8:
-                return this.bcs.de('Option<u8>', data);
+                return bcs.option(bcs.u8()).parse(data);
             case ValueType.TYPE_OPTION_U64:
-                return this.bcs.de('Option<u64>', data);
+                return bcs.option(bcs.u64()).parse(data);
             case ValueType.TYPE_OPTION_U128:
-                return this.bcs.de('Option<u128>', data);
+                return bcs.option(bcs.u128()).parse(data);
             case ValueType.TYPE_OPTION_U256:
-                return this.bcs.de('Option<u256>', data);
+                return bcs.option(bcs.u256()).parse(data);  
             case ValueType.TYPE_OPTION_STRING:
-                return this.bcs.de('Option<string>', data);
+                return bcs.option(bcs.string()).parse(data);
             case ValueType.TYPE_VEC_U256:
-                return this.bcs.de('vector<u256>', data);
+                return bcs.vector(bcs.u256()).parse(data);
             case ValueType.TYPE_STRING:
-                const r = new TextDecoder().decode(Uint8Array.from(this.bcs.de('vector<u8>', data)));
-                return r
+                return bcs.string().parse(data);
             case ValueType.TYPE_VEC_STRING:
-                return this.bcs.de('vector<string>', data);
+                return bcs.vector(bcs.string()).parse(data);
             case ValueType.TYPE_U256:
-                return this.bcs.de(BCS.U256, data);
+                return bcs.u256().parse(data);
             default:
                 ERROR(Errors.bcsTypeInvalid, 'de');
         }
     }
 
-    de_ent(data:Uint8Array | undefined) : any {
-        if (!data || data.length < 2) return ''
-        const struct_vec = this.bcs.de('vector<u8>', data);
-        return this.bcs.de('EntStruct', Uint8Array.from(struct_vec));
-    }    
-    de_entInfo(data:Uint8Array | undefined) : any {
+    de_ent(data:Uint8Array | undefined) : any | undefined {
+        if (!data || data.length < 2) return undefined
+        const struct_vec = bcs.vector(bcs.u8()).parse(data);
+        return this.EntStruct.parse(Uint8Array.from(struct_vec))
+    }  
+    se_entInfo(info: Entity_Info) {
+        return this.PersonalInfo.serialize({
+            name: info.name ?? '',
+            description: info.description ?? '',
+            avatar: info.avatar ?? '',
+            twitter: info.twitter ?? '',
+            discord: info.discord ?? '',
+            homepage: info.homepage ?? '',
+        }).toBytes();
+    }
+    de_entInfo(data:Uint8Array | undefined) : any | undefined {
         if (!data || data.length === 0) return undefined
-        let r = this.bcs.de('PersonalInfo', data);
-        r.name = new TextDecoder().decode(Uint8Array.from(r.name));
-        r.description = new TextDecoder().decode(Uint8Array.from(r.description));
-        return r
+        return this.PersonalInfo.parse(data);
     }    
-    de_tags(data:Uint8Array | undefined) : any {
-        if (!data || data.length === 0) return ''
-        const struct_vec = this.bcs.de('vector<u8>', data);
-        return this.bcs.de('TagStruct', Uint8Array.from(struct_vec));
+    de_tags(data:Uint8Array | undefined) : any | undefined {
+        if (!data || data.length === 0) return undefined;
+        const struct_vec = bcs.vector(bcs.u8()).parse(data);
+        return this.TagStruct.parse(Uint8Array.from(struct_vec));
     }   
-    de_perms(data:Uint8Array | undefined) : any {
-        if (!data || data.length  < 1) return ''
-        let r = this.bcs.de('Perms', data);
-        return r.perms.map((v:any) => {
+    de_perms(data:Uint8Array | undefined) : any | undefined {
+        if (!data || data.length  < 1) return undefined
+        const r = this.Perms.parse(data);
+        return r.perms.map((v:any) => { //@ none, some
             return {index: v?.index, guard:v?.guard?.none ? undefined : '0x'+v?.guard?.some}
         })
     }   

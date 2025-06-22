@@ -1,4 +1,3 @@
-import { BCS } from '@mysten/bcs';
 import { SuiObjectResponse, DynamicFieldPage } from '@mysten/sui/client';
 import { RepositoryValueType, ValueType, ContextType } from './protocol.js';
 export declare const MAX_U8: bigint;
@@ -30,18 +29,32 @@ export declare const array_equal: (arr1: any[], arr2: any[]) => boolean;
 export declare const array_unique: (arr: any[]) => any[];
 export declare function capitalize(s: string): string;
 export declare function parse_object_type(object_data: string): string[];
+export interface Entity_Info {
+    name: string;
+    description?: string;
+    avatar?: string;
+    twitter?: string;
+    discord?: string;
+    homepage?: string;
+}
 export declare class Bcs {
-    bcs: BCS;
     private static _instance;
+    private EntStruct;
+    private TagStruct;
+    private PersonalInfo;
+    private Guards;
+    private Perm;
+    private Perms;
     private constructor();
     static getInstance(): Bcs;
     ser_option_u32(data: Uint8Array | any): Uint8Array;
-    ser(type: ValueType | ContextType | string, data: Uint8Array | any): Uint8Array;
-    de(type: ValueType | string, data: Uint8Array | any): any;
-    de_ent(data: Uint8Array | undefined): any;
-    de_entInfo(data: Uint8Array | undefined): any;
-    de_tags(data: Uint8Array | undefined): any;
-    de_perms(data: Uint8Array | undefined): any;
+    ser(type: ValueType | ContextType, data: Uint8Array | any): Uint8Array;
+    de(type: ValueType, data: Uint8Array | any): any;
+    de_ent(data: Uint8Array | undefined): any | undefined;
+    se_entInfo(info: Entity_Info): Uint8Array<ArrayBufferLike>;
+    de_entInfo(data: Uint8Array | undefined): any | undefined;
+    de_tags(data: Uint8Array | undefined): any | undefined;
+    de_perms(data: Uint8Array | undefined): any | undefined;
 }
 export declare function stringToUint8Array(str: string): Uint8Array<ArrayBufferLike>;
 export declare function numToUint8Array(num: number): Uint8Array;

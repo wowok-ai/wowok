@@ -988,7 +988,7 @@ export class Service {
             names.push(v.item);
         });
         if (!bValid) {
-            ERROR(Errors.InvalidParam, 'buy_items invalid');
+            ERROR(Errors.InvalidParam, 'order.buy_items invalid');
         }
         let name = [];
         let price = [];
@@ -1188,7 +1188,7 @@ Service.DiscountObjects = (owner, handleDiscountObject) => {
         options: { showContent: true, showType: true } }).then((res) => {
         handleDiscountObject(owner, res.data.map((v) => v.data));
     }).catch((e) => {
-        console.log(e);
+        //console.log(e);
     });
 };
 // The agent has the same order operation power as the order payer; The agent can only be set by the order payer.

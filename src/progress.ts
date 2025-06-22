@@ -6,6 +6,7 @@ import { Machine } from './machine.js';
 import { Bcs, array_unique,IsValidName, IsValidAddress, IsValidArray, IsValidInt, IsValidDesription, IsValidTokenType  } from './utils.js'
 import { ERROR, Errors } from './exception.js';
 import { type TransactionResult, Transaction as TransactionBlock,  } from '@mysten/sui/transactions';
+import { bcs } from '@mysten/sui/bcs'
 
 export interface OrderWrap {
     object: OrderObject;
@@ -327,8 +328,8 @@ export class Progress {
 
         const res = await Protocol.Client().devInspectTransactionBlock({sender:sender, transactionBlock:txb});
         if (res.results?.length === 1 && res.results[0].returnValues?.length === 1) {
-            const guard = Bcs.getInstance().de('Option<address>', Uint8Array.from(res.results[0].returnValues[0][0]));
-            return guard?.some?('0x'+guard?.some):undefined;
+            const guard = bcs.option(bcs.Address).parse(Uint8Array.from(res.results[0].returnValues[0][0]));
+            return guard?('0x'+guard):undefined;
         }
     }
 

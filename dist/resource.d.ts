@@ -14,7 +14,8 @@ export declare enum TagName {
     Dislike = "dislike",
     Launch = "launch",
     Order = "order",
-    Payment = "payment"
+    Payment = "payment",
+    Progress = "progress"
 }
 export declare class Resource {
     static MAX_ADDRESS_COUNT_FOR_TAG: number;
