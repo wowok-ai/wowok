@@ -1,17 +1,12 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { parseStructTag } from '../../utils/sui-types.js';
+import { ClientCache } from '../../experimental/cache.js';
+import { MvrClient } from '../../experimental/mvr.js';
 import type { BuildTransactionOptions } from '../resolve.js';
 import type { TransactionDataBuilder } from '../TransactionData.js';
-import type { NamedPackagesPluginCache } from './utils.js';
-import {
-	batch,
-	findNamesInTransaction,
-	getFirstLevelNamedTypes,
-	populateNamedTypesFromCache,
-	replaceNames,
-} from './utils.js';
+import { findNamesInTransaction, replaceNames } from '../../experimental/mvr.js';
+import type { NamedPackagesOverrides } from '../../experimental/mvr.js';
 
 export type NamedPackagesPluginOptions = {
 	/**
@@ -40,8 +35,13 @@ export type NamedPackagesPluginOptions = {
 	 * 	}
 	 *
 	 */
-	overrides?: NamedPackagesPluginCache;
+	overrides?: NamedPackagesOverrides;
 };
+
+// The original versions of the mvr plugin cached lookups by mutating overrides.
+// We don't want to mutate the options, but we can link our cache to the provided overrides object
+// This preserves the caching across transactions while removing the mutation side effects
+const cacheMap = new WeakMap<object, ClientCache>();
 
 /**
  * @experimental This plugin is in experimental phase and there might be breaking changes in the future
@@ -57,129 +57,55 @@ export type NamedPackagesPluginOptions = {
  *
  * You can also define `overrides` to pre-populate name resolutions locally (removes the GraphQL request).
  */
-export const namedPackagesPlugin = ({
-	url,
-	pageSize = 50,
-	overrides = { packages: {}, types: {} },
-}: NamedPackagesPluginOptions) => {
-	// validate that types are first-level only.
-	Object.keys(overrides.types).forEach((type) => {
-		if (parseStructTag(type).typeParams.length > 0)
-			throw new Error(
-				'Type overrides must be first-level only. If you want to supply generic types, just pass each type individually.',
-			);
-	});
+export const namedPackagesPlugin = (options?: NamedPackagesPluginOptions) => {
+	let mvrClient: MvrClient | undefined;
 
-	const cache = overrides;
+	if (options) {
+		const overrides = options.overrides ?? {
+			packages: {},
+			types: {},
+		};
+
+		if (!cacheMap.has(overrides)) {
+			cacheMap.set(overrides, new ClientCache());
+		}
+
+		mvrClient = new MvrClient({
+			cache: cacheMap.get(overrides)!,
+			url: options.url,
+			pageSize: options.pageSize,
+			overrides: overrides,
+		});
+	}
 
 	return async (
 		transactionData: TransactionDataBuilder,
-		_buildOptions: BuildTransactionOptions,
+		buildOptions: BuildTransactionOptions,
 		next: () => Promise<void>,
 	) => {
 		const names = findNamesInTransaction(transactionData);
 
-		const [packages, types] = await Promise.all([
-			resolvePackages(
-				names.packages.filter((x) => !cache.packages[x]),
-				url,
-				pageSize,
-			),
-			resolveTypes(
-				[...getFirstLevelNamedTypes(names.types)].filter((x) => !cache.types[x]),
-				url,
-				pageSize,
-			),
-		]);
+		if (names.types.length === 0 && names.packages.length === 0) {
+			return next();
+		}
 
-		// save first-level mappings to cache.
-		Object.assign(cache.packages, packages);
-		Object.assign(cache.types, types);
-
-		const composedTypes = populateNamedTypesFromCache(names.types, cache.types);
-
-		// when replacing names, we also need to replace the "composed" types collected above.
-		replaceNames(transactionData, {
-			packages: { ...cache.packages },
-			// we include the "composed" type cache too.
-			types: composedTypes,
+		const resolved = await (mvrClient || getClient(buildOptions).core.mvr).resolve({
+			types: names.types,
+			packages: names.packages,
 		});
+
+		replaceNames(transactionData, resolved);
 
 		await next();
 	};
-
-	async function resolvePackages(packages: string[], apiUrl: string, pageSize: number) {
-		if (packages.length === 0) return {};
-
-		const batches = batch(packages, pageSize);
-		const results: Record<string, string> = {};
-
-		await Promise.all(
-			batches.map(async (batch) => {
-				const response = await fetch(`${apiUrl}/v1/resolution/bulk`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						names: batch,
-					}),
-				});
-
-				if (!response.ok) {
-					const errorBody = await response.json().catch(() => ({}));
-					throw new Error(`Failed to resolve packages: ${errorBody?.message}`);
-				}
-
-				const data = await response.json();
-
-				if (!data?.resolution) return;
-
-				for (const pkg of Object.keys(data?.resolution)) {
-					const pkgData = data.resolution[pkg]?.package_id;
-
-					if (!pkgData) continue;
-
-					results[pkg] = pkgData;
-				}
-			}),
-		);
-
-		return results;
-	}
-
-	async function resolveTypes(types: string[], apiUrl: string, pageSize: number) {
-		if (types.length === 0) return {};
-
-		const batches = batch(types, pageSize);
-		const results: Record<string, string> = {};
-
-		await Promise.all(
-			batches.map(async (batch) => {
-				const response = await fetch(`${apiUrl}/v1/struct-definition/bulk`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						types: batch,
-					}),
-				});
-
-				if (!response.ok) {
-					const errorBody = await response.json().catch(() => ({}));
-					throw new Error(`Failed to resolve types: ${errorBody?.message}`);
-				}
-
-				const data = await response.json();
-
-				if (!data?.resolution) return;
-
-				for (const type of Object.keys(data?.resolution)) {
-					const typeData = data.resolution[type]?.type_tag;
-					if (!typeData) continue;
-
-					results[type] = typeData;
-				}
-			}),
-		);
-
-		return results;
-	}
 };
+
+export function getClient(options: BuildTransactionOptions) {
+	if (!options.client) {
+		throw new Error(
+			`No sui client passed to Transaction#build, but transaction data was not sufficient to build offline.`,
+		);
+	}
+
+	return options.client;
+}

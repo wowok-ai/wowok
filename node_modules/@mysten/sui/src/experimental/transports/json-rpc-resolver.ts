@@ -24,7 +24,7 @@ const MAX_OBJECTS_PER_FETCH = 50;
 const GAS_SAFE_OVERHEAD = 1000n;
 const MAX_GAS = 50_000_000_000;
 
-export function resolveTransactionPlugin(client: SuiClient) {
+export function suiClientResolveTransactionPlugin(client: SuiClient) {
 	return async function resolveTransactionData(
 		transactionData: TransactionDataBuilder,
 		options: BuildTransactionOptions,

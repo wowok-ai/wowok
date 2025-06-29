@@ -21,10 +21,11 @@ export * as CLIENT from '@mysten/sui/client';
 export { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 export { SuiClient } from '@mysten/sui/client';
 export { Ed25519Keypair,  } from '@mysten/sui/keypairs/ed25519';
-export { fromHEX, toHEX } from '@mysten/sui/utils';
+export { fromHEX, toHEX } from '@mysten/bcs';
 export { decodeSuiPrivateKey, encodeSuiPrivateKey } from '@mysten/sui/cryptography';
-export { getFaucetHost, requestSuiFromFaucetV2 } from '@mysten/sui/faucet';
+export * as FAUCET from '@mysten/sui/faucet';
 export { normalizeSuiAddress } from '@mysten/sui/utils'
+export * as RawBCS from '@mysten/bcs'
 
 import * as WowokTxn from '@mysten/sui/transactions';
 export type TransactionArgument = WowokTxn.TransactionArgument;

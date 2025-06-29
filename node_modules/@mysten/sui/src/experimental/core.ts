@@ -7,16 +7,34 @@ import { deriveDynamicFieldID } from '../utils/dynamic-fields.js';
 import { normalizeStructTag, parseStructTag, SUI_ADDRESS_LENGTH } from '../utils/sui-types.js';
 import { Experimental_BaseClient } from './client.js';
 import type { ClientWithExtensions, Experimental_SuiClientTypes } from './types.js';
+import { MvrClient } from './mvr.js';
 
 export type ClientWithCoreApi = ClientWithExtensions<{
 	core: Experimental_CoreClient;
 }>;
+
+export interface Experimental_CoreClientOptions
+	extends Experimental_SuiClientTypes.SuiClientOptions {
+	base: Experimental_BaseClient;
+	mvr?: Experimental_SuiClientTypes.MvrOptions;
+}
 
 export abstract class Experimental_CoreClient
 	extends Experimental_BaseClient
 	implements Experimental_SuiClientTypes.TransportMethods
 {
 	core = this;
+	mvr: Experimental_SuiClientTypes.MvrMethods;
+
+	constructor(options: Experimental_CoreClientOptions) {
+		super(options);
+		this.mvr = new MvrClient({
+			cache: this.base.cache.scope('core'),
+			url: options.mvr?.url,
+			pageSize: options.mvr?.pageSize,
+			overrides: options.mvr?.overrides,
+		});
+	}
 
 	abstract getObjects(
 		options: Experimental_SuiClientTypes.GetObjectsOptions,

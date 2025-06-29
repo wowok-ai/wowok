@@ -22,6 +22,6 @@ export { SuiClient } from '@mysten/sui/client';
 export { Ed25519Keypair, } from '@mysten/sui/keypairs/ed25519';
 export { fromHEX, toHEX } from '@mysten/sui/utils';
 export { decodeSuiPrivateKey, encodeSuiPrivateKey } from '@mysten/sui/cryptography';
-export { getFaucetHost, requestSuiFromFaucetV2 } from '@mysten/sui/faucet';
+export * as FAUCET from '@mysten/sui/faucet';
 export { normalizeSuiAddress } from '@mysten/sui/utils';
 //# sourceMappingURL=index.js.map

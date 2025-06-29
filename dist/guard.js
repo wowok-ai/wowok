@@ -336,12 +336,14 @@ Guard.NumberOptions = () => {
         ...Guard.CmdFilter(ValueType.TYPE_U128), ...Guard.CmdFilter(ValueType.TYPE_U256)].map((v) => {
         return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return };
     });
-    return r.concat(Guard.Crunchings);
+    return r.concat(GuardFunctions.filter(v => v.return === 'number' || v.return === ValueType.TYPE_U8
+        || v.return === ValueType.TYPE_U64 || v.return === ValueType.TYPE_U128 || v.return === ValueType.TYPE_U256));
 };
 Guard.Signer = GuardFunctions.find(v => v.name === 'Txn Signer' && v.value === ContextType.TYPE_SIGNER);
 Guard.Time = GuardFunctions.find(v => v.name === 'Txn Time' && v.value === ContextType.TYPE_CLOCK);
 Guard.Guard = GuardFunctions.find(v => v.name === 'Guard Address' && v.value === ContextType.TYPE_GUARD);
 Guard.Logics = () => LogicsInfo.map((v) => { return { from: 'type', name: v[1], value: v[0], group: FunctionGroup.logic, return: ValueType.TYPE_BOOL }; });
+//@deprecated. Crunchings: Ambiguous semantics
 Guard.Crunchings = GuardFunctions.filter(v => v.value === OperatorType.TYPE_NUMBER_ADD ||
     v.value === OperatorType.TYPE_NUMBER_SUBTRACT || v.value === OperatorType.TYPE_NUMBER_MULTIPLY ||
     v.value === OperatorType.TYPE_NUMBER_DEVIDE || v.value === OperatorType.TYPE_NUMBER_MOD || v.value === OperatorType.TYPE_NUMBER_ADDRESS);
@@ -350,7 +352,7 @@ Guard.CommonOptions = (retType) => {
 };
 Guard.AllOptions = () => {
     var r = GUARD_QUERIES.map((v) => { return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return }; });
-    return [...r, ...GuardFunctions];
+    return [...r, ...GuardFunctions, ...Guard.Logics()];
 };
 Guard.StringOptions = () => {
     return [...Guard.CmdFilter(ValueType.TYPE_STRING)].map((v) => {
