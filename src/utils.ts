@@ -348,7 +348,7 @@ export class Bcs {
         if (!data || data.length  < 1) return undefined
         const r = this.Perms.parse(data);
         return r.perms.map((v:any) => { //@ none, some
-            return {index: v?.index, guard:v?.guard?.none ? undefined : '0x'+v?.guard?.some}
+            return {index: v?.index, guard:v?.guard ?? undefined }
         })
     }   
 }

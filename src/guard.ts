@@ -395,7 +395,8 @@ export class Guard {
         const r: Guard_Options[] = [...Guard.CmdFilter(ValueType.TYPE_U8), ...Guard.CmdFilter(ValueType.TYPE_U64), 
             ...Guard.CmdFilter(ValueType.TYPE_U128), ...Guard.CmdFilter(ValueType.TYPE_U256)].map((v)=> { 
                 return {from:'query', name:v.query_name, value:v.query_id, group:FirstLetterUppercase(v.module), return:v.return}});
-        return r.concat(Guard.Crunchings);
+        return r.concat(GuardFunctions.filter(v=>v.return==='number' || v.return === ValueType.TYPE_U8 
+            || v.return === ValueType.TYPE_U64 || v.return === ValueType.TYPE_U128 || v.return === ValueType.TYPE_U256));
     }
 
     static Signer:Guard_Options = GuardFunctions.find(v => v.name==='Txn Signer' && v.value===ContextType.TYPE_SIGNER)!;
@@ -403,6 +404,7 @@ export class Guard {
     static Guard:Guard_Options = GuardFunctions.find(v => v.name==='Guard Address' && v.value===ContextType.TYPE_GUARD)!; 
 
     static Logics = () :Guard_Options[] => LogicsInfo.map((v) => { return {from:'type', name:v[1] as string, value:v[0] as number, group:FunctionGroup.logic, return:ValueType.TYPE_BOOL}});
+    //@deprecated. Crunchings: Ambiguous semantics
     static Crunchings: Guard_Options[] = GuardFunctions.filter(v => v.value === OperatorType.TYPE_NUMBER_ADD ||
         v.value === OperatorType.TYPE_NUMBER_SUBTRACT || v.value === OperatorType.TYPE_NUMBER_MULTIPLY || 
         v.value === OperatorType.TYPE_NUMBER_DEVIDE || v.value === OperatorType.TYPE_NUMBER_MOD || v.value === OperatorType.TYPE_NUMBER_ADDRESS
@@ -414,7 +416,7 @@ export class Guard {
 
     static AllOptions = () :  Guard_Options[] => {
         var r:Guard_Options[] =  GUARD_QUERIES.map((v)=>{return {from:'query', name:v.query_name, value:v.query_id, group:FirstLetterUppercase(v.module), return:v.return}});
-        return [...r, ...GuardFunctions]
+        return [...r, ...GuardFunctions, ...Guard.Logics()]
     }
 
     static StringOptions = () : Guard_Options[] => {

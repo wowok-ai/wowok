@@ -17,6 +17,7 @@ export * from './arbitration.js'
 export * from './exception.js'
 
 export  * as BCS from '@mysten/sui/bcs';
+export * as CLIENT from '@mysten/sui/client';
 export { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 export { SuiClient } from '@mysten/sui/client';
 export { Ed25519Keypair,  } from '@mysten/sui/keypairs/ed25519';

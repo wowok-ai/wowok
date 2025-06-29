@@ -99,7 +99,7 @@ Entity.EntityData = async (address) => {
         if (res.results?.length === 1 && res.results[0].returnValues?.length === 1) {
             const r1 = Bcs.getInstance().de_ent(Uint8Array.from(res.results[0].returnValues[0][0]));
             return { info: Bcs.getInstance().de_entInfo(Uint8Array.from(r1.avatar)),
-                resource_object: r1.resource?.some ?? undefined,
+                resource_object: r1.resource ?? undefined,
                 like: r1.like, dislike: r1.dislike, address: address };
         }
     }

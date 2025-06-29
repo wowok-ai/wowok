@@ -329,7 +329,7 @@ export class Bcs {
             return undefined;
         const r = this.Perms.parse(data);
         return r.perms.map((v) => {
-            return { index: v?.index, guard: v?.guard?.none ? undefined : '0x' + v?.guard?.some };
+            return { index: v?.index, guard: v?.guard ?? undefined };
         });
     }
 }
