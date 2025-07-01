@@ -1,6 +1,6 @@
 {
   "name": "wowok",
-  "version": "1.6.99",
+  "version": "1.7.0",
   "description": "Create, collaborate, and transact on your own terms with the AI-driven web3 collaboration protocol.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

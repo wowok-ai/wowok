@@ -20,8 +20,9 @@ export * as CLIENT from '@mysten/sui/client';
 export { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 export { SuiClient } from '@mysten/sui/client';
 export { Ed25519Keypair, } from '@mysten/sui/keypairs/ed25519';
-export { fromHEX, toHEX } from '@mysten/sui/utils';
+export { fromHex, toHex } from '@mysten/bcs';
 export { decodeSuiPrivateKey, encodeSuiPrivateKey } from '@mysten/sui/cryptography';
 export * as FAUCET from '@mysten/sui/faucet';
 export { normalizeSuiAddress } from '@mysten/sui/utils';
+export * as RawBCS from '@mysten/bcs';
 //# sourceMappingURL=index.js.map
