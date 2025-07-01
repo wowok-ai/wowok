@@ -1,7 +1,7 @@
 import { SuiClient, SuiObjectResponse, SuiObjectDataOptions, SuiTransactionBlockResponseOptions, 
     SuiTransactionBlockResponse } from '@mysten/sui/client';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
-import { fromHEX } from '@mysten/bcs';
+import { fromHex } from '@mysten/bcs';
 import { Transaction as TransactionBlock, TransactionResult, TransactionArgument } from '@mysten/sui/transactions';
 import { capitalize, IsValidAddress, IsValidArray, IsValidU128, IsValidU256, IsValidU64, IsValidU8 } from './utils.js'
 import { GuardConstant } from './guard.js';
@@ -365,8 +365,7 @@ export class Protocol {
         const client =  new SuiClient({ url: this.networkUrl() });  
         exes.forEach((e) => { e(this, param) });
 
-        const privkey = fromHEX(priv_key);
-        const keypair = Ed25519Keypair.fromSecretKey(privkey);
+        const keypair = Ed25519Keypair.fromSecretKey(priv_key);
         const response = await client.signAndExecuteTransaction({
             transaction: this.sessionCurrent(), 
             signer: keypair,
