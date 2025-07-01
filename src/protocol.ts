@@ -1,7 +1,6 @@
 import { SuiClient, SuiObjectResponse, SuiObjectDataOptions, SuiTransactionBlockResponseOptions, 
     SuiTransactionBlockResponse } from '@mysten/sui/client';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
-import { fromHex } from '@mysten/bcs';
 import { Transaction as TransactionBlock, TransactionResult, TransactionArgument } from '@mysten/sui/transactions';
 import { capitalize, IsValidAddress, IsValidArray, IsValidU128, IsValidU256, IsValidU64, IsValidU8 } from './utils.js'
 import { GuardConstant } from './guard.js';
