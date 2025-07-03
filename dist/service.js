@@ -17,6 +17,7 @@ export class Service {
     //static token2coin = (token:string) => { return '0x2::coin::Coin<' + token + '>'};
     get_pay_type() { return this.pay_token_type; }
     get_object() { return this.object; }
+    get_txb() { return this.txb; }
     constructor(txb, pay_token_type, permission) {
         this.pay_token_type = pay_token_type;
         this.txb = txb;

@@ -89,8 +89,8 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.demand, query_name:'Presenter Count', query_id:308, parameters:[], return:ValueType.TYPE_U64, description:'Number of presenters.', },
     {module:MODULES.demand, query_name:'Has Presenter', query_id:309, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Is a certain address a presenter?', parameters_description:['address']},   
     {module:MODULES.demand, query_name:'Who Got Bounty', query_id:310, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_ADDRESS, description:'The address that bounties given.', parameters_description:['address']}, 
-    {module:MODULES.demand, query_name:'Type', query_id:311, parameters:[], return:ValueType.TYPE_STRING, description:'The type name', parameters_description:[]},   
-    {module:MODULES.demand, query_name:'Type with Original Ids', query_id:312, parameters:[], return:ValueType.TYPE_STRING, description:'The type name with original ids', parameters_description:[]}, 
+    {module:MODULES.demand, query_name:'Type', query_id:311, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI")', parameters_description:[]},   
+    {module:MODULES.demand, query_name:'Type with Original Ids', query_id:312, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description:[]}, 
 
     {module:MODULES.service, query_name:'Permission', query_id:400, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', },       
     {module:MODULES.service, query_name:'Payee', query_id:401, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Payee address, that all order withdrawals will be collected to this address.', },
@@ -115,8 +115,8 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.service, query_name:'Contains Treasury', query_id:420, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Does it contain externally withdrawable Treasury for purposes such as compensation or incentives?', parameters_description:['treasury address']},  
     {module:MODULES.service, query_name:'Number of Arbitrations', query_id:421, parameters:[], return:ValueType.TYPE_U64, description:'The number of arbitrations that allows a refund to be made from the order at any time based on the arbitration result.', },   
     {module:MODULES.service, query_name:'Contains Arbitration', query_id:422, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Does it contain an arbitration that allows a refund to be made from the order at any time based on the arbitration result.?', parameters_description:['arbitration address']},  
-    {module:MODULES.service, query_name:'Type', query_id:423, parameters:[], return:ValueType.TYPE_STRING, description:'The type name', parameters_description:[]},   
-    {module:MODULES.service, query_name:'Type with Original Ids', query_id:424, parameters:[], return:ValueType.TYPE_STRING, description:'The type name with original ids', parameters_description:[]}, 
+    {module:MODULES.service, query_name:'Type', query_id:423, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI")', parameters_description:[]},   
+    {module:MODULES.service, query_name:'Type with Original Ids', query_id:424, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description:[]}, 
 
     {module:MODULES.order, query_name:'Amount', query_id:500, parameters:[], return:ValueType.TYPE_U64, description:'Order amount.', },       
     {module:MODULES.order, query_name:'Payer', query_id:501, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Order payer.', },
@@ -131,8 +131,8 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.order, query_name:'Has Agent', query_id:512, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether an address is an order agent?', parameters_description:['agent address']}, 
     {module:MODULES.order, query_name:'Number of Disputes', query_id:513, parameters:[], return:ValueType.TYPE_U64, description:'Number of arbitrations for the order.', },
     {module:MODULES.order, query_name:'Has Arb', query_id:514, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Does the order contain an Arb for arbitration?', parameters_description:['arb address']},   
-    {module:MODULES.order, query_name:'Type', query_id:515, parameters:[], return:ValueType.TYPE_STRING, description:'The type name', parameters_description:[]},   
-    {module:MODULES.order, query_name:'Type with Original Ids', query_id:516, parameters:[], return:ValueType.TYPE_STRING, description:'The type name with original ids', parameters_description:[]}, 
+    {module:MODULES.order, query_name:'Type', query_id:515, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI")', parameters_description:[]},   
+    {module:MODULES.order, query_name:'Type with Original Ids', query_id:516, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description:[]}, 
 
     {module:MODULES.machine, query_name:'Permission', query_id:700, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', },
     {module:MODULES.machine, query_name:'Paused', query_id:701, parameters:[], return:ValueType.TYPE_BOOL, description:'Pause the creation of new Progress?', },
@@ -196,8 +196,8 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.payment, query_name:'Biz-ID', query_id:1213, parameters:[], return:ValueType.TYPE_U64, description:'Bisiness ID number of the payment.', }, 
     {module:MODULES.payment, query_name:'Check the purpose of payment', query_id:1214, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS, ValueType.TYPE_U64], return:ValueType.TYPE_BOOL, description:'Do Guard, Object Perpose, and Biz-ID match?', parameters_description:['guard address', 'object address', 'Biz-ID']}, 
     {module:MODULES.payment, query_name:'Check & Amount for a Recipient', query_id:1215, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS, ValueType.TYPE_U64, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U128, description:'Check and get the amount of payment received by an address.', parameters_description:['guard address', 'object address', 'Biz-ID', 'recipient address']}, 
-    {module:MODULES.payment, query_name:'Type', query_id:1216, parameters:[], return:ValueType.TYPE_STRING, description:'The type name', parameters_description:[]},   
-    {module:MODULES.payment, query_name:'Type with Original Ids', query_id:1217, parameters:[], return:ValueType.TYPE_STRING, description:'The type name with original ids', parameters_description:[]}, 
+    {module:MODULES.payment, query_name:'Type', query_id:1216, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI")', parameters_description:[]},   
+    {module:MODULES.payment, query_name:'Type with Original Ids', query_id:1217, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description:[]}, 
 
     {module:MODULES.treasury, query_name:'Permission', query_id:1400, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', }, 
     {module:MODULES.treasury, query_name:'Balance', query_id:1401, parameters:[], return:ValueType.TYPE_U64, description:"Treasury balance.", }, 
@@ -227,8 +227,8 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.treasury, query_name:'Has Operation with Pmt/Sgr', query_id:1425, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS, ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether there was a fund operation?', parameters_description:['operation', 'payment address', 'singer address']}, 
     {module:MODULES.treasury, query_name:'Operation at Least Times', query_id:1426, parameters:[ValueType.TYPE_U8, ValueType.TYPE_U8], return:ValueType.TYPE_BOOL, description:'Does it operate at least a certain number of times?', parameters_description:['operation', 'at least times']}, 
     {module:MODULES.treasury, query_name:'Operation at Least Times by a Signer', query_id:1427, parameters:[ValueType.TYPE_U8, ValueType.TYPE_ADDRESS, ValueType.TYPE_U8], return:ValueType.TYPE_BOOL, description:'Does it operate at least a certain number of times by a signer?', parameters_description:['operation', 'signer address', 'at least times']}, 
-    {module:MODULES.treasury, query_name:'Type', query_id:1428, parameters:[], return:ValueType.TYPE_STRING, description:'The type name', parameters_description:[]},   
-    {module:MODULES.treasury, query_name:'Type with Original Ids', query_id:1429, parameters:[], return:ValueType.TYPE_STRING, description:'The type name with original ids', parameters_description:[]}, 
+    {module:MODULES.treasury, query_name:'Type', query_id:1428, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI")', parameters_description:[]},   
+    {module:MODULES.treasury, query_name:'Type with Original Ids', query_id:1429, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description:[]}, 
 
     {module:MODULES.arbitration, query_name:'Permission', query_id:1500, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', }, 
     {module:MODULES.arbitration, query_name:'Paused', query_id:1501, parameters:[], return:ValueType.TYPE_BOOL, description:"Is it allowed to create Arb?", }, 
@@ -241,8 +241,8 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.arbitration, query_name:'Has Voting Guard', query_id:1508, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Has the voting Guard added?', parameters_description:['guard address']}, 
     {module:MODULES.arbitration, query_name:'Voting Weight', query_id:1509, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'Voting weight of the voting Guard.', parameters_description:['guard address']}, 
     {module:MODULES.arbitration, query_name:'Treasury', query_id:1510, parameters:[], return:ValueType.TYPE_ADDRESS, description:'The address of the Treasury where fees was collected at the time of withdrawal.', }, 
-    {module:MODULES.arbitration, query_name:'Type', query_id:1511, parameters:[], return:ValueType.TYPE_STRING, description:'The type name', parameters_description:[]},   
-    {module:MODULES.arbitration, query_name:'Type with Original Ids', query_id:1512, parameters:[], return:ValueType.TYPE_STRING, description:'The type name with original ids', parameters_description:[]}, 
+    {module:MODULES.arbitration, query_name:'Type', query_id:1511, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI")', parameters_description:[]},   
+    {module:MODULES.arbitration, query_name:'Type with Original Ids', query_id:1512, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description:[]}, 
 
     {module:MODULES.arb, query_name:'Order', query_id:1600, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Order under arbitration.', }, 
     {module:MODULES.arb, query_name:'Arbitration', query_id:1601, parameters:[], return:ValueType.TYPE_ADDRESS, description:"Arbitration object address.", }, 
@@ -257,8 +257,8 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.arb, query_name:'Voting Option', query_id:1610, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_U8], return:ValueType.TYPE_BOOL, description:'Does an address complete voting for the option?', parameters_description:['voter address', 'option index']}, 
     {module:MODULES.arb, query_name:'Number of Options', query_id:1611, parameters:[], return:ValueType.TYPE_U64, description:'Number of voting options.', }, 
     {module:MODULES.arb, query_name:'Number of Votes', query_id:1612, parameters:[ValueType.TYPE_U8], return:ValueType.TYPE_U64, description:'The number of votes received for an option.', parameters_description:['option index']}, 
-    {module:MODULES.arb, query_name:'Type', query_id:1613, parameters:[], return:ValueType.TYPE_STRING, description:'The type name', parameters_description:[]},   
-    {module:MODULES.arb, query_name:'Type with Original Ids', query_id:1614, parameters:[], return:ValueType.TYPE_STRING, description:'The type name with original ids', parameters_description:[]}, 
+    {module:MODULES.arb, query_name:'Type', query_id:1613, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI")', parameters_description:[]},   
+    {module:MODULES.arb, query_name:'Type with Original Ids', query_id:1614, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description:[]}, 
 ];
 
 export enum FunctionGroup {

@@ -321,7 +321,7 @@ export class GuardParser {
             var value : any = data.slice(1);
             switch (type) {
                 case ValueType.TYPE_ADDRESS:
-                    value = '0x' + Bcs.getInstance().de(ValueType.TYPE_ADDRESS, Uint8Array.from(value)).toString();
+                    value =  Bcs.getInstance().de(ValueType.TYPE_ADDRESS, Uint8Array.from(value)).toString();
                     break;
                 case ValueType.TYPE_BOOL:
                 case ValueType.TYPE_U8:
@@ -392,7 +392,7 @@ export class GuardParser {
                     identifier = arr.shift()! as number;  // identifier
                     break;
                 case ValueType.TYPE_ADDRESS: 
-                    value = '0x' + Bcs.getInstance().de(ValueType.TYPE_ADDRESS, Uint8Array.from(arr)).toString();
+                    value = Bcs.getInstance().de(ValueType.TYPE_ADDRESS, Uint8Array.from(arr)).toString();
                     arr.splice(0, 32); // address     
                     break;
                 case ValueType.TYPE_BOOL:
@@ -453,7 +453,7 @@ export class GuardParser {
                 case OperatorType.TYPE_QUERY:
                     let t = arr.splice(0, 1); // data-type
                     if (t[0] == ValueType.TYPE_ADDRESS) {
-                        let addr = '0x' + Bcs.getInstance().de(ValueType.TYPE_ADDRESS, Uint8Array.from(arr)).toString();
+                        let addr = Bcs.getInstance().de(ValueType.TYPE_ADDRESS, Uint8Array.from(arr)).toString();
                         arr.splice(0, 32); // address            
                         value = addr;
                         cmd = bcs.u16().parse(Uint8Array.from(arr.splice(0, 2))) as number; // cmd(u16)

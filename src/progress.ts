@@ -329,7 +329,7 @@ export class Progress {
         const res = await Protocol.Client().devInspectTransactionBlock({sender:sender, transactionBlock:txb});
         if (res.results?.length === 1 && res.results[0].returnValues?.length === 1) {
             const guard = bcs.option(bcs.Address).parse(Uint8Array.from(res.results[0].returnValues[0][0]));
-            return guard?('0x'+guard):undefined;
+            return guard?? undefined;
         }
     }
 

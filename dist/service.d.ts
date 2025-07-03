@@ -72,6 +72,7 @@ export declare class Service {
     protected txb: TransactionBlock;
     get_pay_type(): string;
     get_object(): TxbObject;
+    get_txb(): TransactionBlock;
     private constructor();
     static From(txb: TransactionBlock, token_type: string, permission: PermissionObject, object: TxbObject): Service;
     static New(txb: TransactionBlock, token_type: string, permission: PermissionObject, description: string, payee_treasury: TreasuryObject, passport?: PassportObject): Service;

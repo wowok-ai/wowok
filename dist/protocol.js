@@ -150,14 +150,14 @@ export var ENTRYPOINT;
     ENTRYPOINT["localnet"] = "localnet";
 })(ENTRYPOINT || (ENTRYPOINT = {}));
 const TESTNET = {
-    wowok: "0xd1ed1921f385bb6c016070325950e87f1d0e3b6a5dcc67c7a9a7b66618f29239",
-    wowok_origin: '0xd1ed1921f385bb6c016070325950e87f1d0e3b6a5dcc67c7a9a7b66618f29239',
-    base: '0xd9705a4f0b7ae3400d3af4ba781b2d2f6b4dc5dd81e2e1ce2bc949c16583df7f',
-    base_origin: '0xd9705a4f0b7ae3400d3af4ba781b2d2f6b4dc5dd81e2e1ce2bc949c16583df7f',
-    wowok_object: '0x04bc9f2680baa9e1cc1e52b329f7d7790afeb95f097b704c10116c257c5d07c4',
-    entity_object: '0x70623568c63000b21b7b5e180c7e5415970763335c3e3b90b1795b0fc164c60d',
-    treasury_cap: '0xfe7b18c27914fef876dfefd018350cfe33c45b6c5fbe5931f9449048e834da5b',
-    oracle_object: '0x70b4a282626aef7d31822079a1727a6576c718e9640cb30ad4c385d632138689',
+    wowok: "0xc45af1cb05d3d1e1e2d5c9abb7c8b788e3c6feaa09622ff6682fd6b5628422c4",
+    wowok_origin: '0xc45af1cb05d3d1e1e2d5c9abb7c8b788e3c6feaa09622ff6682fd6b5628422c4',
+    base: '0x3b053012db764a65a9681d2bf2bce8e1169df9a4850a03bfcef13cd9952a332c',
+    base_origin: '0x3b053012db764a65a9681d2bf2bce8e1169df9a4850a03bfcef13cd9952a332c',
+    wowok_object: '0x1ce0b0e24152770655601e76001eabb3fd9ed8cc3c7d6ddb1ae7cadef6c9563c',
+    entity_object: '0x1ae3162f47652956eee2835cc0e1b29d8652abd89d16fd377c09f6a054d225b4',
+    treasury_cap: '0x85b862a51bb2199eb18ded89e04d791e6a1e4c185f8cfb235be4d68cf33f65fb',
+    oracle_object: '0xba4ecd06e43b45ff506121258fba7d38e78ee66e6a003ba02a9b2727051d89fa',
 };
 const MAINNET = {
     wowok: "",

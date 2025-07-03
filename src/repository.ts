@@ -477,9 +477,9 @@ export class Repository {
             } else {
                 d = Bcs.getInstance().de(value[0], d);
                 if (type === ValueType.TYPE_ADDRESS) {
-                    d = '0x' + d;
+                    //d = '0x' + d;
                 } else if (type === ValueType.TYPE_VEC_ADDRESS) {
-                    d = d.map((v:string) => { return ('0x' + v) } );
+                    //d = d.map((v:string) => { return ('0x' + v) } );
                 } else if (type === ValueType.TYPE_BOOL) {
                     d = d ? 'True' : 'False'
                 }
