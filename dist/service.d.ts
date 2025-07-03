@@ -1,6 +1,7 @@
-import { GuardObject, PassportObject, PermissionObject, RepositoryObject, MachineObject, ServiceAddress, ServiceObject, DiscountObject, OrderObject, OrderAddress, CoinObject, TxbObject, TreasuryObject, PaymentAddress, ArbObject, ArbitrationObject, ProgressObject, ProgressAddress } from './protocol.js';
+import { GuardObject, PassportObject, PermissionObject, RepositoryObject, MachineObject, ServiceAddress, ServiceObject, DiscountObject, OrderObject, OrderAddress, CoinObject, TxbObject, TreasuryObject, PaymentAddress, ArbObject, ArbitrationObject, ProgressObject, ProgressAddress, PaymentObject, ReceivedObject } from './protocol.js';
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 import { SuiObjectData } from '@mysten/sui/client';
+import { TransactionResult } from './index.js';
 export type Service_Guard_Percent = {
     guard: GuardObject;
     percent: number;
@@ -134,5 +135,6 @@ export declare class Service {
     static DiscountObjects: (owner: string, handleDiscountObject: handleDiscountObject) => void;
     static SetOrderAgent: (txb: TransactionBlock, order_token_type: string, order: OrderObject, agent: string[], order_progress?: ProgressObject) => void;
     static ChangeOrderPayer: (txb: TransactionBlock, order_token_type: string, order: OrderObject, new_addr: string, order_progress?: ProgressObject) => void;
+    static OrderReceive(txb: TransactionBlock, order_token_type: string, order: OrderObject, payment: PaymentObject, received: ReceivedObject, token_type: string): TransactionResult;
 }
 //# sourceMappingURL=service.d.ts.map

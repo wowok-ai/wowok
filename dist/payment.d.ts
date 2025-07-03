@@ -13,4 +13,15 @@ export interface PaymentParam {
 }
 export declare const PAYMENT_MAX_RECEIVER_COUNT = 200;
 export declare function create_payment(txb: TransactionBlock, pay_token_type: string, param: PaymentParam): PaymentAddress;
+export interface ReceivedBalanceObject {
+    id: string;
+    balance: string;
+    payment: string;
+}
+export interface ReceivedBalance {
+    balance: string;
+    token_type: string;
+    received: ReceivedBalanceObject[];
+}
+export declare const GetRecievedBalanceObject: (object_address: string, token_type: string) => Promise<ReceivedBalance | undefined>;
 //# sourceMappingURL=payment.d.ts.map

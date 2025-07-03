@@ -1156,6 +1156,17 @@ export class Service {
             return false;
         return new TextEncoder().encode(name).length <= Service.MAX_ITEM_NAME_LENGTH;
     }
+    // return current balance
+    static OrderReceive(txb, order_token_type, order, payment, received, token_type) {
+        if (!Protocol.IsValidObjects([payment, received])) {
+            ERROR(Errors.IsValidArray, 'OrderReceive.payment&received');
+        }
+        return txb.moveCall({
+            target: Protocol.Instance().orderFn('receive'),
+            arguments: [Protocol.TXB_OBJECT(txb, order), Protocol.TXB_OBJECT(txb, received), Protocol.TXB_OBJECT(txb, payment)],
+            typeArguments: [order_token_type, token_type],
+        });
+    }
 }
 Service.MAX_DISCOUNT_COUNT_ONCE = 200;
 Service.MAX_DISCOUNT_RECEIVER_COUNT = 20;

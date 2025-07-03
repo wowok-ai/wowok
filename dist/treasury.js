@@ -1,4 +1,3 @@
-var _a;
 import { Protocol } from './protocol.js';
 import { IsValidDesription, IsValidU64, IsValidAddress, IsValidArgType, IsValidArray, parseObjectType } from './utils.js';
 import { Errors, ERROR } from './exception.js';
@@ -18,7 +17,7 @@ export class Treasury {
     get_token_type() { return this.token_type; }
     get_object() { return this.object; }
     static From(txb, token_type, permission, object) {
-        let d = new _a(txb, token_type, permission);
+        let d = new Treasury(txb, token_type, permission);
         d.object = Protocol.TXB_OBJECT(txb, object);
         return d;
     }
@@ -38,7 +37,7 @@ export class Treasury {
         if (!IsValidArgType(token_type)) {
             ERROR(Errors.IsValidArgType, token_type);
         }
-        let d = new _a(txb, token_type, permission);
+        let d = new Treasury(txb, token_type, permission);
         if (passport) {
             d.object = txb.moveCall({
                 target: Protocol.Instance().treasuryFn('new_with_passport'),
@@ -387,25 +386,8 @@ export class Treasury {
         this.permission = new_permission;
     }
 }
-_a = Treasury;
 Treasury.parseObjectType = (chain_type) => {
     return parseObjectType(chain_type, 'treasury::Treasury<');
-};
-Treasury.GetTreasuryRecievedObject = async (treasury_address, token_type) => {
-    const type = Protocol.Instance().package('wowok') + '::payment::CoinWrapper<' + token_type + '>';
-    const r = await Protocol.Client().getOwnedObjects({ owner: treasury_address, filter: { StructType: type }, options: { showContent: true, showType: true } });
-    try {
-        let receive = BigInt(0);
-        const res = r.data.map((v) => {
-            const i = v?.data?.content?.fields;
-            receive += BigInt(i?.coin?.fields?.balance);
-            return { payment: i?.payment, balance: i?.coin?.fields?.balance, id: v?.data?.objectId };
-        });
-        return { balance: receive.toString(), received: res };
-    }
-    catch (e) {
-        //console.log(e)
-    }
 };
 Treasury.MAX_WITHDRAW_GUARD_COUNT = 16;
 //# sourceMappingURL=treasury.js.map

@@ -17,15 +17,6 @@ export interface DepositParam {
     for_object?: string;
     for_guard?: string;
 }
-export interface TreasuryReceivedObject {
-    id: string;
-    balance: string;
-    payment: string;
-}
-export interface TreasuryReceived {
-    balance: string;
-    received: TreasuryReceivedObject[];
-}
 export interface WithdrawItem {
     address: string;
     amount: bigint | number | string;
@@ -59,7 +50,6 @@ export declare class Treasury {
     remove_withdraw_guard(guard: string[], removeall?: boolean, passport?: PassportObject): void;
     change_permission(new_permission: PermissionObject): void;
     static parseObjectType: (chain_type?: string) => string;
-    static GetTreasuryRecievedObject: (treasury_address: string, token_type: string) => Promise<TreasuryReceived | undefined>;
     static MAX_WITHDRAW_GUARD_COUNT: number;
 }
 //# sourceMappingURL=treasury.d.ts.map

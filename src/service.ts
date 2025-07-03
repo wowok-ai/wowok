@@ -4,10 +4,12 @@ import { IsValidArray, IsValidPercent, IsValidName_AllowEmpty, parseObjectType, 
 import { FnCallType, GuardObject, PassportObject, PermissionObject, RepositoryObject, MachineObject, ServiceAddress, 
     ServiceObject, DiscountObject, OrderObject, OrderAddress, CoinObject, Protocol, ValueType,
     TxbObject, TreasuryObject, PaymentAddress, ArbObject,
-    ArbitrationObject, ProgressObject, ProgressAddress} from './protocol.js';
+    ArbitrationObject, ProgressObject, ProgressAddress,
+    PaymentObject, ReceivedObject} from './protocol.js';
 import { ERROR, Errors } from './exception.js';
 import { Transaction as TransactionBlock,  } from '@mysten/sui/transactions';
 import { SuiObjectData } from '@mysten/sui/client';
+import { TransactionResult } from './index.js';
 
 export type Service_Guard_Percent = {
     guard:GuardObject;
@@ -88,6 +90,8 @@ export class Service {
 
     get_pay_type() {  return this.pay_token_type }
     get_object() { return this.object }
+    get_txb() { return this.txb }
+    
     private constructor(txb: TransactionBlock, pay_token_type:string, permission:PermissionObject) {
         this.pay_token_type = pay_token_type
         this.txb = txb
@@ -1301,5 +1305,19 @@ export class Service {
                 typeArguments:[order_token_type]            
             })  
         } 
+    }
+
+    // return current balance
+    static OrderReceive(txb:TransactionBlock, order_token_type:string, order:OrderObject, 
+        payment:PaymentObject, received:ReceivedObject, token_type:string) : TransactionResult {
+        if (!Protocol.IsValidObjects([payment, received])) {
+            ERROR(Errors.IsValidArray, 'OrderReceive.payment&received');
+        }
+
+        return txb.moveCall({
+            target:Protocol.Instance().orderFn('receive') as FnCallType,
+            arguments:[Protocol.TXB_OBJECT(txb, order), Protocol.TXB_OBJECT(txb, received), Protocol.TXB_OBJECT(txb, payment)],
+            typeArguments:[order_token_type, token_type],
+        })
     }
 }
