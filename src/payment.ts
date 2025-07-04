@@ -59,30 +59,32 @@ export function create_payment(txb:TransactionBlock, pay_token_type:string, para
 }
 
 export interface ReceivedBalanceObject {
-    id: string;
-    balance: string;
-    payment: string;
+    id: string; // object received.
+    type: string; // coin object type.
+    balance: string; // balance.
+    payment: string; // payment object.
 }
 
 export interface ReceivedBalance {
-    balance: string;
-    token_type: string;
+    balance?: string; // total balance if toekn_type specified.
+    token_type?: string; // token type for querying.
     received: ReceivedBalanceObject[];
 }
 
 // receive coins for Order, Treasury, etc...
-export const GetRecievedBalanceObject = async (object_address:string, token_type:string) : Promise<ReceivedBalance|undefined> => {
-    const type = Protocol.Instance().package('wowok')+'::payment::CoinWrapper<'+token_type+'>';
-    const r = await Protocol.Client().getOwnedObjects({owner:object_address, filter:{StructType: type}, options:{showContent:true, showType:true}});
+export const GetRecievedBalanceObject = async (object_address:string, token_type:string | undefined) : Promise<ReceivedBalance|undefined> => {
+    const type = token_type ? Protocol.Instance().package('wowok')+'::payment::CoinWrapper<'+token_type+'>' : undefined;
+    const r = await Protocol.Client().getOwnedObjects({owner:object_address, 
+        filter:type ? {StructType: type} : undefined, options:{showContent:true, showType:true}});
     try {
         let receive = BigInt(0);
         const res: ReceivedBalanceObject[] = r.data.map((v:any) => {
             const i = v?.data?.content?.fields;
             receive += BigInt(i?.coin?.fields?.balance);
-            return {payment:i?.payment, balance:i?.coin?.fields?.balance, id:v?.data?.objectId} 
+            return {payment:i?.payment, balance:i?.coin?.fields?.balance, id:v?.data?.objectId, type: i?.coin?.type} 
         });
 
-        return {balance:receive.toString(), received:res, token_type:token_type};
+        return {balance: token_type ? receive.toString() : undefined, received:res, token_type:token_type};
     } catch (e) {
         //console.log(e)
     }
