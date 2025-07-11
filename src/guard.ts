@@ -87,8 +87,8 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.demand, query_name:'Has Service Picked', query_id:306, parameters:[], return:ValueType.TYPE_BOOL, description:'Whether a service has been picked and bounties given?', },   
     {module:MODULES.demand, query_name:'Service Picked', query_id:307, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Service address that has been picked.', }, 
     {module:MODULES.demand, query_name:'Presenter Count', query_id:308, parameters:[], return:ValueType.TYPE_U64, description:'Number of presenters.', },
-    {module:MODULES.demand, query_name:'Has Presenter', query_id:309, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Is a certain address a presenter?', parameters_description:['address']},   
-    {module:MODULES.demand, query_name:'Who Got Bounty', query_id:310, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_ADDRESS, description:'The address that bounties given.', parameters_description:['address']}, 
+    {module:MODULES.demand, query_name:'Has Service Recommended', query_id:309, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Is a certain service has been recommended?', parameters_description:['service address']},   
+    {module:MODULES.demand, query_name:'Presenter of the Service', query_id:310, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_ADDRESS, description:'Address that recommends the service', parameters_description:['service address']}, 
     {module:MODULES.demand, query_name:'Type', query_id:311, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI")', parameters_description:[]},   
     {module:MODULES.demand, query_name:'Type with Original Ids', query_id:312, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description:[]}, 
 

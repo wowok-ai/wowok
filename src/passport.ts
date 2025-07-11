@@ -462,7 +462,7 @@ export class GuardParser {
                         let v = constants.find((v) => 
                             (v.identifier == id[0]) && 
                             ((v.type == ValueType.TYPE_ADDRESS)));
-                        if (!v) { ERROR(Errors.Fail, 'GuardObject: indentifier not in  constant')}
+                        if (!v) { ERROR(Errors.Fail, 'GuardObject: indentifier not in constant')}
                         identifier = id[0];
                         cmd = bcs.u16().parse(Uint8Array.from(arr.splice(0, 2))) as number; // cmd(u16)
                     } else {
@@ -515,7 +515,7 @@ export class GuardParser {
         let objects: string[] = [];
         // check all witness and get all objects to query.
         this.guard_list.forEach((g) => {
-            g.constant.forEach((v)=> {
+            g.constant.forEach((v) => {
                 if (v.bWitness) {
                     const value = fill?.find((i)=>i.identifier === v.identifier);
                     if (!value) {

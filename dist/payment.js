@@ -41,16 +41,17 @@ export function create_payment(txb, pay_token_type, param) {
 }
 // receive coins for Order, Treasury, etc...
 export const GetRecievedBalanceObject = async (object_address, token_type) => {
-    const type = Protocol.Instance().package('wowok') + '::payment::CoinWrapper<' + token_type + '>';
-    const r = await Protocol.Client().getOwnedObjects({ owner: object_address, filter: { StructType: type }, options: { showContent: true, showType: true } });
+    const type = token_type ? Protocol.Instance().package('wowok') + '::payment::CoinWrapper<' + token_type + '>' : undefined;
+    const r = await Protocol.Client().getOwnedObjects({ owner: object_address,
+        filter: type ? { StructType: type } : undefined, options: { showContent: true, showType: true } });
     try {
         let receive = BigInt(0);
         const res = r.data.map((v) => {
             const i = v?.data?.content?.fields;
             receive += BigInt(i?.coin?.fields?.balance);
-            return { payment: i?.payment, balance: i?.coin?.fields?.balance, id: v?.data?.objectId };
+            return { payment: i?.payment, balance: i?.coin?.fields?.balance, id: v?.data?.objectId, type: i?.coin?.type };
         });
-        return { balance: receive.toString(), received: res, token_type: token_type };
+        return { balance: token_type ? receive.toString() : undefined, received: res, token_type: token_type };
     }
     catch (e) {
         //console.log(e)

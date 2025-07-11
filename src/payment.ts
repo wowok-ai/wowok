@@ -72,7 +72,7 @@ export interface ReceivedBalance {
 }
 
 // receive coins for Order, Treasury, etc...
-export const GetRecievedBalanceObject = async (object_address:string, token_type:string | undefined) : Promise<ReceivedBalance|undefined> => {
+export const GetRecievedBalanceObject = async (object_address:string, token_type?:string | undefined) : Promise<ReceivedBalance|undefined> => {
     const type = token_type ? Protocol.Instance().package('wowok')+'::payment::CoinWrapper<'+token_type+'>' : undefined;
     const r = await Protocol.Client().getOwnedObjects({owner:object_address, 
         filter:type ? {StructType: type} : undefined, options:{showContent:true, showType:true}});
