@@ -310,18 +310,13 @@ export class  Permission {
 
     add_entity(entities:Permission_Entity[])  {
         if (entities.length === 0) return
-
-        let bValid = true;
         entities.forEach((v) => {
-            if (!IsValidAddress(v.address)) bValid = false;
+            if (!IsValidAddress(v.address)) ERROR(Errors.IsValidAddress, 'add_entity.entities.address')
             v.permissions.forEach((p) => {
-                if (!Permission.IsValidPermissionIndex(p.index)) bValid = false;
-                if (p?.guard && !Protocol.IsValidObjects([p.guard])) bValid = false;
+                if (!Permission.IsValidPermissionIndex(p.index)) ERROR(Errors.IsValidPermissionIndex, 'add_entity.entities.permissions.index')
+                if (p?.guard && !Protocol.IsValidObjects([p.guard])) ERROR(Errors.IsValidAddress, 'add_entity.entities.permissions.guard')
             })
         });
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'add_entity.entities');
-        }
 
         let guards:any[]  = [];
         for (let i = 0; i < entities.length; i++) {

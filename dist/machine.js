@@ -44,27 +44,17 @@ export class Machine {
     add_node(nodes, passport) {
         if (nodes.length === 0)
             return;
-        let bValid = true;
         nodes.forEach((node) => {
-            if (!IsValidName(node.name)) {
-                bValid = false;
-            }
+            if (!IsValidName(node.name))
+                ERROR(Errors.IsValidName, 'add_node.nodes.name');
             node.pairs.forEach((p) => {
-                if (!IsValidName_AllowEmpty(p.prior_node)) {
-                    bValid = false;
-                }
-                if (p?.threshold && !IsValidInt(p.threshold)) {
-                    bValid = false;
-                }
-                p.forwards.forEach((f) => {
-                    if (Machine.checkValidForward(f) !== '')
-                        bValid = false;
-                });
+                if (!IsValidName_AllowEmpty(p.prior_node))
+                    ERROR(Errors.IsValidName_AllowEmpty, 'add_node.nodes.pairs.prior_node');
+                if (p?.threshold && !IsValidInt(p.threshold))
+                    ERROR(Errors.IsValidInt, 'add_node.nodes.pairs.threshold');
+                p.forwards.forEach((f) => { Machine.checkValidForward(f); });
             });
         });
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'add_node');
-        }
         let new_nodes = [];
         nodes.forEach((node) => {
             let n = this.txb.moveCall({
@@ -380,9 +370,7 @@ export class Machine {
             ERROR(Errors.IsValidName_AllowEmpty, 'add_forward');
         if (!IsValidName(node_name))
             ERROR(Errors.IsValidName, 'add_forward');
-        const err = Machine.checkValidForward(foward);
-        if (err)
-            ERROR(Errors.InvalidParam, err);
+        Machine.checkValidForward(foward);
         let n;
         if (passport) {
             n = this.txb.moveCall({
@@ -499,16 +487,15 @@ export class Machine {
     }
     static checkValidForward(forward) {
         if (!IsValidName(forward.name))
-            return 'Forward name invalid';
+            ERROR(Errors.IsValidName, `checkValidForward.forward.name ${forward}`);
         if (forward?.namedOperator && !IsValidName_AllowEmpty(forward?.namedOperator))
-            return 'Progress Operator invalid';
+            ERROR(Errors.IsValidName_AllowEmpty, `checkValidForward.forward.namedOperator ${forward}`);
         if (forward?.permission && !Permission.IsValidPermissionIndex(forward?.permission))
-            return 'Permission index invalid';
+            ERROR(Errors.IsValidPermissionIndex, `checkValidForward.forward.permission ${forward}`);
         if (!forward?.permission && !forward?.namedOperator)
-            return 'Business-Permissions invalid';
+            ERROR(Errors.InvalidParam, `checkValidForward.forward permission and namedOperator both empty ${forward}`);
         if (forward?.weight && !IsValidU64(forward.weight))
-            return 'Weight invalid';
-        return '';
+            ERROR(Errors.IsValidU64, `checkValidForward.forward.weight ${forward}`);
     }
 }
 Machine.INITIAL_NODE_NAME = '';

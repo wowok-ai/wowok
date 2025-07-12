@@ -60,7 +60,7 @@ export declare class Machine {
     static rpc_de_nodes(fields: any): Machine_Node[];
     static rpc_de_pair(data: any): Machine_Node_Pair[];
     static namedOperators(nodes: Machine_Node[]): string[];
-    static checkValidForward(forward: Machine_Forward): string;
+    static checkValidForward(forward: Machine_Forward): void;
     static INITIAL_NODE_NAME: string;
     static OPERATOR_ORDER_PAYER: string;
 }

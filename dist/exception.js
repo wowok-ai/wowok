@@ -27,6 +27,7 @@ export var Errors;
     Errors["IsValidCoinType"] = "not the coin type";
     Errors["IsValidGuardIdentifier"] = "guard identifier invalid";
     Errors["noPermission"] = "no permission";
+    Errors["IsValidValue"] = "invalid value";
 })(Errors || (Errors = {}));
 export const ERROR = (error, info) => {
     const e = error.toString() + (info ? (' ' + info) : '');

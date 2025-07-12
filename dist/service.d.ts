@@ -92,7 +92,7 @@ export declare class Service {
     remove_withdraw_guards(guard_address: string[], removeall?: boolean, passport?: PassportObject): void;
     add_refund_guards(guards: Service_Guard_Percent[], passport?: PassportObject): void;
     remove_refund_guards(guard_address: string[], removeall?: boolean, passport?: PassportObject): void;
-    is_valid_sale(sales: Service_Sale[]): boolean;
+    check_valid_sale(sales: Service_Sale[]): void;
     add_sales(sales: Service_Sale[], bExistAssert?: boolean, passport?: PassportObject): void;
     remove_sales(sales: string[], passport?: PassportObject): void;
     discount_transfer(discount_dispatch: DicountDispatch[], passport?: PassportObject): void;

@@ -106,14 +106,10 @@ export class Repository {
             ERROR(Errors.IsValidName, 'add_data')
         }
 
-        let bValid = true;
         data.data.forEach((value) => {
-            if (!IsValidAddress(value.address)) bValid = false;
-            if (!Repository.IsValidValue(value.bcsBytes)) bValid = false; 
+            if (!IsValidAddress(value.address)) ERROR(Errors.IsValidAddress, `add_data.data.data.address ${value}` )
+            if (!Repository.IsValidValue(value.bcsBytes)) ERROR(Errors.IsValidValue, `add_data.data.data.bcsBytes ${value}` )
         });
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'add_data')
-        }
         
         if (data?.value_type !== undefined) {
             data.data.forEach((d) => this.txb.moveCall({
@@ -141,17 +137,14 @@ export class Repository {
 
     add_data2(data:Repository_Policy_Data2)  {
         if (!IsValidAddress(data.address)) {
-            ERROR(Errors.IsValidAddress, 'add_data2')
+            ERROR(Errors.IsValidAddress, `add_data2.data.address ${data}`)
+
         }
 
-        let bValid = true;
         data.data.forEach((value) => {
-            if (!Repository.IsValidName(value.key)) bValid = false;
-            if (!Repository.IsValidValue(value.bcsBytes)) bValid = false; 
+            if (!Repository.IsValidName(value.key)) ERROR(Errors.IsValidName, `add_data2.data.data.key ${value}`)
+            if (!Repository.IsValidValue(value.bcsBytes)) ERROR(Errors.IsValidValue, `add_data2.data.data.bcsBytes ${value}`)
         });
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'add_data2')
-        }
         
         if (data?.value_type !== undefined) {
             data.data.forEach((d) => this.txb.moveCall({
@@ -259,15 +252,10 @@ export class Repository {
     add_policies(policies:Repository_Policy[], passport?:PassportObject)  {
         if (policies.length === 0) return;
 
-        let bValid = true;
         policies.forEach((p) => {
-            if (!IsValidDesription(p.description) || !Repository.IsValidName(p.key)) {
-                bValid = false
-            }
+            if (!IsValidDesription(p.description)) ERROR(Errors.IsValidDesription, `add_policies.policies.description ${p}`)
+            if (!Repository.IsValidName(p.key)) ERROR(Errors.IsValidName, `add_policies.policies.key ${p}`)
         });
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'policies')
-        }
 
         policies.forEach((policy) => {
             let permission_index = this.txb.pure.option('u64', policy?.permissionIndex ? policy?.permissionIndex : undefined);

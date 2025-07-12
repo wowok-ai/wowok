@@ -434,14 +434,10 @@ export class Service {
     add_withdraw_guards(guards:Service_Guard_Percent[], passport?:PassportObject) {
         if (guards.length === 0) return;
 
-        let bValid = true;
         guards.forEach((v) => {
-            if (!Protocol.IsValidObjects([v.guard])) bValid  = false;
-            if (!IsValidPercent(v.percent)) bValid =  false;
+            if (!Protocol.IsValidObjects([v.guard])) ERROR(Errors.IsValidObjects, `add_withdraw_guards.guard ${v}`)
+            if (!IsValidPercent(v.percent)) ERROR(Errors.IsValidPercent, `add_withdraw_guards.percent ${v}`)
         })
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'guards')
-        }
         
         guards.forEach((guard) => { 
             if (passport) {
@@ -505,14 +501,10 @@ export class Service {
     add_refund_guards(guards:Service_Guard_Percent[], passport?:PassportObject) {
         if (guards.length === 0) return;
 
-        let bValid = true;
         guards.forEach((v) => {
-            if (!Protocol.IsValidObjects([v.guard])) bValid = false;
-            if (!IsValidPercent(v.percent)) bValid = false;
+            if (!Protocol.IsValidObjects([v.guard])) ERROR(Errors.IsValidObjects, `add_refund_guards.guard ${v}`)
+            if (!IsValidPercent(v.percent)) ERROR(Errors.IsValidPercent, `add_refund_guards.percent ${v}`)
         })
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'guards')
-        }
 
         guards.forEach((guard) => { 
             if (passport) {
@@ -571,24 +563,21 @@ export class Service {
         }
     }
 
-    is_valid_sale(sales:Service_Sale[]) {
-        let bValid = true; let names:string[]  = [];
+    check_valid_sale(sales:Service_Sale[]) {
+        const names:string[]  = [];
         sales.forEach((v) => {
-            if (!Service.IsValidItemName(v.item)) bValid = false;
-            if (!IsValidU64(v.price)) bValid = false;
-            if (!IsValidU64(v.stock)) bValid = false;
-            if (names.includes(v.item)) bValid = false;
+            if (!Service.IsValidItemName(v.item)) ERROR(Errors.IsValidName, `check_valid_sale.sales.item ${v}`)
+            if (!IsValidU64(v.price)) ERROR(Errors.IsValidU64, `check_valid_sale.sales.price ${v}`)
+            if (!IsValidU64(v.stock)) ERROR(Errors.IsValidU64, `check_valid_sale.sales.stock ${v}`)
+            if (names.includes(v.item)) ERROR(Errors.IsValidName, `check_valid_sale.sales.item repeat ${v}`)
             names.push(v.item)
         })
-        return bValid
     }
 
     add_sales(sales:Service_Sale[], bExistAssert:boolean=false, passport?:PassportObject) {
         if (sales.length === 0) return;
 
-        if (!this.is_valid_sale(sales)) {
-            ERROR(Errors.InvalidParam, 'add_sales')
-        }
+        this.check_valid_sale(sales);
         
         let names: string[]  = []; let price: (string | number | bigint)[] = []; let stock: (string | number | bigint)[] = []; let endpoint: string[] = [];
         sales.forEach((s) => {
@@ -650,19 +639,17 @@ export class Service {
             ERROR(Errors.InvalidParam, 'discount_dispatch')
         }
 
-        let bValid = true;
         discount_dispatch.forEach((v) => {
-            if (!IsValidAddress(v.receiver)) bValid = false;
-            if (!IsValidU64(v.count) || v.count > Service.MAX_DISCOUNT_COUNT_ONCE) bValid = false;
-            if (!IsValidName_AllowEmpty(v.discount.name)) bValid = false;
-            if (v.discount.type == Service_Discount_Type.ratio && !IsValidPercent(v.discount.off)) bValid = false;
-            if (!IsValidU64(v.discount.duration_minutes)) bValid = false;
-            if (v.discount?.time_start && !IsValidU64(v.discount.time_start)) bValid = false;
-            if (v.discount?.price_greater && !IsValidU64(v.discount.price_greater))  bValid = false;
+            if (!IsValidAddress(v.receiver)) ERROR(Errors.IsValidAddress, `discount_transfer.discount_dispatch.receiver ${v}`)
+
+            if (!IsValidU64(v.count) || v.count > Service.MAX_DISCOUNT_COUNT_ONCE) ERROR(Errors.IsValidU64, `discount_transfer.discount_dispatch.count ${v}`)
+            if (!IsValidName_AllowEmpty(v.discount.name)) ERROR(Errors.IsValidName, `discount_transfer.discount_dispatch.discount.name ${v}`)
+            if (v.discount.type == Service_Discount_Type.ratio && !IsValidPercent(v.discount.off)) ERROR(Errors.IsValidPercent, `discount_transfer.discount_dispatch.discount.off ${v}`)
+            if (!IsValidU64(v.discount.duration_minutes)) ERROR(Errors.IsValidU64, `discount_transfer.discount_dispatch.discount.duration_minutes ${v}`)
+            if (v.discount?.time_start && !IsValidU64(v.discount.time_start)) ERROR(Errors.IsValidU64, `discount_transfer.discount_dispatch.discount.time_start ${v}`)
+            if (v.discount?.price_greater && !IsValidU64(v.discount.price_greater))  ERROR(Errors.IsValidU64, `discount_transfer.discount_dispatch.discount.price_greater ${v}`)
         })
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'discount_dispatch')
-        }
+
         const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
         discount_dispatch.forEach((discount) => {
             let price_greater = this.txb.pure.option('u64', discount.discount?.price_greater ? discount.discount?.price_greater : undefined);
@@ -1039,19 +1026,20 @@ export class Service {
         customer_info_crypto?: Customer_RequiredInfo, passport?:PassportObject) : OrderResult {
         if (buy_items.length === 0)  ERROR(Errors.InvalidParam, 'order.buy_items empty');
 
-        let bValid = true; let names:string[]  = [];
+        const repeat:string[]  = [];
         buy_items.forEach((v) => {
-            if (!Service.IsValidItemName(v.item)) bValid = false;
-            if (!IsValidU64(v.max_price)) bValid = false;
-            if (!IsValidU64(v.count)) bValid = false;
-            if (names.includes(v.item)) bValid = false;
-            names.push(v.item)
+            if (!Service.IsValidItemName(v.item)) ERROR(Errors.InvalidParam, `order.buy_items.item ${v}`)
+            if (!IsValidU64(v.max_price)) ERROR(Errors.IsValidU64, `order.buy_items.max_price ${v}`)
+            if (!IsValidU64(v.count)) ERROR(Errors.IsValidU64, `order.buy_items.count ${v}`)
+            if (repeat.includes(v.item)) ERROR(Errors.InvalidParam, `order.buy_items.item repeat ${v}`)
+            repeat.push(v.item)
         })
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'order.buy_items invalid')
-        }
 
-        let name:string[] = []; let price:bigint[] = [];    let stock:bigint[] = []; let order;
+        const name:string[] = []; 
+        const price:bigint[] = [];    
+        const stock:bigint[] = []; 
+        let order;
+        
         buy_items.forEach((b) => { name.push(b.item); price.push(BigInt(b.max_price)); stock.push(BigInt(b.count))})
         const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
         if (passport) {

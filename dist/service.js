@@ -357,16 +357,12 @@ export class Service {
     add_withdraw_guards(guards, passport) {
         if (guards.length === 0)
             return;
-        let bValid = true;
         guards.forEach((v) => {
             if (!Protocol.IsValidObjects([v.guard]))
-                bValid = false;
+                ERROR(Errors.IsValidObjects, `add_withdraw_guards.guard ${v}`);
             if (!IsValidPercent(v.percent))
-                bValid = false;
+                ERROR(Errors.IsValidPercent, `add_withdraw_guards.percent ${v}`);
         });
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'guards');
-        }
         guards.forEach((guard) => {
             if (passport) {
                 this.txb.moveCall({
@@ -431,16 +427,12 @@ export class Service {
     add_refund_guards(guards, passport) {
         if (guards.length === 0)
             return;
-        let bValid = true;
         guards.forEach((v) => {
             if (!Protocol.IsValidObjects([v.guard]))
-                bValid = false;
+                ERROR(Errors.IsValidObjects, `add_refund_guards.guard ${v}`);
             if (!IsValidPercent(v.percent))
-                bValid = false;
+                ERROR(Errors.IsValidPercent, `add_refund_guards.percent ${v}`);
         });
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'guards');
-        }
         guards.forEach((guard) => {
             if (passport) {
                 this.txb.moveCall({
@@ -501,28 +493,24 @@ export class Service {
             }
         }
     }
-    is_valid_sale(sales) {
-        let bValid = true;
-        let names = [];
+    check_valid_sale(sales) {
+        const names = [];
         sales.forEach((v) => {
             if (!Service.IsValidItemName(v.item))
-                bValid = false;
+                ERROR(Errors.IsValidName, `check_valid_sale.sales.item ${v}`);
             if (!IsValidU64(v.price))
-                bValid = false;
+                ERROR(Errors.IsValidU64, `check_valid_sale.sales.price ${v}`);
             if (!IsValidU64(v.stock))
-                bValid = false;
+                ERROR(Errors.IsValidU64, `check_valid_sale.sales.stock ${v}`);
             if (names.includes(v.item))
-                bValid = false;
+                ERROR(Errors.IsValidName, `check_valid_sale.sales.item repeat ${v}`);
             names.push(v.item);
         });
-        return bValid;
     }
     add_sales(sales, bExistAssert = false, passport) {
         if (sales.length === 0)
             return;
-        if (!this.is_valid_sale(sales)) {
-            ERROR(Errors.InvalidParam, 'add_sales');
-        }
+        this.check_valid_sale(sales);
         let names = [];
         let price = [];
         let stock = [];
@@ -586,26 +574,22 @@ export class Service {
         if (!discount_dispatch || discount_dispatch.length > Service.MAX_DISCOUNT_RECEIVER_COUNT) {
             ERROR(Errors.InvalidParam, 'discount_dispatch');
         }
-        let bValid = true;
         discount_dispatch.forEach((v) => {
             if (!IsValidAddress(v.receiver))
-                bValid = false;
+                ERROR(Errors.IsValidAddress, `discount_transfer.discount_dispatch.receiver ${v}`);
             if (!IsValidU64(v.count) || v.count > Service.MAX_DISCOUNT_COUNT_ONCE)
-                bValid = false;
+                ERROR(Errors.IsValidU64, `discount_transfer.discount_dispatch.count ${v}`);
             if (!IsValidName_AllowEmpty(v.discount.name))
-                bValid = false;
+                ERROR(Errors.IsValidName, `discount_transfer.discount_dispatch.discount.name ${v}`);
             if (v.discount.type == Service_Discount_Type.ratio && !IsValidPercent(v.discount.off))
-                bValid = false;
+                ERROR(Errors.IsValidPercent, `discount_transfer.discount_dispatch.discount.off ${v}`);
             if (!IsValidU64(v.discount.duration_minutes))
-                bValid = false;
+                ERROR(Errors.IsValidU64, `discount_transfer.discount_dispatch.discount.duration_minutes ${v}`);
             if (v.discount?.time_start && !IsValidU64(v.discount.time_start))
-                bValid = false;
+                ERROR(Errors.IsValidU64, `discount_transfer.discount_dispatch.discount.time_start ${v}`);
             if (v.discount?.price_greater && !IsValidU64(v.discount.price_greater))
-                bValid = false;
+                ERROR(Errors.IsValidU64, `discount_transfer.discount_dispatch.discount.price_greater ${v}`);
         });
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'discount_dispatch');
-        }
         const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
         discount_dispatch.forEach((discount) => {
             let price_greater = this.txb.pure.option('u64', discount.discount?.price_greater ? discount.discount?.price_greater : undefined);
@@ -975,25 +959,21 @@ export class Service {
     order(buy_items, coin, discount, machine, customer_info_crypto, passport) {
         if (buy_items.length === 0)
             ERROR(Errors.InvalidParam, 'order.buy_items empty');
-        let bValid = true;
-        let names = [];
+        const repeat = [];
         buy_items.forEach((v) => {
             if (!Service.IsValidItemName(v.item))
-                bValid = false;
+                ERROR(Errors.InvalidParam, `order.buy_items.item ${v}`);
             if (!IsValidU64(v.max_price))
-                bValid = false;
+                ERROR(Errors.IsValidU64, `order.buy_items.max_price ${v}`);
             if (!IsValidU64(v.count))
-                bValid = false;
-            if (names.includes(v.item))
-                bValid = false;
-            names.push(v.item);
+                ERROR(Errors.IsValidU64, `order.buy_items.count ${v}`);
+            if (repeat.includes(v.item))
+                ERROR(Errors.InvalidParam, `order.buy_items.item repeat ${v}`);
+            repeat.push(v.item);
         });
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'order.buy_items invalid');
-        }
-        let name = [];
-        let price = [];
-        let stock = [];
+        const name = [];
+        const price = [];
+        const stock = [];
         let order;
         buy_items.forEach((b) => { name.push(b.item); price.push(BigInt(b.max_price)); stock.push(BigInt(b.count)); });
         const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);

@@ -501,7 +501,7 @@ GuardParser.parse_bcs = (constants, chain_bytes) => {
                     let v = constants.find((v) => (v.identifier == id[0]) &&
                         ((v.type == ValueType.TYPE_ADDRESS)));
                     if (!v) {
-                        ERROR(Errors.Fail, 'GuardObject: indentifier not in  constant');
+                        ERROR(Errors.Fail, 'GuardObject: indentifier not in constant');
                     }
                     identifier = id[0];
                     cmd = bcs.u16().parse(Uint8Array.from(arr.splice(0, 2))); // cmd(u16)

@@ -86,20 +86,16 @@ export class Machine {
     add_node(nodes:Machine_Node[], passport?:PassportObject) {
         if (nodes.length === 0) return ;
 
-        let bValid = true;
         nodes.forEach((node) => {
-            if (!IsValidName(node.name))  { bValid = false; }
+            if (!IsValidName(node.name)) ERROR(Errors.IsValidName, 'add_node.nodes.name')
+
             node.pairs.forEach((p) => {
-                if (!IsValidName_AllowEmpty(p.prior_node)) { bValid = false; }
-                if (p?.threshold && !IsValidInt(p.threshold)) { bValid = false; }
-                p.forwards.forEach((f) => {
-                    if (Machine.checkValidForward(f) !== '') bValid = false;
-                })
+                if (!IsValidName_AllowEmpty(p.prior_node)) ERROR(Errors.IsValidName_AllowEmpty, 'add_node.nodes.pairs.prior_node')
+
+                if (p?.threshold && !IsValidInt(p.threshold)) ERROR(Errors.IsValidInt, 'add_node.nodes.pairs.threshold')
+                p.forwards.forEach((f) => { Machine.checkValidForward(f) })
             })
         })
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'add_node')
-        }
 
         let new_nodes: TxbObject[] = [];
         nodes.forEach((node) => {
@@ -414,7 +410,7 @@ export class Machine {
     add_forward(node_prior:string, node_name:string, foward: Machine_Forward, threshold?:number, old_forward_name?:string, passport?:PassportObject) {
         if (!IsValidName_AllowEmpty(node_prior)) ERROR(Errors.IsValidName_AllowEmpty, 'add_forward');
         if (!IsValidName(node_name)) ERROR(Errors.IsValidName, 'add_forward');
-        const err = Machine.checkValidForward(foward); if (err) ERROR(Errors.InvalidParam, err);
+        Machine.checkValidForward(foward); 
 
         let n : any;
         if (passport) {
@@ -533,13 +529,12 @@ export class Machine {
         return ret;
     }
 
-    static checkValidForward(forward:Machine_Forward) : string {
-        if (!IsValidName(forward.name)) return 'Forward name invalid'
-        if (forward?.namedOperator && !IsValidName_AllowEmpty(forward?.namedOperator)) return 'Progress Operator invalid';
-        if (forward?.permission && !Permission.IsValidPermissionIndex(forward?.permission)) return 'Permission index invalid';
-        if (!forward?.permission && !forward?.namedOperator) return 'Business-Permissions invalid';
-        if (forward?.weight && !IsValidU64(forward.weight)) return 'Weight invalid';
-        return ''
+    static checkValidForward(forward:Machine_Forward) {
+        if (!IsValidName(forward.name)) ERROR(Errors.IsValidName, `checkValidForward.forward.name ${forward}`)
+        if (forward?.namedOperator && !IsValidName_AllowEmpty(forward?.namedOperator)) ERROR(Errors.IsValidName_AllowEmpty, `checkValidForward.forward.namedOperator ${forward}`)
+        if (forward?.permission && !Permission.IsValidPermissionIndex(forward?.permission)) ERROR(Errors.IsValidPermissionIndex, `checkValidForward.forward.permission ${forward}`)
+        if (!forward?.permission && !forward?.namedOperator) ERROR(Errors.InvalidParam, `checkValidForward.forward permission and namedOperator both empty ${forward}`)
+        if (forward?.weight && !IsValidU64(forward.weight)) ERROR(Errors.IsValidU64, `checkValidForward.forward.weight ${forward}`)
     }
 
     static INITIAL_NODE_NAME = '';

@@ -312,15 +312,11 @@ export class Guard {
             ERROR(Errors.InvalidParam, 'launch input')
         }
     
-        let bValid = true;
         constants?.forEach((v, k) => {
-            if (!GuardMaker.IsValidIndentifier(k)) bValid = false;
-            if (v.value && v.bWitness) bValid =  false;
-            if (v.value === undefined && !v.bWitness) bValid =  false;
+            if (!GuardMaker.IsValidIndentifier(k)) ERROR(Errors.IsValidIndentifier, 'Guard.New.constants.identifier')
+            if (v.value && v.bWitness) ERROR(Errors.InvalidParam, 'Guard.New.constants.value & bWiteness')
+            if (v.value === undefined && !v.bWitness) ERROR(Errors.InvalidParam, 'Guard.New.constants.value')
         })
-        if (!bValid) {
-            ERROR(Errors.InvalidParam, 'launch constants')
-        }
         
         let input = new  Uint8Array(bcs_input); // copy new uint8array to reserve!
 

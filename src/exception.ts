@@ -27,6 +27,7 @@ export enum Errors {
     IsValidCoinType = 'not the coin type',
     IsValidGuardIdentifier = 'guard identifier invalid',
     noPermission = 'no permission',
+    IsValidValue = 'invalid value'
 }
 
 export const ERROR = (error:Errors, info?:any) =>  {
