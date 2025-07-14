@@ -141,7 +141,6 @@ GuardParser.DeGuardObject_FromData = (guard_constants, guard_input_bytes) => {
     let constants = _a.parse_constant(guard_constants);
     // console.log(constants)
     let inputs = _a.parse_bcs(constants, guard_input_bytes);
-    // console.log(data);
     if (!inputs || inputs.length == 0)
         ERROR(Errors.Fail, 'GuardObject: data parsed error');
     let stack = [];

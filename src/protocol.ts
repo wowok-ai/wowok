@@ -162,7 +162,6 @@ export enum ContextType {
     TYPE_SIGNER  = 60, // address type; the signer address on verifying
     TYPE_CLOCK = 61, // u64 type; On-chain time at validation
     TYPE_GUARD = 62, // address type; the address of the guard being verified
-    //TYPE_STACK_ADDRESS = 63, // object queried from current stack top
     TYPE_CONSTANT = 80, 
 }
 interface ValueTypeString {

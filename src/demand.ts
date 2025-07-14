@@ -85,8 +85,10 @@ export class Demand {
     // minutes_duration TRUE , time is minutes count; otherwise, the deadline time
     expand_time(minutes_duration:boolean, time: number, passport?:PassportObject) {
         if (!IsValidU64(time)) {
-            ERROR(Errors.IsValidUint, 'time');
+            ERROR(Errors.IsValidUint, `expand_time.time ${time}`);
         }
+        if (minutes_duration) time = time * 1000 * 60; //@ duration minutes
+
         if (passport) {
             this.txb.moveCall({
                 target:Protocol.Instance().demandFn('time_expand_with_passport') as FnCallType,

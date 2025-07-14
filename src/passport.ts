@@ -66,7 +66,6 @@ export class GuardParser {
         // console.log(constants)
         
         let inputs : DeGuardInput[] = GuardParser.parse_bcs(constants, guard_input_bytes);
-        // console.log(data);
         if (!inputs || inputs.length == 0) ERROR(Errors.Fail, 'GuardObject: data parsed error');
         let stack: DeGuardData[] = [];
         inputs.forEach((d) => {

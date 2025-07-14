@@ -112,7 +112,6 @@ export var ContextType;
     ContextType[ContextType["TYPE_SIGNER"] = 60] = "TYPE_SIGNER";
     ContextType[ContextType["TYPE_CLOCK"] = 61] = "TYPE_CLOCK";
     ContextType[ContextType["TYPE_GUARD"] = 62] = "TYPE_GUARD";
-    //TYPE_STACK_ADDRESS = 63, // object queried from current stack top
     ContextType[ContextType["TYPE_CONSTANT"] = 80] = "TYPE_CONSTANT";
 })(ContextType || (ContextType = {}));
 export const SER_VALUE = [
