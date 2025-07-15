@@ -15,7 +15,7 @@ export class Demand {
         this.txb = txb;
         this.object = '';
     }
-    static New(txb, bounty_type, ms_expand, time, permission, description, passport) {
+    static New(txb, bounty_type, minutes_duration, time, permission, description, passport) {
         if (!IsValidDesription(description)) {
             ERROR(Errors.IsValidDesription);
         }
@@ -27,10 +27,12 @@ export class Demand {
         }
         let d = new Demand(txb, bounty_type, permission);
         const clock = txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
+        if (minutes_duration)
+            time = time * 1000 * 60; //@ duration minutes
         if (passport) {
             d.object = txb.moveCall({
                 target: Protocol.Instance().demandFn('new_with_passport'),
-                arguments: [passport, txb.pure.string(description), txb.pure.bool(ms_expand), txb.pure.u64(time),
+                arguments: [passport, txb.pure.string(description), txb.pure.bool(minutes_duration), txb.pure.u64(time),
                     txb.object(clock), Protocol.TXB_OBJECT(txb, permission)],
                 typeArguments: [bounty_type],
             });
@@ -38,7 +40,7 @@ export class Demand {
         else {
             d.object = txb.moveCall({
                 target: Protocol.Instance().demandFn('new'),
-                arguments: [txb.pure.string(description), txb.pure.bool(ms_expand), txb.pure.u64(time),
+                arguments: [txb.pure.string(description), txb.pure.bool(minutes_duration), txb.pure.u64(time),
                     txb.object(clock), Protocol.TXB_OBJECT(txb, permission)],
                 typeArguments: [bounty_type],
             });
@@ -159,7 +161,7 @@ export class Demand {
     }
     yes(service_address, passport) {
         if (!IsValidAddress(service_address)) {
-            ERROR(Errors.IsValidAddress);
+            ERROR(Errors.IsValidAddress, 'yes.service_address');
         }
         if (passport) {
             this.txb.moveCall({

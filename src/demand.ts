@@ -24,7 +24,7 @@ export class Demand {
         this.txb = txb;
         this.object = '';
     }
-    static New(txb:TransactionBlock, bounty_type:string, ms_expand:boolean, time:number, permission:PermissionObject, description:string, 
+    static New(txb:TransactionBlock, bounty_type:string, minutes_duration:boolean, time:number, permission:PermissionObject, description:string, 
         passport?:PassportObject) : Demand {
         if (!IsValidDesription(description)) {
             ERROR(Errors.IsValidDesription);
@@ -38,17 +38,18 @@ export class Demand {
         
         let  d = new Demand(txb, bounty_type, permission);
         const clock = txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
+        if (minutes_duration) time = time * 1000 * 60; //@ duration minutes
         if (passport) {
             d.object = txb.moveCall({
                 target:Protocol.Instance().demandFn('new_with_passport') as FnCallType,
-                arguments:[passport, txb.pure.string(description), txb.pure.bool(ms_expand), txb.pure.u64(time), 
+                arguments:[passport, txb.pure.string(description), txb.pure.bool(minutes_duration), txb.pure.u64(time), 
                     txb.object(clock), Protocol.TXB_OBJECT(txb, permission)],
                 typeArguments:[bounty_type],
             })        
         } else {
             d.object = txb.moveCall({
                 target:Protocol.Instance().demandFn('new') as FnCallType,
-                arguments:[txb.pure.string(description), txb.pure.bool(ms_expand), txb.pure.u64(time), 
+                arguments:[txb.pure.string(description), txb.pure.bool(minutes_duration), txb.pure.u64(time), 
                     txb.object(clock), Protocol.TXB_OBJECT(txb, permission)],
                 typeArguments:[bounty_type],
             })        
@@ -88,7 +89,6 @@ export class Demand {
             ERROR(Errors.IsValidUint, `expand_time.time ${time}`);
         }
         if (minutes_duration) time = time * 1000 * 60; //@ duration minutes
-
         if (passport) {
             this.txb.moveCall({
                 target:Protocol.Instance().demandFn('time_expand_with_passport') as FnCallType,
@@ -171,9 +171,10 @@ export class Demand {
     
     yes(service_address:string, passport?:PassportObject) {
         if (!IsValidAddress(service_address)) {
-            ERROR(Errors.IsValidAddress)
+            ERROR(Errors.IsValidAddress, 'yes.service_address')
+
         }
-    
+
         if (passport) {
             this.txb.moveCall({
                 target:Protocol.Instance().demandFn('yes_with_passport') as FnCallType,
