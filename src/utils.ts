@@ -394,15 +394,19 @@ export const deepClone = <T>(origin: T, target?: Record<string, any> | T ): T =>
 }
 
 export const MAX_DESCRIPTION_LENGTH = 4000;
+export const MAX_LOCATION_LENGTH = 256;
 export const MAX_NAME_LENGTH = 64;
 export const MAX_ENDPOINT_LENGTH = 1024;
 // export const OptionNone = (txb:TransactionBlock) : TransactionArgument => { return txb.pure([], BCS.U8) };
-const IsValidStringLength = (str: string, max_len:number) : boolean => {
+export const IsValidStringLength = (str: string, max_len:number) : boolean => {
     return Bcs.getInstance().ser(ValueType.TYPE_STRING, str).length <= max_len
 }
 export const IsValidDesription = (description:string) : boolean => { 
     return IsValidStringLength(description, MAX_DESCRIPTION_LENGTH)
 } 
+export const IsValidLocation = (location:string) : boolean => {
+    return IsValidStringLength(location, MAX_LOCATION_LENGTH)
+}
 export const IsValidName = (name?:string) : boolean => { 
     if(!name || name.length === 0) {
         return false;

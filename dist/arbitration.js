@@ -1,4 +1,4 @@
-import { IsValidArray, array_unique, IsValidTokenType, IsValidDesription, parseObjectType, IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, } from './utils.js';
+import { IsValidArray, array_unique, IsValidTokenType, IsValidDesription, parseObjectType, IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, IsValidLocation, } from './utils.js';
 import { Protocol } from './protocol.js';
 import { ERROR, Errors } from './exception.js';
 export class Arbitration {
@@ -53,6 +53,25 @@ export class Arbitration {
             arguments: [Protocol.TXB_OBJECT(this.txb, this.object)],
             typeArguments: [this.pay_token_type]
         });
+    }
+    set_location(location, passport) {
+        if (!IsValidLocation(location)) {
+            ERROR(Errors.IsValidLocation, `Arbitration.set_location.location ${location}`);
+        }
+        if (passport) {
+            this.txb.moveCall({
+                target: Protocol.Instance().arbitrationFn('location_set_with_passport'),
+                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments: [this.pay_token_type]
+            });
+        }
+        else {
+            this.txb.moveCall({
+                target: Protocol.Instance().arbitrationFn('location_set'),
+                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments: [this.pay_token_type]
+            });
+        }
     }
     set_description(description, passport) {
         if (!IsValidDesription(description)) {

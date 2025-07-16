@@ -1,4 +1,4 @@
-import { IsValidArray, IsValidPercent, IsValidName_AllowEmpty, parseObjectType, array_unique, IsValidTokenType, IsValidDesription, IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, } from './utils.js';
+import { IsValidArray, IsValidPercent, IsValidName_AllowEmpty, parseObjectType, array_unique, IsValidTokenType, IsValidDesription, IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, IsValidStringLength, IsValidLocation } from './utils.js';
 import { Protocol } from './protocol.js';
 import { ERROR, Errors } from './exception.js';
 export var Service_Discount_Type;
@@ -63,6 +63,25 @@ export class Service {
             arguments: [Protocol.TXB_OBJECT(this.txb, this.object)],
             typeArguments: [this.pay_token_type]
         });
+    }
+    set_location(location, passport) {
+        if (!IsValidLocation(location)) {
+            ERROR(Errors.IsValidLocation, `Service.set_location.location ${location}`);
+        }
+        if (passport) {
+            this.txb.moveCall({
+                target: Protocol.Instance().serviceFn('location_set_with_passport'),
+                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments: [this.pay_token_type]
+            });
+        }
+        else {
+            this.txb.moveCall({
+                target: Protocol.Instance().serviceFn('location_set'),
+                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments: [this.pay_token_type]
+            });
+        }
     }
     set_description(description, passport) {
         if (!IsValidDesription(description)) {
@@ -1135,7 +1154,7 @@ export class Service {
     static IsValidItemName(name) {
         if (!name)
             return false;
-        return new TextEncoder().encode(name).length <= Service.MAX_ITEM_NAME_LENGTH;
+        return IsValidStringLength(name, Service.MAX_ITEM_NAME_LENGTH);
     }
     // return current balance
     static OrderReceive(txb, order_token_type, order, payment, received, token_type) {

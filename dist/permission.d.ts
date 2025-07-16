@@ -24,12 +24,14 @@ export declare enum PermissionIndex {
     service_pause = 215,
     service_treasury = 216,
     service_arbitration = 217,
+    service_location = 218,
     demand = 260,
     demand_refund = 261,
     demand_expand_time = 262,
     demand_guard = 263,
     demand_description = 264,
     demand_yes = 265,
+    demand_location = 266,
     machine = 600,
     machine_description = 601,
     machine_repository = 602,
@@ -63,6 +65,7 @@ export declare enum PermissionIndex {
     arbitration_arbitration = 808,
     arbitration_withdraw = 809,
     arbitration_treasury = 810,
+    arbitration_location = 811,
     user_defined_start = 1000
 }
 export interface PermissionInfoType {

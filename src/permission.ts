@@ -29,6 +29,7 @@ export enum PermissionIndex {
     service_pause = 215,
     service_treasury = 216,
     service_arbitration = 217,
+    service_location = 218,
 
     demand = 260,
     demand_refund = 261,
@@ -36,6 +37,7 @@ export enum PermissionIndex {
     demand_guard = 263,
     demand_description = 264,
     demand_yes = 265,
+    demand_location = 266,
 
     machine = 600,
     machine_description = 601,
@@ -73,6 +75,7 @@ export enum PermissionIndex {
     arbitration_arbitration = 808,
     arbitration_withdraw = 809,
     arbitration_treasury = 810,
+    arbitration_location = 811,
     
     user_defined_start = 1000,
 }
@@ -108,6 +111,7 @@ export const PermissionInfo : PermissionInfoType[] = [
     {index:PermissionIndex.service_pause, name:'Pause', description:'Pause/Unpause Service', module: MODULES.service},
     {index:PermissionIndex.service_treasury, name:'Treasury', description:'Externally withdrawable treasury for compensation or rewards', module: MODULES.service},
     {index:PermissionIndex.service_arbitration, name:'Arbitration', description:'Add/Remove arbitration that allows refunds from orders at any time based on arbitration results', module: MODULES.service},
+    {index:PermissionIndex.service_location, name:'Location', description:'Set Service location', module: MODULES.service},
 
     {index:PermissionIndex.demand, name:'Demand', description:'Launch new Demand', module: MODULES.demand},
     {index:PermissionIndex.demand_refund, name:'Refund', description:'Refund from Demand', module: MODULES.demand},
@@ -115,6 +119,7 @@ export const PermissionInfo : PermissionInfoType[] = [
     {index:PermissionIndex.demand_guard, name:'Guard', description:'Set Demand guard', module: MODULES.demand},
     {index:PermissionIndex.demand_description, name:'Description', description:'Set Demand description', module: MODULES.demand},
     {index:PermissionIndex.demand_yes, name:'Yes', description:'Pick the Deamand serice', module: MODULES.demand},
+    {index:PermissionIndex.demand_location, name:'Location', description:'Set Demand location', module: MODULES.demand},
 
     {index:PermissionIndex.machine, name: 'Machine', description:'Launch new Machine', module: MODULES.machine},
     {index:PermissionIndex.machine_description, name: 'Description', description:'Set Machine description', module: MODULES.machine},
@@ -152,6 +157,7 @@ export const PermissionInfo : PermissionInfoType[] = [
     {index:PermissionIndex.arbitration_vote, name: 'Vote', description:'Vote on the application for arbitration', module: MODULES.arbitration},
     {index:PermissionIndex.arbitration_withdraw, name: 'Withdraw', description:'Withdraw the arbitration fee', module: MODULES.arbitration},
     {index:PermissionIndex.arbitration_treasury, name: 'Withdraw', description:'Set Treasury that fees was collected at the time of withdrawal', module: MODULES.arbitration},
+    {index:PermissionIndex.arbitration_location, name: 'Location', description:'Set Arbitration location', module: MODULES.arbitration},
 ]
 
 export interface PermissionAnswer {

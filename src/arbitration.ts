@@ -1,6 +1,7 @@
 
 import { IsValidArray,  array_unique, IsValidTokenType, IsValidDesription, parseObjectType,
-    IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, } from './utils.js'
+    IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName,
+    IsValidLocation, } from './utils.js'
 import { FnCallType, GuardObject, PassportObject, PermissionObject, CoinObject, Protocol,
     TxbObject, ArbitrationAddress, OrderObject, ArbObject, PaymentAddress, TreasuryObject,
     ArbAddress} from './protocol.js';
@@ -21,7 +22,7 @@ export interface Vote {
 export interface Feedback {
     arb:ArbObject,
     feedback:string, 
-    indemnity?:string | number | bigint,  // bigint
+    indemnity?:string | number | bigint | null,  // bigint
 }
 
 export interface Dispute {
@@ -103,6 +104,25 @@ export class Arbitration {
         })
     }
 
+    set_location(location:string, passport?:PassportObject) {
+        if (!IsValidLocation(location)) {
+            ERROR(Errors.IsValidLocation, `Arbitration.set_location.location ${location}`)
+        }
+        if (passport) {
+            this.txb.moveCall({
+                target:Protocol.Instance().arbitrationFn('location_set_with_passport') as FnCallType,
+                arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments:[this.pay_token_type]
+            })
+        } else {
+            this.txb.moveCall({
+                target:Protocol.Instance().arbitrationFn('location_set') as FnCallType,
+                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments:[this.pay_token_type]
+            })
+        }
+    }
+
     set_description(description:string, passport?:PassportObject)  {
         if (!IsValidDesription(description)) {
             ERROR(Errors.IsValidDesription, 'set_description.description')
@@ -143,7 +163,7 @@ export class Arbitration {
         }
     }
 
-    set_endpoint(endpoint?:string, passport?:PassportObject)  {
+    set_endpoint(endpoint?:string|null, passport?:PassportObject)  {
         if (endpoint && !IsValidEndpoint(endpoint)) {
             ERROR(Errors.IsValidEndpoint, 'set_endpoint.endpoint')
         }

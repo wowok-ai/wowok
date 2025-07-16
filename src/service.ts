@@ -1,6 +1,6 @@
 import { IsValidArray, IsValidPercent, IsValidName_AllowEmpty, parseObjectType, array_unique, IsValidTokenType, IsValidDesription, 
-    IsValidAddress, IsValidEndpoint, IsValidU64,
-    IsValidName, } from './utils.js'
+    IsValidAddress, IsValidEndpoint, IsValidU64, IsValidName, IsValidStringLength,
+    IsValidLocation} from './utils.js'
 import { FnCallType, GuardObject, PassportObject, PermissionObject, RepositoryObject, MachineObject, ServiceAddress, 
     ServiceObject, DiscountObject, OrderObject, OrderAddress, CoinObject, Protocol, ValueType,
     TxbObject, TreasuryObject, PaymentAddress, ArbObject,
@@ -141,6 +141,26 @@ export class Service {
             arguments:[Protocol.TXB_OBJECT(this.txb, this.object)],
             typeArguments:[this.pay_token_type]
         })
+    }
+
+    set_location(location:string, passport?:PassportObject) {
+        if (!IsValidLocation(location)) {
+            ERROR(Errors.IsValidLocation, `Service.set_location.location ${location}`)
+        }
+
+        if (passport) {
+            this.txb.moveCall({
+                target:Protocol.Instance().serviceFn('location_set_with_passport') as FnCallType,
+                arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments:[this.pay_token_type]
+            })
+        } else {
+            this.txb.moveCall({
+                target:Protocol.Instance().serviceFn('location_set') as FnCallType,
+                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments:[this.pay_token_type]
+            })
+        }
     }
 
     set_description(description:string, passport?:PassportObject)  {
@@ -721,7 +741,7 @@ export class Service {
         }      
     }
 
-    set_buy_guard(guard?:GuardObject, passport?:PassportObject) {
+    set_buy_guard(guard?:GuardObject | null, passport?:PassportObject) {
         if (passport) {
             if (guard) {
                 this.txb.moveCall({
@@ -784,7 +804,7 @@ export class Service {
         }
     }
 
-    set_endpoint(endpoint?:string, passport?:PassportObject) {
+    set_endpoint(endpoint?:string | null, passport?:PassportObject) {
         if (endpoint && !IsValidEndpoint(endpoint)) {
             ERROR(Errors.IsValidEndpoint);
         }
@@ -1022,7 +1042,7 @@ export class Service {
         })    
     }
     
-    order(buy_items:Service_Buy[], coin:CoinObject, discount?:DiscountObject, machine?:MachineObject,
+    order(buy_items:Service_Buy[], coin:CoinObject, discount?:DiscountObject|null, machine?:MachineObject,
         customer_info_crypto?: Customer_RequiredInfo, passport?:PassportObject) : OrderResult {
         if (buy_items.length === 0)  ERROR(Errors.InvalidParam, 'order.buy_items empty');
 
@@ -1214,7 +1234,7 @@ export class Service {
 
     static IsValidItemName(name:string) : boolean {
         if (!name) return false;
-        return new TextEncoder().encode(name).length <= Service.MAX_ITEM_NAME_LENGTH;
+        return IsValidStringLength(name, Service.MAX_ITEM_NAME_LENGTH);
     }
 
     static parseObjectType = (chain_type:string | undefined | null) : string =>  {

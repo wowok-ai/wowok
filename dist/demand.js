@@ -1,5 +1,5 @@
 import { Protocol } from './protocol.js';
-import { IsValidDesription, IsValidAddress, IsValidArgType, IsValidU64, parseObjectType, IsValidU8 } from './utils.js';
+import { IsValidDesription, IsValidAddress, IsValidArgType, IsValidU64, parseObjectType, IsValidU8, IsValidLocation } from './utils.js';
 import { Errors, ERROR } from './exception.js';
 export class Demand {
     get_bounty_type() { return this.bounty_type; }
@@ -137,6 +137,27 @@ export class Demand {
                     typeArguments: [this.bounty_type],
                 });
             }
+        }
+    }
+    set_location(location, passport) {
+        if (!IsValidLocation(location)) {
+            ERROR(Errors.IsValidLocation, `Demand.set_location.location ${location}`);
+        }
+        if (passport) {
+            this.txb.moveCall({
+                target: Protocol.Instance().demandFn('location_set_with_passport'),
+                arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location),
+                    Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments: [this.bounty_type],
+            });
+        }
+        else {
+            this.txb.moveCall({
+                target: Protocol.Instance().demandFn('location_set'),
+                arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location),
+                    Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments: [this.bounty_type],
+            });
         }
     }
     set_description(description, passport) {

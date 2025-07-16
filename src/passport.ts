@@ -256,7 +256,6 @@ export class GuardParser {
             const index = protocol.WOWOK_OBJECTS_TYPE().findIndex(v => {return v.includes('guard::Guard') && v == c.type});
             if (index === -1) ERROR(Errors.Fail, 'Parse_Guard_Helper invalid type: ' + c.type);
 
-
             if (c.fields.input.type === (protocol.package('base') + '::bcs::BCS')) {
                 const constants = GuardParser.parse_constant(c.fields.constants); // MUST first
                 const inputs = GuardParser.parse_bcs(constants, Uint8Array.from(c.fields.input.fields.bytes));

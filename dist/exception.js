@@ -28,6 +28,7 @@ export var Errors;
     Errors["IsValidGuardIdentifier"] = "guard identifier invalid";
     Errors["noPermission"] = "no permission";
     Errors["IsValidValue"] = "invalid value";
+    Errors["IsValidLocation"] = "invalid location";
 })(Errors || (Errors = {}));
 export const ERROR = (error, info) => {
     const e = error.toString() + (info ? (' ' + info) : '');

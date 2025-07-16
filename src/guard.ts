@@ -173,13 +173,13 @@ export const GUARD_QUERIES:GuardQuery[] = [
 
     {module:MODULES.wowok, query_name:'Builder', query_id:900, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Builder address of Wowok.', }, 
     {module:MODULES.wowok, query_name:'Object of Entities', query_id:901, parameters:[], return:ValueType.TYPE_ADDRESS, description:'The address of entity information object.', },
-    {module:MODULES.wowok, query_name:'Grantor Count', query_id:902, parameters:[], return:ValueType.TYPE_U64, description:'Number of registered grantors.', },   
+/*    {module:MODULES.wowok, query_name:'Grantor Count', query_id:902, parameters:[], return:ValueType.TYPE_U64, description:'Number of registered grantors.', },   
     {module:MODULES.wowok, query_name:'Has Grantor', query_id:903, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether an address has been registered as a grantor?', parameters_description:['address']}, 
     {module:MODULES.wowok, query_name:'Grantor Name', query_id:904, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_STRING, description:"Name of a grantor.", parameters_description:['address']}, 
     {module:MODULES.wowok, query_name:'Grantor Registration Time', query_id:905, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'Registration time of a grantor.', parameters_description:['address']}, 
     {module:MODULES.wowok, query_name:'Grantor Expired Time', query_id:906, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The expiration time of a grantor.', parameters_description:['address']}, 
     {module:MODULES.wowok, query_name:'Grantee Object for Grantor', query_id:907, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_ADDRESS, description:'Grantee repository address of a grantor.', parameters_description:['address']}, 
-
+*/
     {module:MODULES.payment, query_name:'Sender', query_id:1200, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Payment originator address.', }, 
     {module:MODULES.payment, query_name:'Total Amount', query_id:1201, parameters:[], return:ValueType.TYPE_U128, description:"Payment amount.", }, 
     {module:MODULES.payment, query_name:'Remark', query_id:1202, parameters:[], return:ValueType.TYPE_STRING, description:'Payment remark.', parameters_description:['address']}, 

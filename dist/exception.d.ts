@@ -26,7 +26,8 @@ export declare enum Errors {
     IsValidCoinType = "not the coin type",
     IsValidGuardIdentifier = "guard identifier invalid",
     noPermission = "no permission",
-    IsValidValue = "invalid value"
+    IsValidValue = "invalid value",
+    IsValidLocation = "invalid location"
 }
 export declare const ERROR: (error: Errors, info?: any) => never;
 //# sourceMappingURL=exception.d.ts.map

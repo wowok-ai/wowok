@@ -12,7 +12,7 @@ export interface Vote {
 export interface Feedback {
     arb: ArbObject;
     feedback: string;
-    indemnity?: string | number | bigint;
+    indemnity?: string | number | bigint | null;
 }
 export interface Dispute {
     order: OrderObject;
@@ -39,9 +39,10 @@ export declare class Arbitration {
     static From(txb: TransactionBlock, token_type: string, permission: PermissionObject, object: TxbObject): Arbitration;
     static New(txb: TransactionBlock, token_type: string, permission: PermissionObject, description: string, fee: bigint | number | string, withdrawTreasury: TreasuryObject, passport?: PassportObject): Arbitration;
     launch(): ArbitrationAddress;
+    set_location(location: string, passport?: PassportObject): void;
     set_description(description: string, passport?: PassportObject): void;
     set_fee(fee: bigint, passport?: PassportObject): void;
-    set_endpoint(endpoint?: string, passport?: PassportObject): void;
+    set_endpoint(endpoint?: string | null, passport?: PassportObject): void;
     add_voting_guard(guard: VotingGuard[], passport?: PassportObject): void;
     remove_voting_guard(guard: string[], removeall?: boolean, passport?: PassportObject): void;
     set_guard(apply_guard?: string, passport?: PassportObject): void;

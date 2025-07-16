@@ -77,6 +77,7 @@ export declare class Service {
     static From(txb: TransactionBlock, token_type: string, permission: PermissionObject, object: TxbObject): Service;
     static New(txb: TransactionBlock, token_type: string, permission: PermissionObject, description: string, payee_treasury: TreasuryObject, passport?: PassportObject): Service;
     launch(): ServiceAddress;
+    set_location(location: string, passport?: PassportObject): void;
     set_description(description: string, passport?: PassportObject): void;
     set_price(item: string, price: bigint, bNotFoundAssert?: boolean, passport?: PassportObject): void;
     set_stock(item: string, stock: bigint, bNotFoundAssert?: boolean, passport?: PassportObject): void;
@@ -97,9 +98,9 @@ export declare class Service {
     remove_sales(sales: string[], passport?: PassportObject): void;
     discount_transfer(discount_dispatch: DicountDispatch[], passport?: PassportObject): void;
     withdraw(order: OrderObject, param: WithdrawPayee, passport: PassportObject): PaymentAddress;
-    set_buy_guard(guard?: GuardObject, passport?: PassportObject): void;
+    set_buy_guard(guard?: GuardObject | null, passport?: PassportObject): void;
     set_machine(machine?: MachineObject, passport?: PassportObject): void;
-    set_endpoint(endpoint?: string, passport?: PassportObject): void;
+    set_endpoint(endpoint?: string | null, passport?: PassportObject): void;
     publish(passport?: PassportObject): void;
     clone(new_token_type?: string, bLaunch?: boolean, passport?: PassportObject): ServiceObject | ServiceAddress;
     set_customer_required(pubkey: string, customer_required: (BuyRequiredEnum | string)[], passport?: PassportObject): void;
@@ -109,7 +110,7 @@ export declare class Service {
     refund_withArb(order: OrderObject, arb: ArbObject, arb_type: string): void;
     refund(order: OrderObject, refund_guard?: GuardObject, passport?: PassportObject): void;
     update_order_required_info(order: OrderObject, customer_info_crypto: Customer_RequiredInfo): void;
-    order(buy_items: Service_Buy[], coin: CoinObject, discount?: DiscountObject, machine?: MachineObject, customer_info_crypto?: Customer_RequiredInfo, passport?: PassportObject): OrderResult;
+    order(buy_items: Service_Buy[], coin: CoinObject, discount?: DiscountObject | null, machine?: MachineObject, customer_info_crypto?: Customer_RequiredInfo, passport?: PassportObject): OrderResult;
     order_launch(order: OrderResult): BuyResult;
     buy(buy_items: Service_Buy[], coin: CoinObject, discount?: DiscountObject, machine?: MachineObject, customer_info_crypto?: Customer_RequiredInfo, passport?: PassportObject): BuyResult;
     order_bind_machine(order: OrderObject, machine: MachineObject): ProgressObject;

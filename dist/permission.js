@@ -27,12 +27,14 @@ export var PermissionIndex;
     PermissionIndex[PermissionIndex["service_pause"] = 215] = "service_pause";
     PermissionIndex[PermissionIndex["service_treasury"] = 216] = "service_treasury";
     PermissionIndex[PermissionIndex["service_arbitration"] = 217] = "service_arbitration";
+    PermissionIndex[PermissionIndex["service_location"] = 218] = "service_location";
     PermissionIndex[PermissionIndex["demand"] = 260] = "demand";
     PermissionIndex[PermissionIndex["demand_refund"] = 261] = "demand_refund";
     PermissionIndex[PermissionIndex["demand_expand_time"] = 262] = "demand_expand_time";
     PermissionIndex[PermissionIndex["demand_guard"] = 263] = "demand_guard";
     PermissionIndex[PermissionIndex["demand_description"] = 264] = "demand_description";
     PermissionIndex[PermissionIndex["demand_yes"] = 265] = "demand_yes";
+    PermissionIndex[PermissionIndex["demand_location"] = 266] = "demand_location";
     PermissionIndex[PermissionIndex["machine"] = 600] = "machine";
     PermissionIndex[PermissionIndex["machine_description"] = 601] = "machine_description";
     PermissionIndex[PermissionIndex["machine_repository"] = 602] = "machine_repository";
@@ -66,6 +68,7 @@ export var PermissionIndex;
     PermissionIndex[PermissionIndex["arbitration_arbitration"] = 808] = "arbitration_arbitration";
     PermissionIndex[PermissionIndex["arbitration_withdraw"] = 809] = "arbitration_withdraw";
     PermissionIndex[PermissionIndex["arbitration_treasury"] = 810] = "arbitration_treasury";
+    PermissionIndex[PermissionIndex["arbitration_location"] = 811] = "arbitration_location";
     PermissionIndex[PermissionIndex["user_defined_start"] = 1000] = "user_defined_start";
 })(PermissionIndex || (PermissionIndex = {}));
 export const PermissionInfo = [
@@ -91,12 +94,14 @@ export const PermissionInfo = [
     { index: PermissionIndex.service_pause, name: 'Pause', description: 'Pause/Unpause Service', module: MODULES.service },
     { index: PermissionIndex.service_treasury, name: 'Treasury', description: 'Externally withdrawable treasury for compensation or rewards', module: MODULES.service },
     { index: PermissionIndex.service_arbitration, name: 'Arbitration', description: 'Add/Remove arbitration that allows refunds from orders at any time based on arbitration results', module: MODULES.service },
+    { index: PermissionIndex.service_location, name: 'Location', description: 'Set Service location', module: MODULES.service },
     { index: PermissionIndex.demand, name: 'Demand', description: 'Launch new Demand', module: MODULES.demand },
     { index: PermissionIndex.demand_refund, name: 'Refund', description: 'Refund from Demand', module: MODULES.demand },
     { index: PermissionIndex.demand_expand_time, name: 'Expand deadline', description: 'Expand Demand deadline', module: MODULES.demand },
     { index: PermissionIndex.demand_guard, name: 'Guard', description: 'Set Demand guard', module: MODULES.demand },
     { index: PermissionIndex.demand_description, name: 'Description', description: 'Set Demand description', module: MODULES.demand },
     { index: PermissionIndex.demand_yes, name: 'Yes', description: 'Pick the Deamand serice', module: MODULES.demand },
+    { index: PermissionIndex.demand_location, name: 'Location', description: 'Set Demand location', module: MODULES.demand },
     { index: PermissionIndex.machine, name: 'Machine', description: 'Launch new Machine', module: MODULES.machine },
     { index: PermissionIndex.machine_description, name: 'Description', description: 'Set Machine description', module: MODULES.machine },
     { index: PermissionIndex.machine_repository, name: 'Repository', description: 'Set Machine repository', module: MODULES.machine },
@@ -130,6 +135,7 @@ export const PermissionInfo = [
     { index: PermissionIndex.arbitration_vote, name: 'Vote', description: 'Vote on the application for arbitration', module: MODULES.arbitration },
     { index: PermissionIndex.arbitration_withdraw, name: 'Withdraw', description: 'Withdraw the arbitration fee', module: MODULES.arbitration },
     { index: PermissionIndex.arbitration_treasury, name: 'Withdraw', description: 'Set Treasury that fees was collected at the time of withdrawal', module: MODULES.arbitration },
+    { index: PermissionIndex.arbitration_location, name: 'Location', description: 'Set Arbitration location', module: MODULES.arbitration },
 ];
 export class Permission {
     get_object() { return this.object; }

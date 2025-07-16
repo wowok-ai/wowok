@@ -1,6 +1,6 @@
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 import { FnCallType, Protocol, PassportObject, PermissionObject, GuardObject, DemandAddress, TxbObject, ServiceObject } from './protocol.js';
-import { IsValidDesription, IsValidAddress, IsValidArgType, IsValidU64, parseObjectType, IsValidU8 } from './utils.js'
+import { IsValidDesription, IsValidAddress, IsValidArgType, IsValidU64, parseObjectType, IsValidU8, IsValidLocation } from './utils.js'
 import { Errors, ERROR}  from './exception.js'
 
 export class Demand {
@@ -148,6 +148,27 @@ export class Demand {
         }
     }
     
+    set_location(location:string, passport?:PassportObject) {
+        if (!IsValidLocation(location)) {
+            ERROR(Errors.IsValidLocation, `Demand.set_location.location ${location}`);
+        }
+        if (passport) {
+            this.txb.moveCall({
+                target:Protocol.Instance().demandFn('location_set_with_passport') as FnCallType,
+                arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location), 
+                    Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments:[this.bounty_type],
+            })    
+        } else {
+            this.txb.moveCall({
+                target:Protocol.Instance().demandFn('location_set') as FnCallType,
+                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(location), 
+                    Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments:[this.bounty_type],
+            })    
+        }
+    }
+
     set_description(description:string, passport?:PassportObject) {
         if (!IsValidDesription(description)) {
             ERROR(Errors.IsValidDesription);

@@ -14,6 +14,7 @@ export declare class Demand {
     refund(passport?: PassportObject): void;
     expand_time(minutes_duration: boolean, time: number, passport?: PassportObject): void;
     set_guard(guard?: GuardObject, service_identifier?: number, passport?: PassportObject): void;
+    set_location(location: string, passport?: PassportObject): void;
     set_description(description: string, passport?: PassportObject): void;
     yes(service_address: string, passport?: PassportObject): void;
     deposit(bounty: TxbObject): void;
