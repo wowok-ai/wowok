@@ -54,9 +54,9 @@ export declare class Repository {
     static From(txb: TransactionBlock, permission: PermissionObject, object: TxbObject): Repository;
     static New(txb: TransactionBlock, permission: PermissionObject, description: string, policy_mode?: Repository_Policy_Mode, passport?: PassportObject): Repository;
     launch(): RepositoryAddress;
-    add_data(data: Repository_Policy_Data): void;
-    add_data2(data: Repository_Policy_Data2): void;
-    remove(address: string, key: string): void;
+    add_data(data: Repository_Policy_Data, passport?: PassportObject): void;
+    add_data2(data: Repository_Policy_Data2, passport?: PassportObject): void;
+    remove(address: string, key: string, passport?: PassportObject): void;
     add_reference(references: string[], passport?: PassportObject): void;
     remove_reference(references: string[], removeall?: boolean, passport?: PassportObject): void;
     add_policies(policies: Repository_Policy[], passport?: PassportObject): void;
@@ -71,11 +71,13 @@ export declare class Repository {
     static MAX_KEY_LENGTH: number;
     static MAX_VALUE_LENGTH: number;
     static MAX_REFERENCE_COUNT: number;
+    static MAX_POLICY_DESRIPTION_LENGTH: number;
     static IsValidName: (key: string) => boolean;
+    static IsValidPolicyDescription(description: string): boolean;
     static IsValidValue: (value: Uint8Array) => boolean;
     static rpc_de_data(fields: any): RepData[];
-    static DataType2ValueType(data: string): ValueType | undefined;
-    static ResolveRepositoryData: (dataType: RepositoryValueType, data: string | boolean | string[]) => {
+    static DataType2ValueType(data: string | number | bigint): ValueType | undefined;
+    static ResolveRepositoryData: (dataType: RepositoryValueType, data: bigint | string | boolean | number | string[] | number[]) => {
         type: ValueType;
         data: Uint8Array;
     } | undefined;

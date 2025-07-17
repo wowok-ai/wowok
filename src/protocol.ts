@@ -210,15 +210,15 @@ export enum ENTRYPOINT {
 }
 
 const TESTNET = {
-    wowok: "0x1bc5ca38cb40bd1e95f494cc94c68be12f29cba59bf590b0f6f2ba8943e191e0",
-    wowok_origin:'0x1bc5ca38cb40bd1e95f494cc94c68be12f29cba59bf590b0f6f2ba8943e191e0' ,
-    base: '0x5efddf2c5960b0410e2c97580968b4ff3d836086ea930e2d965bd64f20732078',
-    base_origin: '0x5efddf2c5960b0410e2c97580968b4ff3d836086ea930e2d965bd64f20732078',
+    wowok: "0x661357b99ce7ece747c9ef365a5bf555f5ebeac8effed12d0f5920816e618de4",
+    wowok_origin:'0x661357b99ce7ece747c9ef365a5bf555f5ebeac8effed12d0f5920816e618de4' ,
+    base: '0xae90f6a083954653560771bc1cff940bcd532c1f348a69ff03770335c6c52173',
+    base_origin: '0xae90f6a083954653560771bc1cff940bcd532c1f348a69ff03770335c6c52173',
 
-    wowok_object: '0xcebd5c14a739056f798c967a0d434d4d76f2d3fa6be0c5c164d8b80844e9e430',
-    entity_object: '0xcfdc626cb81d519f18ea8ce0bcdc78f13d93f1f57d40ff938b4a2b6013669018',
-    treasury_cap:'0xc3c424ca78d2727ac67f5d78b24bbebc4e27ab41287af819f587a01d00f6d3e6',
-    oracle_object:'0x01741ebf0320813787b4117f01d4103bc48e6b1f73a575ab20ec6c267f41bd58',
+    wowok_object: '0xb36e50e9a9dab110b385304f82c440ff04a5cd6a84b4c12d9131811b262c7373',
+    entity_object: '0x6a9c149565dd2bf0c9e04fd59965403c741180db7960c100606b8ae19b84ef73',
+    treasury_cap:'0xecc1a7c48f15f0b85d515a1bd3c9cd53c2e1fe50944db29e85b9355cc7827829',
+    oracle_object:'0x0a7fedc81b6d33e9791d78df8bfb2c7c60e3681462dba82926d8e1f961690f59',
 }
 const MAINNET = {
     wowok: "",

@@ -625,7 +625,7 @@ export interface query_object_param {
     onFieldsErr?:(id:string, err:any)=>void;
 }
 
-export const uint2address = (value: number | bigint) : string => {
+export const uint2address = (value: number | bigint | string) : string => {
     return normalizeSuiAddress(value.toString(16)); 
 }
 

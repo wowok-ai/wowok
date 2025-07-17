@@ -1,6 +1,6 @@
 import { Protocol, FnCallType, ValueType, RepositoryValueType, RepositoryAddress, PermissionObject, PassportObject, TxbObject, } from './protocol.js';
 import { PermissionIndexType, Permission } from './permission.js'
-import { Bcs, array_unique, IsValidDesription, IsValidAddress, IsValidArray, IsValidName,  ValueTypeConvert} from './utils.js';
+import { Bcs, array_unique, IsValidDesription, IsValidAddress, IsValidArray, IsValidName,  ValueTypeConvert, IsValidStringLength, uint2address} from './utils.js';
 import { ERROR, Errors } from './exception.js';
 import { MAX_U8, MAX_U128, MAX_U256, MAX_U64, parseObjectType } from './utils.js';
 import { type TransactionResult, Transaction as TransactionBlock } from '@mysten/sui/transactions';
@@ -101,7 +101,7 @@ export class Repository {
         })    
     }
 
-    add_data(data:Repository_Policy_Data)  {
+    add_data(data:Repository_Policy_Data, passport?:PassportObject)  {
         if (!Repository.IsValidName(data.key)) {
             ERROR(Errors.IsValidName, 'add_data')
         }
@@ -112,30 +112,60 @@ export class Repository {
         });
         
         if (data?.value_type !== undefined) {
-            data.data.forEach((d) => this.txb.moveCall({
-                target:Protocol.Instance().repositoryFn('add') as FnCallType,
-                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
-                    this.txb.pure.address(d.address),
-                    this.txb.pure.string(data.key), 
-                    this.txb.pure.u8(data.value_type!),
-                    this.txb.pure.vector('u8', [...d.bcsBytes]),
-                    Protocol.TXB_OBJECT(this.txb, this.permission),
-                ],
-            }))       
+            data.data.forEach((d) => {
+                if (passport) {
+                    this.txb.moveCall({
+                        target:Protocol.Instance().repositoryFn('add_with_passport') as FnCallType,
+                        arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), 
+                            this.txb.pure.address(d.address),
+                            this.txb.pure.string(data.key), 
+                            this.txb.pure.u8(data.value_type!),
+                            this.txb.pure.vector('u8', [...d.bcsBytes]),
+                            Protocol.TXB_OBJECT(this.txb, this.permission),
+                        ],
+                    })     
+                } else {
+                    this.txb.moveCall({
+                        target:Protocol.Instance().repositoryFn('add') as FnCallType,
+                        arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
+                            this.txb.pure.address(d.address),
+                            this.txb.pure.string(data.key), 
+                            this.txb.pure.u8(data.value_type!),
+                            this.txb.pure.vector('u8', [...d.bcsBytes]),
+                            Protocol.TXB_OBJECT(this.txb, this.permission),
+                        ],
+                    })                    
+                }
+            })       
         } else {
-            data.data.forEach((d) => this.txb.moveCall({
-                target:Protocol.Instance().repositoryFn('add_typed_data') as FnCallType,
-                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
-                    this.txb.pure.address(d.address),
-                    this.txb.pure.string(data.key), 
-                    this.txb.pure.vector('u8', [...d.bcsBytes]),
-                    Protocol.TXB_OBJECT(this.txb, this.permission),
-                ],
-            }))   
+            data.data.forEach((d) => {
+                if (passport)   {
+                    this.txb.moveCall({
+                        target:Protocol.Instance().repositoryFn('add_typed_data_with_passport') as FnCallType,
+                        arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), 
+                            this.txb.pure.address(d.address),
+                            this.txb.pure.string(data.key), 
+                            this.txb.pure.vector('u8', [...d.bcsBytes]),
+                            Protocol.TXB_OBJECT(this.txb, this.permission),
+                        ],
+                    })    
+                } else {
+                    this.txb.moveCall({
+                        target:Protocol.Instance().repositoryFn('add_typed_data') as FnCallType,
+                        arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
+                            this.txb.pure.address(d.address),
+                            this.txb.pure.string(data.key), 
+                            this.txb.pure.vector('u8', [...d.bcsBytes]),
+                            Protocol.TXB_OBJECT(this.txb, this.permission),
+                        ],
+                    })                
+                }
+                
+        })   
         }
     }
 
-    add_data2(data:Repository_Policy_Data2)  {
+    add_data2(data:Repository_Policy_Data2, passport?:PassportObject)  {
         if (!IsValidAddress(data.address)) {
             ERROR(Errors.IsValidAddress, `add_data2.data.address ${data}`)
 
@@ -147,30 +177,59 @@ export class Repository {
         });
         
         if (data?.value_type !== undefined) {
-            data.data.forEach((d) => this.txb.moveCall({
-                target:Protocol.Instance().repositoryFn('add') as FnCallType,
-                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
-                    this.txb.pure.address(data.address),
-                    this.txb.pure.string(d.key), 
-                    this.txb.pure.u8(data.value_type!),
-                    this.txb.pure.vector('u8', [...d.bcsBytes]),
-                    Protocol.TXB_OBJECT(this.txb, this.permission),
-                ],
-            }))       
+            data.data.forEach((d) => {
+                if (passport)   {
+                    this.txb.moveCall({
+                        target:Protocol.Instance().repositoryFn('add_with_passport') as FnCallType,
+                        arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), 
+                            this.txb.pure.address(data.address),
+                            this.txb.pure.string(d.key), 
+                            this.txb.pure.u8(data.value_type!),
+                            this.txb.pure.vector('u8', [...d.bcsBytes]),
+                            Protocol.TXB_OBJECT(this.txb, this.permission),
+                        ],
+                    })    
+                } else {
+                    this.txb.moveCall({
+                        target:Protocol.Instance().repositoryFn('add') as FnCallType,
+                        arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
+                            this.txb.pure.address(data.address),
+                            this.txb.pure.string(d.key), 
+                            this.txb.pure.u8(data.value_type!),
+                            this.txb.pure.vector('u8', [...d.bcsBytes]),
+                            Protocol.TXB_OBJECT(this.txb, this.permission),
+                        ],
+                    })                    
+                }
+            })       
         } else {
-            data.data.forEach((d) => this.txb.moveCall({
-                target:Protocol.Instance().repositoryFn('add_typed_data') as FnCallType,
-                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
-                    this.txb.pure.address(data.address),
-                    this.txb.pure.string(d.key), 
-                    this.txb.pure.vector('u8', [...d.bcsBytes]),
-                    Protocol.TXB_OBJECT(this.txb, this.permission),
-                ],
-            }))   
+            data.data.forEach((d) => {
+                if (passport)   {
+                    this.txb.moveCall({
+                        target:Protocol.Instance().repositoryFn('add_typed_data_with_passport') as FnCallType,
+                        arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), 
+                            this.txb.pure.address(data.address),
+                            this.txb.pure.string(d.key), 
+                            this.txb.pure.vector('u8', [...d.bcsBytes]),
+                            Protocol.TXB_OBJECT(this.txb, this.permission),
+                        ],
+                    })
+                } else {
+                    this.txb.moveCall({
+                        target:Protocol.Instance().repositoryFn('add_typed_data') as FnCallType,
+                        arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
+                            this.txb.pure.address(data.address),
+                            this.txb.pure.string(d.key), 
+                            this.txb.pure.vector('u8', [...d.bcsBytes]),
+                            Protocol.TXB_OBJECT(this.txb, this.permission),
+                        ],
+                    })
+                }
+            })   
         }
     }
 
-    remove(address:string, key:string)  {
+    remove(address:string, key:string, passport?:PassportObject)  {
         if (!Repository.IsValidName(key)) {
             ERROR(Errors.IsValidName)
         } 
@@ -178,15 +237,27 @@ export class Repository {
             ERROR(Errors.IsValidAddress)
         }
         
-        this.txb.moveCall({
-            target:Protocol.Instance().repositoryFn('remove') as FnCallType,
-            arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
-                this.txb.pure.address(address),
-                this.txb.pure.string(key), 
-                Protocol.TXB_OBJECT(this.txb, this.permission),
-            ],
-        })  
+        if (passport) {
+            this.txb.moveCall({
+                target:Protocol.Instance().repositoryFn('remove_with_passport') as FnCallType,
+                arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), 
+                    this.txb.pure.address(address),
+                    this.txb.pure.string(key), 
+                    Protocol.TXB_OBJECT(this.txb, this.permission),
+                ],
+            })      
+        } else {
+            this.txb.moveCall({
+                target:Protocol.Instance().repositoryFn('remove') as FnCallType,
+                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
+                    this.txb.pure.address(address),
+                    this.txb.pure.string(key), 
+                    Protocol.TXB_OBJECT(this.txb, this.permission),
+                ],
+            })  
+        }
     }
+
     add_reference(references:string[], passport?:PassportObject) {
         if (references.length === 0)  return;
         if (!IsValidArray(references, IsValidAddress)) {
@@ -441,9 +512,14 @@ export class Repository {
     static MAX_KEY_LENGTH = 128;
     static MAX_VALUE_LENGTH = 204800;
     static MAX_REFERENCE_COUNT = 100;
+    static MAX_POLICY_DESRIPTION_LENGTH = 256;
 
     static IsValidName = (key:string)  => {
-        return key.length <= Repository.MAX_KEY_LENGTH && key.length != 0;
+        return IsValidStringLength(key, Repository.MAX_KEY_LENGTH) && key.length != 0;
+    }
+    static IsValidPolicyDescription(description:string) {
+        return IsValidStringLength(description, Repository.MAX_POLICY_DESRIPTION_LENGTH)
+
     }
     static IsValidValue = (value:Uint8Array)  => {
         return value.length < Repository.MAX_VALUE_LENGTH;
@@ -480,46 +556,74 @@ export class Repository {
         return rep;
     }
 
-    static DataType2ValueType(data:string) : ValueType | undefined{
+    static DataType2ValueType(data:string | number | bigint) : ValueType | undefined {
         try {
             const value = BigInt(data);
-            var t = ValueType.TYPE_U8;
+            if (value < 0n) return;
+
             if (value <= MAX_U8) {
+                return ValueType.TYPE_U8
             } else if (value <= MAX_U64) {
-                t = ValueType.TYPE_U64;
+                return ValueType.TYPE_U64;
             } else if (value <= MAX_U128) {
-                t = ValueType.TYPE_U128;
+                return ValueType.TYPE_U128;
             } else if (value <= MAX_U256) {
-                t = ValueType.TYPE_U256;
-            } else {
-                return undefined
-            }
+                return ValueType.TYPE_U256;
+            } 
         } catch (e) {
-            console.log(e)
-        } return undefined
+            //console.log(e)
+        } 
     }
 
-    static ResolveRepositoryData = (dataType:RepositoryValueType, data:string | boolean | string[]) : {type:ValueType, data: Uint8Array} | undefined =>  {
+    static ResolveRepositoryData = (dataType:RepositoryValueType, data:bigint | string | boolean | number | string[] | number[])
+        : {type:ValueType, data: Uint8Array} | undefined =>  {
         if (dataType === RepositoryValueType.String) { 
-            return {type: ValueType.TYPE_STRING, data: Bcs.getInstance().ser(ValueType.TYPE_VEC_U8, new TextEncoder().encode(data.toString()))}
-       } else if (dataType === RepositoryValueType.PositiveNumber) {
-            const t = Repository.DataType2ValueType(data as string);
-            if (!t) return undefined;
-            return {type:t, data:Bcs.getInstance().ser(t, data)}
-       } else if (dataType === RepositoryValueType.Address) {
-            if (!IsValidAddress(data as string)) return undefined;
-            return {type:ValueType.TYPE_ADDRESS, data:Bcs.getInstance().ser(ValueType.TYPE_ADDRESS, data)}
-       } else if (dataType === RepositoryValueType.Address_Vec) {
-            for(let i = 0; i < (data as string[]).length; ++i) {
-                if (!IsValidAddress((data as string[])[i])) return undefined; 
+            if (data instanceof Array) {
+                ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.String but array ${data}`);
             }
-            return {type:ValueType.TYPE_VEC_ADDRESS, data:Bcs.getInstance().ser(ValueType.TYPE_VEC_ADDRESS, data)}
+            return {type: ValueType.TYPE_STRING, data: Bcs.getInstance().ser(ValueType.TYPE_STRING, data.toString())}
+        } else if (dataType === RepositoryValueType.PositiveNumber) {
+            if (data instanceof Array) {
+                ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.PositiveNumber but array ${data}`);
+            }
+            const t = Repository.DataType2ValueType(data as string);
+            if (!t) ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.PositiveNumber ${data}`);
+
+            return {type:t!, data:Bcs.getInstance().ser(t!, data)}
+       } else if (dataType === RepositoryValueType.Address) {
+            if (typeof(data) === 'boolean') {
+                ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.Address but boolean ${data}`);
+            }
+            if (data instanceof Array) {
+                ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.Address but array ${data}`);
+            }
+            let addr: string |  undefined ; 
+            if (typeof data === 'string') {
+                addr = data as string;
+            } else {
+                addr = uint2address(data as number | bigint);
+            }
+            
+            if (!IsValidAddress(addr)) ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.Address ${data}`)
+            return {type:ValueType.TYPE_ADDRESS, data:Bcs.getInstance().ser(ValueType.TYPE_ADDRESS, addr)}
+       } else if (dataType === RepositoryValueType.Address_Vec) {
+            if (!(data instanceof Array)) {
+                ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.Address_Vec but not array ${data}`);
+            }
+            const addrs = [];
+            for(let i = 0; i < (data as string[]).length; ++i) {
+                if (!IsValidAddress((data as string[])[i])) ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.Address_Vec ${data}`);
+                addrs.push((data as string[])[i]);
+            }
+            return {type:ValueType.TYPE_VEC_ADDRESS, data:Bcs.getInstance().ser(ValueType.TYPE_VEC_ADDRESS, addrs)}
        } else if (dataType === RepositoryValueType.PositiveNumber_Vec) {
+            if (!(data instanceof Array)) ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.PositiveNumber_Vec but not array ${data}`);
+
             let type = ValueType.TYPE_U8;
             for(let i = 0; i < (data as string[]).length; ++i) {
                 const t = Repository.DataType2ValueType(data as string);
-                if (!t) return undefined;
-                if (t > type) type = t;
+                if (!t) ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.PositiveNumber_Vec ${data}`);
+                if (t! > type) type = t!;
             }
             if (type === ValueType.TYPE_U8) { 
                 type  = ValueType.TYPE_VEC_U8;
@@ -532,15 +636,13 @@ export class Repository {
             }
             return {type:type, data:Bcs.getInstance().ser(type, data)}
        } else if (dataType === RepositoryValueType.String_Vec) {
-            const r = (data as string[]).map((v:string) => {
-                return new TextEncoder().encode(v);
-            })
-            return {type: ValueType.TYPE_VEC_STRING, data: Bcs.getInstance().ser(ValueType.TYPE_VEC_VEC_U8, r)}
+            if (!(data instanceof Array)) ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.String_Vec but not array ${data}`);
+            return {type: ValueType.TYPE_VEC_STRING, data: Bcs.getInstance().ser(ValueType.TYPE_VEC_STRING, data)}
        } else if (dataType === RepositoryValueType.Bool) {
-            if (typeof(data) !== 'boolean') return undefined;
+            if (typeof(data) !== 'boolean') ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType.Bool ${data}`);
             return {type:ValueType.TYPE_BOOL, data:Bcs.getInstance().ser(ValueType.TYPE_BOOL, data)}       
        }
-       return undefined
+       ERROR(Errors.Fail, `ResolveRepositoryData resolve RepositoryValueType ${dataType}`)
     }
 }
 

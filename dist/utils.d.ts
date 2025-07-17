@@ -104,7 +104,7 @@ export interface query_object_param {
     onDynamicErr?: (id: string, err: any) => void;
     onFieldsErr?: (id: string, err: any) => void;
 }
-export declare const uint2address: (value: number | bigint) => string;
+export declare const uint2address: (value: number | bigint | string) => string;
 export declare const query_object: (param: query_object_param) => void;
 export declare const FirstLetterUppercase: (str: string | undefined | null) => string;
 export declare function hasDuplicates<T>(array: T[]): boolean;
