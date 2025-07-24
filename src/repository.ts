@@ -1,4 +1,4 @@
-import { Protocol, FnCallType, ValueType, RepositoryValueType, RepositoryAddress, PermissionObject, PassportObject, TxbObject, } from './protocol.js';
+import { Protocol, FnCallType, ValueType, RepositoryValueType, RepositoryAddress, PermissionObject, PassportObject, TxbObject, GuardObject, } from './protocol.js';
 import { PermissionIndexType, Permission } from './permission.js'
 import { Bcs, array_unique, IsValidDesription, IsValidAddress, IsValidArray, IsValidName,  ValueTypeConvert, IsValidStringLength, uint2address} from './utils.js';
 import { ERROR, Errors } from './exception.js';
@@ -443,6 +443,38 @@ export class Repository {
                 target:Protocol.Instance().repositoryFn('mode_set') as FnCallType,
                 arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.u8(policy_mode), Protocol.TXB_OBJECT(this.txb, this.permission)]
             })  
+        }  
+    }
+
+    set_guard(guard?:GuardObject | null, passport?:PassportObject)  {
+        if (guard && !Protocol.IsValidObjects([guard])) {
+            ERROR(Errors.IsValidObjects, `set_guard.guard ${guard}`);
+        }
+
+        if (passport) {
+            if (guard) {
+                this.txb.moveCall({
+                    target:Protocol.Instance().repositoryFn('guard_set_with_passport') as FnCallType,
+                    arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, guard), Protocol.TXB_OBJECT(this.txb, this.permission)]
+                })  
+            } else {
+                this.txb.moveCall({
+                    target:Protocol.Instance().repositoryFn('guard_none_with_passport') as FnCallType,
+                    arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, this.permission)]
+                })
+            }
+        } else {
+            if (guard) {
+                this.txb.moveCall({
+                    target:Protocol.Instance().repositoryFn('guard_set') as FnCallType,
+                    arguments:[Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, guard), Protocol.TXB_OBJECT(this.txb, this.permission)]
+                })  
+            } else {
+                this.txb.moveCall({
+                    target:Protocol.Instance().repositoryFn('guard_none') as FnCallType,
+                    arguments:[Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, this.permission)]
+                })
+            }
         }  
     }
 

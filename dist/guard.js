@@ -3,6 +3,8 @@ import { concatenate, array_equal, IsValidU8, IsValidDesription, Bcs, IsValidAdd
 import { ERROR, Errors } from './exception.js';
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 import { bcs } from '@mysten/sui/bcs';
+// commands for check guard (repository data query)
+export const CMD_CHECK_GUARD = [112, 113, 114, 115, 116, 117, 118, 119];
 export const GUARD_QUERIES = [
     // module, 'name', 'id', [input], output
     { module: MODULES.permission, query_name: 'Owner', query_id: 1, parameters: [], return: ValueType.TYPE_ADDRESS, description: "Owner's address." },
@@ -20,8 +22,8 @@ export const GUARD_QUERIES = [
     { module: MODULES.repository, query_name: 'Permission of Policy', query_id: 103, parameters: [ValueType.TYPE_STRING], return: ValueType.TYPE_U64, description: 'The permission index of a certain consensus policy in the Permission object.', parameters_description: ['the policy name'] },
     { module: MODULES.repository, query_name: 'Value Type of Policy', query_id: 104, parameters: [ValueType.TYPE_STRING], return: ValueType.TYPE_U8, description: 'Data types defined by consensus policy.', parameters_description: ['the policy name'] },
     { module: MODULES.repository, query_name: 'Contains Data', query_id: 105, parameters: [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return: ValueType.TYPE_BOOL, description: 'Does it contain data for a certain field of an address?', parameters_description: ['address', 'the field name'] },
-    { module: MODULES.repository, query_name: 'Raw data without Type', query_id: 106, parameters: [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return: ValueType.TYPE_VEC_U8, description: 'Data for a field at an address and does not contain data type information.', parameters_description: ['address', 'the field name'] },
-    { module: MODULES.repository, query_name: 'Raw data', query_id: 107, parameters: [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return: ValueType.TYPE_VEC_U8, description: 'Data for a field at an address, and the first byte contains data type information.', parameters_description: ['address', 'the field name'] },
+    { module: MODULES.repository, query_name: 'Is Guard for data query been set', query_id: 106, parameters: [], return: ValueType.TYPE_BOOL, description: 'Has the guard for data query been set?', parameters_description: [] },
+    { module: MODULES.repository, query_name: 'Guard address for data query', query_id: 107, parameters: [], return: ValueType.TYPE_ADDRESS, description: 'The guard address for data query.', parameters_description: [] },
     { module: MODULES.repository, query_name: 'Type', query_id: 108, parameters: [], return: ValueType.TYPE_U8, description: 'The repository Type. 0: Normal; 1: Wowok greenee.', },
     { module: MODULES.repository, query_name: 'Policy Mode', query_id: 109, parameters: [], return: ValueType.TYPE_U8, description: 'Policy Mode. 0: Free mode;  1: Strict mode.', },
     { module: MODULES.repository, query_name: 'Reference Count', query_id: 110, parameters: [], return: ValueType.TYPE_U64, description: 'The number of times it is referenced by other objects.', },
@@ -34,6 +36,8 @@ export const GUARD_QUERIES = [
     { module: MODULES.repository, query_name: 'String Vector Data', query_id: 117, parameters: [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return: ValueType.TYPE_VEC_STRING, description: 'Data for a field at an address and get string vector type data.', parameters_description: ['address', 'the field name'] },
     { module: MODULES.repository, query_name: 'Address Vector Data', query_id: 118, parameters: [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return: ValueType.TYPE_VEC_ADDRESS, description: 'Data for a field at an address and get address vector type data.', parameters_description: ['address', 'the field name'] },
     { module: MODULES.repository, query_name: 'Bool Vector Data', query_id: 119, parameters: [ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return: ValueType.TYPE_VEC_BOOL, description: 'Data for a field at an address and get bool vector type data.', parameters_description: ['address', 'the field name'] },
+    //{module:MODULES.repository, query_name:'Raw data without Type', query_id:106, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_VEC_U8,  description:'Data for a field at an address and does not contain data type information.', parameters_description:['address', 'the field name']},       
+    //{module:MODULES.repository, query_name:'Raw data', query_id:107, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_VEC_U8,  description:'Data for a field at an address, and the first byte contains data type information.', parameters_description:['address', 'the field name']},
     { module: MODULES.entity, query_name: 'Has Entity', query_id: 200, parameters: [ValueType.TYPE_ADDRESS], return: ValueType.TYPE_BOOL, description: 'Is an entity already registered?', parameters_description: ['address'] },
     { module: MODULES.entity, query_name: 'Likes', query_id: 201, parameters: [ValueType.TYPE_ADDRESS], return: ValueType.TYPE_U64, description: 'The number of likes for an address by other addresses.', parameters_description: ['address'] },
     { module: MODULES.entity, query_name: 'Dislikes', query_id: 202, parameters: [ValueType.TYPE_ADDRESS], return: ValueType.TYPE_U64, description: 'The number of dislikes for an address by other addresses.', parameters_description: ['address'] },
@@ -52,6 +56,7 @@ export const GUARD_QUERIES = [
     { module: MODULES.demand, query_name: 'Presenter of the Service', query_id: 310, parameters: [ValueType.TYPE_ADDRESS], return: ValueType.TYPE_ADDRESS, description: 'Address that recommends the service', parameters_description: ['service address'] },
     { module: MODULES.demand, query_name: 'Type', query_id: 311, parameters: [], return: ValueType.TYPE_STRING, description: 'The type name(eg. contains "2::sui::SUI")', parameters_description: [] },
     { module: MODULES.demand, query_name: 'Type with Original Ids', query_id: 312, parameters: [], return: ValueType.TYPE_STRING, description: 'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description: [] },
+    { module: MODULES.demand, query_name: 'Location', query_id: 313, parameters: [], return: ValueType.TYPE_STRING, description: 'location or coordinate address', parameters_description: [] },
     { module: MODULES.service, query_name: 'Permission', query_id: 400, parameters: [], return: ValueType.TYPE_ADDRESS, description: 'Permission object address.', },
     { module: MODULES.service, query_name: 'Payee', query_id: 401, parameters: [], return: ValueType.TYPE_ADDRESS, description: 'Payee address, that all order withdrawals will be collected to this address.', },
     { module: MODULES.service, query_name: 'Has Buying Guard', query_id: 402, parameters: [], return: ValueType.TYPE_BOOL, description: 'Is the guard condition of buying set?', },
@@ -77,6 +82,7 @@ export const GUARD_QUERIES = [
     { module: MODULES.service, query_name: 'Contains Arbitration', query_id: 422, parameters: [ValueType.TYPE_ADDRESS], return: ValueType.TYPE_BOOL, description: 'Does it contain an arbitration that allows a refund to be made from the order at any time based on the arbitration result.?', parameters_description: ['arbitration address'] },
     { module: MODULES.service, query_name: 'Type', query_id: 423, parameters: [], return: ValueType.TYPE_STRING, description: 'The type name(eg. contains "2::sui::SUI")', parameters_description: [] },
     { module: MODULES.service, query_name: 'Type with Original Ids', query_id: 424, parameters: [], return: ValueType.TYPE_STRING, description: 'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description: [] },
+    { module: MODULES.service, query_name: 'Location', query_id: 425, parameters: [], return: ValueType.TYPE_STRING, description: 'location or coordinate address', parameters_description: [] },
     { module: MODULES.order, query_name: 'Amount', query_id: 500, parameters: [], return: ValueType.TYPE_U64, description: 'Order amount.', },
     { module: MODULES.order, query_name: 'Payer', query_id: 501, parameters: [], return: ValueType.TYPE_ADDRESS, description: 'Order payer.', },
     { module: MODULES.order, query_name: 'Service', query_id: 502, parameters: [], return: ValueType.TYPE_ADDRESS, description: 'Service for creating orders.', },
@@ -197,6 +203,7 @@ export const GUARD_QUERIES = [
     { module: MODULES.arbitration, query_name: 'Treasury', query_id: 1510, parameters: [], return: ValueType.TYPE_ADDRESS, description: 'The address of the Treasury where fees was collected at the time of withdrawal.', },
     { module: MODULES.arbitration, query_name: 'Type', query_id: 1511, parameters: [], return: ValueType.TYPE_STRING, description: 'The type name(eg. contains "2::sui::SUI")', parameters_description: [] },
     { module: MODULES.arbitration, query_name: 'Type with Original Ids', query_id: 1512, parameters: [], return: ValueType.TYPE_STRING, description: 'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description: [] },
+    { module: MODULES.arbitration, query_name: 'Location', query_id: 1513, parameters: [], return: ValueType.TYPE_STRING, description: 'location or coordinate address', parameters_description: [] },
     { module: MODULES.arb, query_name: 'Order', query_id: 1600, parameters: [], return: ValueType.TYPE_ADDRESS, description: 'Order under arbitration.', },
     { module: MODULES.arb, query_name: 'Arbitration', query_id: 1601, parameters: [], return: ValueType.TYPE_ADDRESS, description: "Arbitration object address.", },
     { module: MODULES.arb, query_name: 'Feedback', query_id: 1602, parameters: [], return: ValueType.TYPE_STRING, description: 'Arbitration feedback.', },
@@ -218,12 +225,14 @@ export var FunctionGroup;
     FunctionGroup["txn"] = "Txn Functions";
     FunctionGroup["number"] = "Number Crunching";
     FunctionGroup["logic"] = "Compare or Logic";
+    FunctionGroup["string"] = "String Functions";
 })(FunctionGroup || (FunctionGroup = {}));
 export const GuardFunctions = [
     { from: 'type', name: 'Txn Signer', value: ContextType.TYPE_SIGNER, group: FunctionGroup.txn, return: ValueType.TYPE_ADDRESS },
     { from: 'type', name: 'Txn Time', value: ContextType.TYPE_CLOCK, group: FunctionGroup.txn, return: ValueType.TYPE_U64 },
     { from: 'type', name: 'Guard Address', value: ContextType.TYPE_GUARD, group: FunctionGroup.txn, return: ValueType.TYPE_ADDRESS },
     { from: 'type', name: 'PositiveNumber to Address', value: OperatorType.TYPE_NUMBER_ADDRESS, group: FunctionGroup.number, return: ValueType.TYPE_ADDRESS },
+    { from: 'type', name: 'Convert the string to lowercase', value: OperatorType.TYPE_STRING_LOWERCASE, group: FunctionGroup.string, return: ValueType.TYPE_STRING },
     { from: 'type', name: 'PositiveNumber Add (+)', value: OperatorType.TYPE_NUMBER_ADD, group: FunctionGroup.number, return: 'number' },
     { from: 'type', name: 'PositiveNumber Subtract (-)', value: OperatorType.TYPE_NUMBER_SUBTRACT, group: FunctionGroup.number, return: 'number' },
     { from: 'type', name: 'PositiveNumber Multiply (*)', value: OperatorType.TYPE_NUMBER_MULTIPLY, group: FunctionGroup.number, return: 'number' },
@@ -367,9 +376,10 @@ Guard.AllOptions = () => {
     return [...r, ...GuardFunctions, ...Guard.Logics()];
 };
 Guard.StringOptions = () => {
-    return [...Guard.CmdFilter(ValueType.TYPE_STRING)].map((v) => {
+    const q = Guard.CmdFilter(ValueType.TYPE_STRING).map((v) => {
         return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return };
     });
+    return [...q, ...GuardFunctions.filter(v => v.return === ValueType.TYPE_STRING)];
 };
 Guard.BoolOptions = () => {
     const n1 = Guard.BoolCmd.map((v) => { return { from: 'query', name: v.query_name, value: v.query_id, group: FirstLetterUppercase(v.module), return: v.return }; });
@@ -623,6 +633,16 @@ export class GuardMaker {
                     ERROR(Errors.Fail, 'type_validator.length:' + e);
                 }
                 if (!GuardMaker.match_u256(this.type_validator[this.type_validator.length - 1])) {
+                    ERROR(Errors.Fail, 'type_validator check:' + e);
+                }
+                break;
+            case OperatorType.TYPE_STRING_LOWERCASE:
+                splice_len = 1;
+                ret = ValueType.TYPE_STRING;
+                if (this.type_validator.length < splice_len) {
+                    ERROR(Errors.Fail, 'type_validator.length:' + e);
+                }
+                if (this.type_validator[this.type_validator.length - 1] !== ValueType.TYPE_STRING) {
                     ERROR(Errors.Fail, 'type_validator check:' + e);
                 }
                 break;

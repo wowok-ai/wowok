@@ -28,11 +28,13 @@ export interface GuardQuery {
     description: string;
     parameters_description?: string[];
 }
+export declare const CMD_CHECK_GUARD: number[];
 export declare const GUARD_QUERIES: GuardQuery[];
 export declare enum FunctionGroup {
     txn = "Txn Functions",
     number = "Number Crunching",
-    logic = "Compare or Logic"
+    logic = "Compare or Logic",
+    string = "String Functions"
 }
 export declare const GuardFunctions: Guard_Options[];
 export declare class Guard {

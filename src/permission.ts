@@ -10,6 +10,7 @@ export enum PermissionIndex {
     repository_mode = 102,
     repository_policies = 103,
     repository_reference = 104,
+    repository_guard = 105,
 
     service = 200,
     service_description = 201,
@@ -30,6 +31,7 @@ export enum PermissionIndex {
     service_treasury = 216,
     service_arbitration = 217,
     service_location = 218,
+    service_refund = 219,
 
     demand = 260,
     demand_refund = 261,
@@ -93,6 +95,7 @@ export const PermissionInfo : PermissionInfoType[] = [
     {index:PermissionIndex.repository_mode, name:'Policy mode', description:'Set Repository mode', module: MODULES.repository},
     {index:PermissionIndex.repository_policies, name:'Policy', description:'Set Repository policies', module: MODULES.repository},
     {index:PermissionIndex.repository_reference, name:'Reference', description:'Set Repository reference', module: MODULES.repository},
+    {index:PermissionIndex.repository_guard, name:'Guard', description:'Set Guard for data query', module: MODULES.repository},
 
     {index:PermissionIndex.service, name:'Service', description:'Launch new Service', module: MODULES.service},
     {index:PermissionIndex.service_description, name:'Description', description:'Set Service description', module: MODULES.service},
@@ -112,6 +115,7 @@ export const PermissionInfo : PermissionInfoType[] = [
     {index:PermissionIndex.service_treasury, name:'Treasury', description:'Externally withdrawable treasury for compensation or rewards', module: MODULES.service},
     {index:PermissionIndex.service_arbitration, name:'Arbitration', description:'Add/Remove arbitration that allows refunds from orders at any time based on arbitration results', module: MODULES.service},
     {index:PermissionIndex.service_location, name:'Location', description:'Set Service location', module: MODULES.service},
+    {index:PermissionIndex.service_refund, name:'Refund', description:'Initiate order refund', module: MODULES.service},
 
     {index:PermissionIndex.demand, name:'Demand', description:'Launch new Demand', module: MODULES.demand},
     {index:PermissionIndex.demand_refund, name:'Refund', description:'Refund from Demand', module: MODULES.demand},

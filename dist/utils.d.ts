@@ -24,6 +24,7 @@ export declare const cb_U64: (arr: any[], i: number, length: number) => any;
 export declare const cb_U128: (arr: any[], i: number, length: number) => any;
 export declare const cb_U256: (arr: any[], i: number, length: number) => any;
 export declare const concatenate: (resultConstructor: any, ...arrays: any[]) => any;
+export declare function deepCopy<T>(obj: T): T;
 export declare const parseObjectType: (chain_type: string | null | undefined, header?: string) => string;
 export declare const array_equal: (arr1: any[], arr2: any[]) => boolean;
 export declare const array_unique: (arr: any[]) => any[];

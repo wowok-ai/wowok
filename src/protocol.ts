@@ -78,6 +78,7 @@ export enum OperatorType {
     TYPE_NUMBER_DEVIDE = 5, 
     TYPE_NUMBER_MOD = 6,
     TYPE_NUMBER_ADDRESS = 7,
+    TYPE_STRING_LOWERCASE = 8, // string to lowercase
 
     TYPE_LOGIC_AS_U256_GREATER = 11,
     TYPE_LOGIC_AS_U256_GREATER_EQUAL = 12,
@@ -210,15 +211,15 @@ export enum ENTRYPOINT {
 }
 
 const TESTNET = {
-    wowok: "0x661357b99ce7ece747c9ef365a5bf555f5ebeac8effed12d0f5920816e618de4",
-    wowok_origin:'0x661357b99ce7ece747c9ef365a5bf555f5ebeac8effed12d0f5920816e618de4' ,
-    base: '0xae90f6a083954653560771bc1cff940bcd532c1f348a69ff03770335c6c52173',
-    base_origin: '0xae90f6a083954653560771bc1cff940bcd532c1f348a69ff03770335c6c52173',
+    wowok: "0xd22f1ea12cf0b6a51efa99c0380f677cd3b9e656c67fc8f624ea091ca7a3d772",
+    wowok_origin:'0xd22f1ea12cf0b6a51efa99c0380f677cd3b9e656c67fc8f624ea091ca7a3d772' ,
+    base: '0x846c084a6f26b05a807047106cf6ff915c43a989a1c0dd49a17c6047ccf70a63',
+    base_origin: '0x846c084a6f26b05a807047106cf6ff915c43a989a1c0dd49a17c6047ccf70a63',
 
-    wowok_object: '0xb36e50e9a9dab110b385304f82c440ff04a5cd6a84b4c12d9131811b262c7373',
-    entity_object: '0x6a9c149565dd2bf0c9e04fd59965403c741180db7960c100606b8ae19b84ef73',
-    treasury_cap:'0xecc1a7c48f15f0b85d515a1bd3c9cd53c2e1fe50944db29e85b9355cc7827829',
-    oracle_object:'0x0a7fedc81b6d33e9791d78df8bfb2c7c60e3681462dba82926d8e1f961690f59',
+    wowok_object: '0xf250b63c6566916ff51a8d81c825ecacf7cf4002fc14b061446052e75e82819b',
+    entity_object: '0x5f96d21bb16b9d6a44509715625a96701dfe3f113c478c98ffe96e33439cacef',
+    treasury_cap:'0xd649d296ddbf650787291878a4253b4d3f955b7fea0122c5683042c5a9dc4636',
+    oracle_object:'0x452af9867cf69afc11c3c7c671ce4c58d2b26181a3d006e61a4b007d14776d0a',
 }
 const MAINNET = {
     wowok: "",

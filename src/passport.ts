@@ -2,9 +2,9 @@ import { type TransactionObjectInput, Inputs, Transaction as TransactionBlock, T
 import { SuiObjectResponse } from '@mysten/sui/client';
 import { FnCallType, GuardObject, Protocol, ContextType, OperatorType, Data_Type,
     ValueType, SER_VALUE, IsValidOperatorType } from './protocol.js';
-import { parse_object_type, array_unique, Bcs, ulebDecode, IsValidAddress, IsValidArray, insertAtHead, readOption, readOptionString } from './utils.js';
+import { parse_object_type, array_unique, Bcs, ulebDecode, IsValidAddress, IsValidArray, insertAtHead, readOption, readOptionString, deepCopy } from './utils.js';
 import { ERROR, Errors } from './exception.js';
-import { Guard, GuardMaker } from './guard.js';
+import { CMD_CHECK_GUARD, Guard, GuardMaker } from './guard.js';
 import { bcs } from '@mysten/sui/bcs';
 
 export type Guard_Query_Object = {
@@ -102,7 +102,7 @@ export class GuardParser {
         switch (current.type) {
             case OperatorType.TYPE_LOGIC_NOT:
                 current.ret_type = ValueType.TYPE_BOOL;
-                if (stack.length < 1) ERROR(Errors.Fail, 'ResolveData: TYPE_LOGIC_NOT');
+                if (stack.length < 1) ERROR(Errors.Fail, `ResolveData: TYPE_LOGIC_NOT`);
 
                 var param = stack.pop() as DeGuardData;
                 if (!param.ret_type || param.ret_type !=  ValueType.TYPE_BOOL) {
@@ -119,6 +119,18 @@ export class GuardParser {
                 var param = stack.pop() as DeGuardData;
                 if (!param.ret_type || !GuardMaker.match_u256(param.ret_type)) {
                     ERROR(Errors.Fail, 'ResolveData: TYPE_NUMBER_ADDRESS type invalid');
+                }
+
+                current.child.push(param);
+                stack.push(current);
+                return;
+            case OperatorType.TYPE_STRING_LOWERCASE:
+                current.ret_type = ValueType.TYPE_STRING;
+                if (stack.length < 1) ERROR(Errors.Fail, 'ResolveData: TYPE_STRING_LOWERCASE');
+
+                var param = stack.pop() as DeGuardData;
+                if (!param.ret_type || param.ret_type !== ValueType.TYPE_STRING) {
+                    ERROR(Errors.Fail, 'ResolveData: TYPE_STRING_LOWERCASE type invalid');
                 }
 
                 current.child.push(param);
@@ -244,12 +256,13 @@ export class GuardParser {
                 return;
                 
         }   
-        ERROR(Errors.Fail, 'OperateParamCount: type  invalid ' + current.type);
+        ERROR(Errors.Fail, 'OperateParamCount: type invalid ' + current.type);
     }
 
-    private static  Parse_Guard_Helper(guards: string[], res:SuiObjectResponse[]) {
+    private static  Parse_Guard_Helper(guards: string[], res:SuiObjectResponse[]) : GuardParser{
         const protocol = Protocol.Instance();
         const me = new GuardParser(guards);
+        
         res.forEach((r) => {
             const c = r.data?.content as any;
             if (!c) ERROR(Errors.Fail, 'Parse_Guard_Helper invalid content');
@@ -267,25 +280,70 @@ export class GuardParser {
         return me
     }
 
-    static Create = async (guards: string[], onGuardInfo?:(parser:GuardParser|undefined)=>void) => {
+    static Create = async (guards: string[]) : Promise<GuardParser | undefined> => {
         if (!IsValidArray(guards, IsValidAddress)) {
-            if (onGuardInfo) onGuardInfo(undefined);
             return undefined;
         }
 
         let guard_list = array_unique(guards);
-        if (onGuardInfo) {
-            Protocol.Instance().query_raw(guard_list)
-                .then((res) => { 
-                    onGuardInfo(GuardParser.Parse_Guard_Helper(guards, res)); 
-                }).catch((e) => { 
-                    console.log(e);
-                    onGuardInfo(undefined); 
-                })            
-        } else {
-            const res = await Protocol.Instance().query_raw(guard_list);
-            return GuardParser.Parse_Guard_Helper(guards, res);
+        let check_guards = [...guard_list]; 
+        let i = 0; const parsers : GuardParser[] = [];
+
+        for (;i < GuardParser.MAX_REPOSITORY_DEPTH; ++i) {  
+            const res = await Protocol.Instance().query_raw(check_guards);
+            const p = GuardParser.Parse_Guard_Helper(guards, res);
+
+            const repositories: string[] = [];
+            p.guardlist().forEach((g) => {
+                g.input.forEach((i) => {
+                    if (i.cmd !== undefined && CMD_CHECK_GUARD.includes(i.cmd)) {
+                        if (i.identifier !== undefined) {
+                            const id = g.constant.find((c) => c.identifier === i.identifier);
+                            if (id && id.value) {
+                                repositories.push(id.value);
+                            } 
+                        } else if (i.value) {
+                            repositories.push(i.value as string);
+                        }
+                    }
+                });  
+            });
+
+            parsers.push(p);
+            if (repositories.length === 0) {
+                break;
+            }
+
+            check_guards = await GuardParser.RepositoryGuards(repositories);
+            if (check_guards.length === 0) {
+                break;
+            }
         }
+
+        if (i >= GuardParser.MAX_REPOSITORY_DEPTH) {
+            ERROR(Errors.Fail, `GuardParser.Create: Retrieve guards from the Repository with a maximum depth of more than ${GuardParser.MAX_REPOSITORY_DEPTH} levels.`);
+        }
+
+        // concatenate all parsers
+        for (let i = 1; i < parsers.length; ++i) {
+            parsers[0].guard_list = parsers[0].guard_list.concat(deepCopy(parsers[i].guard_list));
+            parsers[0].guards = parsers[0].guards.concat(parsers[i].guards);
+        }
+        if (parsers.length > 0) {
+            return parsers[0];
+        }
+    }
+
+    // fetch repository guards
+    static RepositoryGuards = async (repositories: string[]) : Promise<string[]> => {
+        const res = await Protocol.Instance().query_raw(repositories);
+        const guards : string[] = [];
+        for (let i=0; i < res.length; ++i) {
+            if ((res[i].data?.content as any)?.fields?.guard) {
+                guards.push((res[i].data?.content as any).fields.guard);
+            }
+        }
+        return guards;
     }
 
     future_fills = () : WitnessFill[] => {
@@ -369,6 +427,7 @@ export class GuardParser {
                 case ContextType.TYPE_GUARD:
                 case OperatorType.TYPE_LOGIC_NOT:
                 case OperatorType.TYPE_NUMBER_ADDRESS:
+                case OperatorType.TYPE_STRING_LOWERCASE:
                     break;
                 case OperatorType.TYPE_LOGIC_AS_U256_GREATER:
                 case OperatorType.TYPE_LOGIC_AS_U256_GREATER_EQUAL:
@@ -593,6 +652,7 @@ export class GuardParser {
             }
         }
     }
+    static MAX_REPOSITORY_DEPTH = 3;
 }
 
 export class Passport {

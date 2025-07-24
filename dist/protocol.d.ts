@@ -64,6 +64,7 @@ export declare enum OperatorType {
     TYPE_NUMBER_DEVIDE = 5,
     TYPE_NUMBER_MOD = 6,
     TYPE_NUMBER_ADDRESS = 7,
+    TYPE_STRING_LOWERCASE = 8,// string to lowercase
     TYPE_LOGIC_AS_U256_GREATER = 11,
     TYPE_LOGIC_AS_U256_GREATER_EQUAL = 12,
     TYPE_LOGIC_AS_U256_LESSER = 13,

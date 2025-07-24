@@ -115,6 +115,18 @@ export const concatenate = (resultConstructor, ...arrays) => {
     }
     return result;
 };
+export function deepCopy(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+    const copy = Array.isArray(obj) ? [] : {};
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            copy[key] = deepCopy(obj[key]);
+        }
+    }
+    return copy;
+}
 export const parseObjectType = (chain_type, header = 'payment::Payment<') => {
     if (chain_type) {
         const i = chain_type.indexOf(header);

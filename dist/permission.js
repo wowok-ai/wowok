@@ -9,6 +9,7 @@ export var PermissionIndex;
     PermissionIndex[PermissionIndex["repository_mode"] = 102] = "repository_mode";
     PermissionIndex[PermissionIndex["repository_policies"] = 103] = "repository_policies";
     PermissionIndex[PermissionIndex["repository_reference"] = 104] = "repository_reference";
+    PermissionIndex[PermissionIndex["repository_guard"] = 105] = "repository_guard";
     PermissionIndex[PermissionIndex["service"] = 200] = "service";
     PermissionIndex[PermissionIndex["service_description"] = 201] = "service_description";
     PermissionIndex[PermissionIndex["service_sales"] = 202] = "service_sales";
@@ -28,6 +29,7 @@ export var PermissionIndex;
     PermissionIndex[PermissionIndex["service_treasury"] = 216] = "service_treasury";
     PermissionIndex[PermissionIndex["service_arbitration"] = 217] = "service_arbitration";
     PermissionIndex[PermissionIndex["service_location"] = 218] = "service_location";
+    PermissionIndex[PermissionIndex["service_refund"] = 219] = "service_refund";
     PermissionIndex[PermissionIndex["demand"] = 260] = "demand";
     PermissionIndex[PermissionIndex["demand_refund"] = 261] = "demand_refund";
     PermissionIndex[PermissionIndex["demand_expand_time"] = 262] = "demand_expand_time";
@@ -77,6 +79,7 @@ export const PermissionInfo = [
     { index: PermissionIndex.repository_mode, name: 'Policy mode', description: 'Set Repository mode', module: MODULES.repository },
     { index: PermissionIndex.repository_policies, name: 'Policy', description: 'Set Repository policies', module: MODULES.repository },
     { index: PermissionIndex.repository_reference, name: 'Reference', description: 'Set Repository reference', module: MODULES.repository },
+    { index: PermissionIndex.repository_guard, name: 'Guard', description: 'Set Guard for data query', module: MODULES.repository },
     { index: PermissionIndex.service, name: 'Service', description: 'Launch new Service', module: MODULES.service },
     { index: PermissionIndex.service_description, name: 'Description', description: 'Set Service description', module: MODULES.service },
     { index: PermissionIndex.service_sales, name: 'Sales', description: 'Set Service sales items', module: MODULES.service },
@@ -95,6 +98,7 @@ export const PermissionInfo = [
     { index: PermissionIndex.service_treasury, name: 'Treasury', description: 'Externally withdrawable treasury for compensation or rewards', module: MODULES.service },
     { index: PermissionIndex.service_arbitration, name: 'Arbitration', description: 'Add/Remove arbitration that allows refunds from orders at any time based on arbitration results', module: MODULES.service },
     { index: PermissionIndex.service_location, name: 'Location', description: 'Set Service location', module: MODULES.service },
+    { index: PermissionIndex.service_refund, name: 'Refund', description: 'Initiate order refund', module: MODULES.service },
     { index: PermissionIndex.demand, name: 'Demand', description: 'Launch new Demand', module: MODULES.demand },
     { index: PermissionIndex.demand_refund, name: 'Refund', description: 'Refund from Demand', module: MODULES.demand },
     { index: PermissionIndex.demand_expand_time, name: 'Expand deadline', description: 'Expand Demand deadline', module: MODULES.demand },

@@ -400,6 +400,39 @@ export class Repository {
             });
         }
     }
+    set_guard(guard, passport) {
+        if (guard && !Protocol.IsValidObjects([guard])) {
+            ERROR(Errors.IsValidObjects, `set_guard.guard ${guard}`);
+        }
+        if (passport) {
+            if (guard) {
+                this.txb.moveCall({
+                    target: Protocol.Instance().repositoryFn('guard_set_with_passport'),
+                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, guard), Protocol.TXB_OBJECT(this.txb, this.permission)]
+                });
+            }
+            else {
+                this.txb.moveCall({
+                    target: Protocol.Instance().repositoryFn('guard_none_with_passport'),
+                    arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, this.permission)]
+                });
+            }
+        }
+        else {
+            if (guard) {
+                this.txb.moveCall({
+                    target: Protocol.Instance().repositoryFn('guard_set'),
+                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, guard), Protocol.TXB_OBJECT(this.txb, this.permission)]
+                });
+            }
+            else {
+                this.txb.moveCall({
+                    target: Protocol.Instance().repositoryFn('guard_none'),
+                    arguments: [Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, this.permission)]
+                });
+            }
+        }
+    }
     set_policy_description(policy, description, passport) {
         if (!Repository.IsValidName(policy)) {
             ERROR(Errors.IsValidName, 'policy');

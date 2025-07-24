@@ -1,9 +1,9 @@
 var _a;
 import { Inputs } from '@mysten/sui/transactions';
 import { Protocol, ContextType, OperatorType, ValueType, SER_VALUE } from './protocol.js';
-import { parse_object_type, array_unique, Bcs, ulebDecode, IsValidAddress, IsValidArray, readOption, readOptionString } from './utils.js';
+import { parse_object_type, array_unique, Bcs, ulebDecode, IsValidAddress, IsValidArray, readOption, readOptionString, deepCopy } from './utils.js';
 import { ERROR, Errors } from './exception.js';
-import { Guard, GuardMaker } from './guard.js';
+import { CMD_CHECK_GUARD, Guard, GuardMaker } from './guard.js';
 import { bcs } from '@mysten/sui/bcs';
 export class GuardParser {
     constructor(guards) {
@@ -173,7 +173,7 @@ GuardParser.ResolveData = (constants, stack, current) => {
         case OperatorType.TYPE_LOGIC_NOT:
             current.ret_type = ValueType.TYPE_BOOL;
             if (stack.length < 1)
-                ERROR(Errors.Fail, 'ResolveData: TYPE_LOGIC_NOT');
+                ERROR(Errors.Fail, `ResolveData: TYPE_LOGIC_NOT`);
             var param = stack.pop();
             if (!param.ret_type || param.ret_type != ValueType.TYPE_BOOL) {
                 ERROR(Errors.Fail, 'ResolveData: TYPE_LOGIC_NOT type invalid');
@@ -188,6 +188,17 @@ GuardParser.ResolveData = (constants, stack, current) => {
             var param = stack.pop();
             if (!param.ret_type || !GuardMaker.match_u256(param.ret_type)) {
                 ERROR(Errors.Fail, 'ResolveData: TYPE_NUMBER_ADDRESS type invalid');
+            }
+            current.child.push(param);
+            stack.push(current);
+            return;
+        case OperatorType.TYPE_STRING_LOWERCASE:
+            current.ret_type = ValueType.TYPE_STRING;
+            if (stack.length < 1)
+                ERROR(Errors.Fail, 'ResolveData: TYPE_STRING_LOWERCASE');
+            var param = stack.pop();
+            if (!param.ret_type || param.ret_type !== ValueType.TYPE_STRING) {
+                ERROR(Errors.Fail, 'ResolveData: TYPE_STRING_LOWERCASE type invalid');
             }
             current.child.push(param);
             stack.push(current);
@@ -320,28 +331,66 @@ GuardParser.ResolveData = (constants, stack, current) => {
             stack.push(current);
             return;
     }
-    ERROR(Errors.Fail, 'OperateParamCount: type  invalid ' + current.type);
+    ERROR(Errors.Fail, 'OperateParamCount: type invalid ' + current.type);
 };
-GuardParser.Create = async (guards, onGuardInfo) => {
+GuardParser.Create = async (guards) => {
     if (!IsValidArray(guards, IsValidAddress)) {
-        if (onGuardInfo)
-            onGuardInfo(undefined);
         return undefined;
     }
     let guard_list = array_unique(guards);
-    if (onGuardInfo) {
-        Protocol.Instance().query_raw(guard_list)
-            .then((res) => {
-            onGuardInfo(_a.Parse_Guard_Helper(guards, res));
-        }).catch((e) => {
-            console.log(e);
-            onGuardInfo(undefined);
+    let check_guards = [...guard_list];
+    let i = 0;
+    const parsers = [];
+    for (; i < _a.MAX_REPOSITORY_DEPTH; ++i) {
+        const res = await Protocol.Instance().query_raw(check_guards);
+        const p = _a.Parse_Guard_Helper(guards, res);
+        const repositories = [];
+        p.guardlist().forEach((g) => {
+            g.input.forEach((i) => {
+                if (i.cmd !== undefined && CMD_CHECK_GUARD.includes(i.cmd)) {
+                    if (i.identifier !== undefined) {
+                        const id = g.constant.find((c) => c.identifier === i.identifier);
+                        if (id && id.value) {
+                            repositories.push(id.value);
+                        }
+                    }
+                    else if (i.value) {
+                        repositories.push(i.value);
+                    }
+                }
+            });
         });
+        parsers.push(p);
+        if (repositories.length === 0) {
+            break;
+        }
+        check_guards = await _a.RepositoryGuards(repositories);
+        if (check_guards.length === 0) {
+            break;
+        }
     }
-    else {
-        const res = await Protocol.Instance().query_raw(guard_list);
-        return _a.Parse_Guard_Helper(guards, res);
+    if (i >= _a.MAX_REPOSITORY_DEPTH) {
+        ERROR(Errors.Fail, `GuardParser.Create: Retrieve guards from the Repository with a maximum depth of more than ${_a.MAX_REPOSITORY_DEPTH} levels.`);
     }
+    // concatenate all parsers
+    for (let i = 1; i < parsers.length; ++i) {
+        parsers[0].guard_list = parsers[0].guard_list.concat(deepCopy(parsers[i].guard_list));
+        parsers[0].guards = parsers[0].guards.concat(parsers[i].guards);
+    }
+    if (parsers.length > 0) {
+        return parsers[0];
+    }
+};
+// fetch repository guards
+GuardParser.RepositoryGuards = async (repositories) => {
+    const res = await Protocol.Instance().query_raw(repositories);
+    const guards = [];
+    for (let i = 0; i < res.length; ++i) {
+        if (res[i].data?.content?.fields?.guard) {
+            guards.push((res[i].data?.content).fields.guard);
+        }
+    }
+    return guards;
 };
 GuardParser.parse_constant = (constants) => {
     let ret = [];
@@ -407,6 +456,7 @@ GuardParser.parse_bcs = (constants, chain_bytes) => {
             case ContextType.TYPE_GUARD:
             case OperatorType.TYPE_LOGIC_NOT:
             case OperatorType.TYPE_NUMBER_ADDRESS:
+            case OperatorType.TYPE_STRING_LOWERCASE:
                 break;
             case OperatorType.TYPE_LOGIC_AS_U256_GREATER:
             case OperatorType.TYPE_LOGIC_AS_U256_GREATER_EQUAL:
@@ -556,6 +606,7 @@ GuardParser.parse_bcs = (constants, chain_bytes) => {
     }
     return data;
 };
+GuardParser.MAX_REPOSITORY_DEPTH = 3;
 export class Passport {
     get_object() { return this.passport; }
     // return passport object used

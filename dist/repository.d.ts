@@ -1,4 +1,4 @@
-import { ValueType, RepositoryValueType, RepositoryAddress, PermissionObject, PassportObject, TxbObject } from './protocol.js';
+import { ValueType, RepositoryValueType, RepositoryAddress, PermissionObject, PassportObject, TxbObject, GuardObject } from './protocol.js';
 import { PermissionIndexType } from './permission.js';
 import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
 export declare enum Repository_Policy_Mode {
@@ -64,6 +64,7 @@ export declare class Repository {
     rename_policy(policy_key: string, new_policy_key: string, passport?: PassportObject): void;
     set_description(description: string, passport?: PassportObject): void;
     set_policy_mode(policy_mode: Repository_Policy_Mode, passport?: PassportObject): void;
+    set_guard(guard?: GuardObject | null, passport?: PassportObject): void;
     set_policy_description(policy: string, description: string, passport?: PassportObject): void;
     set_policy_permission(policy: string, permission_index?: number, passport?: PassportObject): void;
     change_permission(new_permission: PermissionObject): void;

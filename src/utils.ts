@@ -120,6 +120,20 @@ export const concatenate = (resultConstructor:any, ...arrays:any[]) => {
     return result;
 }
 
+export function deepCopy<T>(obj: T): T {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+ 
+  const copy: any = Array.isArray(obj) ? [] : {};
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      copy[key] = deepCopy(obj[key]);
+    }
+  }
+  return copy;
+}
+
 export const parseObjectType = (chain_type:string | null | undefined, header:string='payment::Payment<') : string =>  {
     if (chain_type) {
         const i = chain_type.indexOf(header);
