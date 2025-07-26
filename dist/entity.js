@@ -32,10 +32,9 @@ export class Entity {
                 typeof (address) === 'string' ? this.txb.pure.address(address) : address]
         });
     }
-    update(info) {
-        if (info.size === 0) {
+    add_info(info) {
+        if (info.size === 0)
             return;
-        }
         if (info.size > _a.MAX_INFO_LENGTH) {
             ERROR(Errors.IsValidValue, `Entity.update: info size too long ${info.size}`);
         }
@@ -50,10 +49,26 @@ export class Entity {
         const keys = Array.from(info.keys()).map(v => v.toLocaleLowerCase());
         const values = Array.from(info.values());
         this.txb.moveCall({
-            target: Protocol.Instance().entityFn('info_update'),
+            target: Protocol.Instance().entityFn('info_add'),
             arguments: [Protocol.TXB_OBJECT(this.txb, this.object),
                 this.txb.pure.vector('string', keys),
                 this.txb.pure.vector('string', values)]
+        });
+    }
+    remove_info(titles) {
+        if (titles.length === 0)
+            return;
+        const t = titles.map(v => v.toLowerCase());
+        this.txb.moveCall({
+            target: Protocol.Instance().entityFn('info_remove'),
+            arguments: [Protocol.TXB_OBJECT(this.txb, this.object),
+                this.txb.pure.vector('string', t)]
+        });
+    }
+    removeall_info() {
+        this.txb.moveCall({
+            target: Protocol.Instance().entityFn('info_removeall'),
+            arguments: [Protocol.TXB_OBJECT(this.txb, this.object)]
         });
     }
     create_resource() {

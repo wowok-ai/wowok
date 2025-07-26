@@ -23,6 +23,10 @@ export enum EntityInfo_Default {
     homepage = 'homepage'
 }
 
+export interface EntityInfo {
+    title: string;
+    value: string;
+}
 
 export class Entity {
     protected object:TxbObject;
@@ -52,10 +56,8 @@ export class Entity {
         })
     }
 
-    update(info: Map<string, string>) {
-        if (info.size === 0) {
-            return 
-        }
+    add_info(info: Map<string, string>) {
+        if (info.size === 0)  return ;
 
         if (info.size > Entity.MAX_INFO_LENGTH) {
             ERROR(Errors.IsValidValue, `Entity.update: info size too long ${info.size}`);
@@ -74,12 +76,30 @@ export class Entity {
         const values = Array.from(info.values());
         
         this.txb.moveCall({
-            target:Protocol.Instance().entityFn('info_update') as FnCallType,
+            target:Protocol.Instance().entityFn('info_add') as FnCallType,
             arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
                 this.txb.pure.vector('string', keys),
                 this.txb.pure.vector('string', values)]
         })
     }
+
+    remove_info(titles:string[]) {
+        if (titles.length === 0) return ;
+        const t = titles.map(v => v.toLowerCase());
+        this.txb.moveCall({
+            target:Protocol.Instance().entityFn('info_remove') as FnCallType,
+            arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
+                this.txb.pure.vector('string', t)]
+        })
+    }
+
+    removeall_info() {
+        this.txb.moveCall({
+            target:Protocol.Instance().entityFn('info_removeall') as FnCallType,
+            arguments:[Protocol.TXB_OBJECT(this.txb, this.object)]
+        })
+    }
+
 
     create_resource() : ResourceAddress {
         return this.txb.moveCall({

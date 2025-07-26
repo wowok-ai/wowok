@@ -18,6 +18,10 @@ export declare enum EntityInfo_Default {
     location = "location",
     homepage = "homepage"
 }
+export interface EntityInfo {
+    title: string;
+    value: string;
+}
 export declare class Entity {
     protected object: TxbObject;
     protected txb: TransactionBlock;
@@ -25,7 +29,9 @@ export declare class Entity {
     private constructor();
     static From(txb: TransactionBlock): Entity;
     mark(resource: Resource, address: string | TransactionResult, like: TagName.Like | TagName.Dislike): void;
-    update(info: Map<string, string>): void;
+    add_info(info: Map<string, string>): void;
+    remove_info(titles: string[]): void;
+    removeall_info(): void;
     create_resource(): ResourceAddress;
     create_resource2(): ResourceObject;
     set_description(description: string): TransactionResult;
