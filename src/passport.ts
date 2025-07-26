@@ -282,7 +282,7 @@ export class GuardParser {
 
     static Create = async (guards: string[]) : Promise<GuardParser | undefined> => {
         if (!IsValidArray(guards, IsValidAddress)) {
-            return undefined;
+            ERROR(Errors.InvalidParam, 'GuardParser.Create: guards invalid');
         }
 
         let guard_list = array_unique(guards);
