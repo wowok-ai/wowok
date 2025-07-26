@@ -965,6 +965,24 @@ export class Service {
             })   
         }    
     } */
+    refund_by_service(order:OrderObject, passport?:PassportObject) {
+        if (!Protocol.IsValidObjects([order])) {
+            ERROR(Errors.IsValidObjects, `refund_by_service.order ${order}`)
+        }
+        if (passport) {
+            this.txb.moveCall({
+                target:Protocol.Instance().serviceFn('refund_by_service_with_passport') as FnCallType,
+                arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments:[this.pay_token_type]
+            })     
+        } else {
+            this.txb.moveCall({
+                target:Protocol.Instance().serviceFn('refund_by_service') as FnCallType,
+                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, order), Protocol.TXB_OBJECT(this.txb, this.permission)],
+                typeArguments:[this.pay_token_type]
+            })     
+        }    
+    }
 
     pause(pause:boolean, passport?:PassportObject) {
         if (passport) {
@@ -996,7 +1014,7 @@ export class Service {
             typeArguments:[this.pay_token_type, arb_type]
             })     
     }
-
+    
     refund(order:OrderObject, refund_guard?:GuardObject, passport?:PassportObject) {
         if (!Protocol.IsValidObjects([order])) {
             ERROR(Errors.IsValidObjects, 'refund.order')

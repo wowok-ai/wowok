@@ -30,19 +30,11 @@ export declare const array_equal: (arr1: any[], arr2: any[]) => boolean;
 export declare const array_unique: (arr: any[]) => any[];
 export declare function capitalize(s: string): string;
 export declare function parse_object_type(object_data: string): string[];
-export interface Entity_Info {
-    name: string;
-    description?: string;
-    avatar?: string;
-    twitter?: string;
-    discord?: string;
-    homepage?: string;
-}
 export declare class Bcs {
     private static _instance;
+    private VecMapStruct;
     private EntStruct;
     private TagStruct;
-    private PersonalInfo;
     private Guards;
     private Perm;
     private Perms;
@@ -52,8 +44,6 @@ export declare class Bcs {
     ser(type: ValueType | ContextType, data: Uint8Array | any): Uint8Array;
     de(type: ValueType, data: Uint8Array | any): any;
     de_ent(data: Uint8Array | undefined): any | undefined;
-    se_entInfo(info: Entity_Info): Uint8Array<ArrayBufferLike>;
-    de_entInfo(data: Uint8Array | undefined): any | undefined;
     de_tags(data: Uint8Array | undefined): any | undefined;
     de_perms(data: Uint8Array | undefined): any | undefined;
 }

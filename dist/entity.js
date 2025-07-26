@@ -1,8 +1,16 @@
 var _a;
 import { Protocol } from './protocol.js';
-import { IsValidDesription, IsValidAddress, IsValidName, isValidHttpUrl, Bcs } from './utils.js';
+import { IsValidDesription, IsValidAddress, IsValidName, IsValidStringLength } from './utils.js';
 import { ERROR, Errors } from './exception.js';
-import { Transaction as TransactionBlock } from '@mysten/sui/transactions';
+export var EntityInfo_Default;
+(function (EntityInfo_Default) {
+    EntityInfo_Default["name"] = "name";
+    EntityInfo_Default["avatar"] = "avatar";
+    EntityInfo_Default["x"] = "x";
+    EntityInfo_Default["discord"] = "discord";
+    EntityInfo_Default["location"] = "location";
+    EntityInfo_Default["homepage"] = "homepage";
+})(EntityInfo_Default || (EntityInfo_Default = {}));
 export class Entity {
     get_object() { return this.object; }
     constructor(txb) {
@@ -25,22 +33,27 @@ export class Entity {
         });
     }
     update(info) {
-        if (info?.name && !IsValidName(info.name))
-            ERROR(Errors.IsValidName, 'update');
-        if (info?.description && !IsValidDesription(info.description))
-            ERROR(Errors.IsValidDesription, 'update');
-        if (info?.avatar && !isValidHttpUrl(info.avatar))
-            ERROR(Errors.isValidHttpUrl, 'update:avatar');
-        if (info?.twitter && !IsValidName(info.twitter))
-            ERROR(Errors.IsValidName, 'update:twitter');
-        if (info?.homepage && !isValidHttpUrl(info.homepage))
-            ERROR(Errors.isValidHttpUrl, 'update:homepage');
-        if (info?.discord && !IsValidName(info.discord))
-            ERROR(Errors.IsValidName, 'update:discord');
-        const bytes = Bcs.getInstance().se_entInfo(info);
+        if (info.size === 0) {
+            return;
+        }
+        if (info.size > _a.MAX_INFO_LENGTH) {
+            ERROR(Errors.IsValidValue, `Entity.update: info size too long ${info.size}`);
+        }
+        info.forEach((v, k) => {
+            if (!IsValidName(k)) {
+                ERROR(Errors.IsValidName, `Entity.update: ${k} key too long `);
+            }
+            if (!IsValidStringLength(v, _a.MAX_INFO_VALUE_LENGTH)) {
+                ERROR(Errors.IsValidValue, `Entity.update: ${k} value too long`);
+            }
+        });
+        const keys = Array.from(info.keys()).map(v => v.toLocaleLowerCase());
+        const values = Array.from(info.values());
         this.txb.moveCall({
-            target: Protocol.Instance().entityFn('avatar_update'),
-            arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.vector('u8', [].slice.call(bytes))]
+            target: Protocol.Instance().entityFn('info_update'),
+            arguments: [Protocol.TXB_OBJECT(this.txb, this.object),
+                this.txb.pure.vector('string', keys),
+                this.txb.pure.vector('string', values)]
         });
     }
     create_resource() {
@@ -53,6 +66,15 @@ export class Entity {
         return this.txb.moveCall({
             target: Protocol.Instance().entityFn('resource_create2'),
             arguments: [Protocol.TXB_OBJECT(this.txb, this.object)]
+        });
+    }
+    set_description(description) {
+        if (!IsValidDesription(description)) {
+            ERROR(Errors.IsValidDesription, 'Entity.set_description');
+        }
+        return this.txb.moveCall({
+            target: Protocol.Instance().entityFn('description_set'),
+            arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(description)]
         });
     }
     destroy_resource(resource) {
@@ -76,32 +98,23 @@ export class Entity {
                 this.txb.pure.address(new_address)]
         });
     }
-    query_ent(address_queried) {
-        if (!IsValidAddress(address_queried)) {
-            ERROR(Errors.InvalidParam, 'query_ent');
-        }
-        this.txb.moveCall({
-            target: Protocol.Instance().entityFn('QueryEnt'),
-            arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.address(address_queried)]
-        });
-    }
 }
 _a = Entity;
 Entity.EntityData = async (address) => {
     if (IsValidAddress(address)) {
-        const txb = new TransactionBlock();
-        txb.moveCall({
-            target: Protocol.Instance().entityFn('QueryEnt'),
-            arguments: [Protocol.TXB_OBJECT(txb, Protocol.Instance().objectEntity()),
-                txb.pure.address(address)]
+        const res = await Protocol.Client().getDynamicFieldObject({
+            parentId: Protocol.Instance().objectEntity(), name: { type: 'address', value: address }
         });
-        const res = await Protocol.Client().devInspectTransactionBlock({ sender: address, transactionBlock: txb });
-        if (res.results?.length === 1 && res.results[0].returnValues?.length === 1) {
-            const r1 = Bcs.getInstance().de_ent(Uint8Array.from(res.results[0].returnValues[0][0]));
-            return { info: Bcs.getInstance().de_entInfo(Uint8Array.from(r1.avatar)),
-                resource_object: r1.resource ?? undefined,
-                like: r1.like, dislike: r1.dislike, address: address };
-        }
+        const content = res?.data?.content?.fields;
+        const info = new Map();
+        content?.value?.fields?.info?.fields?.contents?.forEach((v) => {
+            info.set(v?.fields?.key, v?.fields?.value);
+        });
+        return { like: content?.value?.fields?.like, dislike: content?.value?.fields?.dislike, address: address,
+            resource_object: content?.value?.fields?.resource, lastActive_digest: res?.data?.previousTransaction ?? '',
+            info: info, description: content?.value?.fields?.description };
     }
 };
+Entity.MAX_INFO_LENGTH = 32;
+Entity.MAX_INFO_VALUE_LENGTH = 256; // The max length of each info value.
 //# sourceMappingURL=entity.js.map

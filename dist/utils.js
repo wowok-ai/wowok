@@ -167,25 +167,19 @@ export function parse_object_type(object_data) {
 }
 export class Bcs {
     constructor() {
+        this.VecMapStruct = bcs.struct('VecMap', {
+            contents: bcs.vector(bcs.tuple([bcs.string(), bcs.string()])),
+        });
         this.EntStruct = bcs.struct('EntStruct', {
-            avatar: bcs.vector(bcs.u8()),
+            description: bcs.string(),
+            info: this.VecMapStruct,
             resource: bcs.option(bcs.Address),
-            safer_name: bcs.vector(bcs.string()),
-            safer_value: bcs.vector(bcs.string()),
             like: bcs.u32(),
             dislike: bcs.u32(),
         });
         this.TagStruct = bcs.struct('TagStruct', {
             nick: bcs.string(),
             tags: bcs.vector(bcs.string()),
-        });
-        this.PersonalInfo = bcs.struct('PersonalInfo', {
-            name: bcs.string(),
-            description: bcs.string(),
-            avatar: bcs.string(),
-            twitter: bcs.string(),
-            discord: bcs.string(),
-            homepage: bcs.string(),
         });
         this.Guards = bcs.struct('Guards', {
             address: bcs.option(bcs.Address),
@@ -314,21 +308,6 @@ export class Bcs {
             return undefined;
         const struct_vec = bcs.vector(bcs.u8()).parse(data);
         return this.EntStruct.parse(Uint8Array.from(struct_vec));
-    }
-    se_entInfo(info) {
-        return this.PersonalInfo.serialize({
-            name: info.name ?? '',
-            description: info.description ?? '',
-            avatar: info.avatar ?? '',
-            twitter: info.twitter ?? '',
-            discord: info.discord ?? '',
-            homepage: info.homepage ?? '',
-        }).toBytes();
-    }
-    de_entInfo(data) {
-        if (!data || data.length === 0)
-            return undefined;
-        return this.PersonalInfo.parse(data);
     }
     de_tags(data) {
         if (!data || data.length === 0)

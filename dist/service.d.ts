@@ -106,6 +106,7 @@ export declare class Service {
     set_customer_required(pubkey: string, customer_required: (BuyRequiredEnum | string)[], passport?: PassportObject): void;
     remove_customer_required(passport?: PassportObject): void;
     change_required_pubkey(pubkey: string, passport?: PassportObject): void;
+    refund_by_service(order: OrderObject, passport?: PassportObject): void;
     pause(pause: boolean, passport?: PassportObject): void;
     refund_withArb(order: OrderObject, arb: ArbObject, arb_type: string): void;
     refund(order: OrderObject, refund_guard?: GuardObject, passport?: PassportObject): void;

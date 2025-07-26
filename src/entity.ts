@@ -1,19 +1,29 @@
 import { Protocol, FnCallType, TxbObject, ResourceAddress, ResourceObject} from './protocol.js';
-import { IsValidDesription, IsValidAddress, IsValidName, isValidHttpUrl, Bcs, Entity_Info} from './utils.js';
+import { IsValidDesription, IsValidAddress, IsValidName, Bcs, IsValidStringLength} from './utils.js';
 import { ERROR, Errors } from './exception.js';
 import { TagName, Resource } from './resource.js';
 import { Transaction as TransactionBlock, TransactionResult } from '@mysten/sui/transactions';
 
-
-
-
 export interface EntityData {
-    info?: Entity_Info
+    info?: Map<string, string>,
     resource_object?: string,
     like?: number,
     dislike?: number,
     address?:string,
+    description?: string,
+    lastActive_digest?: string,
 }
+
+export enum EntityInfo_Default {
+    name = 'name',
+    avatar = 'avatar',
+    x = 'x',
+    discord = 'discord',
+    location = 'location',
+    homepage = 'homepage'
+}
+
+
 export class Entity {
     protected object:TxbObject;
     protected txb;
@@ -42,18 +52,32 @@ export class Entity {
         })
     }
 
-    update(info: Entity_Info) {
-        if (info?.name && !IsValidName(info.name)) ERROR(Errors.IsValidName, 'update');
-        if (info?.description && !IsValidDesription(info.description)) ERROR(Errors.IsValidDesription, 'update');
-        if (info?.avatar && !isValidHttpUrl(info.avatar)) ERROR(Errors.isValidHttpUrl, 'update:avatar');
-        if (info?.twitter && !IsValidName(info.twitter)) ERROR(Errors.IsValidName, 'update:twitter');
-        if (info?.homepage && !isValidHttpUrl(info.homepage)) ERROR(Errors.isValidHttpUrl, 'update:homepage');
-        if (info?.discord && !IsValidName(info.discord)) ERROR(Errors.IsValidName, 'update:discord');
+    update(info: Map<string, string>) {
+        if (info.size === 0) {
+            return 
+        }
+
+        if (info.size > Entity.MAX_INFO_LENGTH) {
+            ERROR(Errors.IsValidValue, `Entity.update: info size too long ${info.size}`);
+        }
+
+        info.forEach((v, k) => {
+            if (!IsValidName(k)) {
+                ERROR(Errors.IsValidName, `Entity.update: ${k} key too long `);
+            }
+            if (!IsValidStringLength(v, Entity.MAX_INFO_VALUE_LENGTH)) {
+                ERROR(Errors.IsValidValue, `Entity.update: ${k} value too long`);
+            }   
+        })
+
+        const keys = Array.from(info.keys()).map(v => v.toLocaleLowerCase());
+        const values = Array.from(info.values());
         
-        const bytes = Bcs.getInstance().se_entInfo(info);
         this.txb.moveCall({
-            target:Protocol.Instance().entityFn('avatar_update') as FnCallType,
-            arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.vector('u8', [].slice.call(bytes))]
+            target:Protocol.Instance().entityFn('info_update') as FnCallType,
+            arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
+                this.txb.pure.vector('string', keys),
+                this.txb.pure.vector('string', values)]
         })
     }
 
@@ -71,6 +95,17 @@ export class Entity {
         }) 
     }
     
+    set_description(description:string) {
+        if (!IsValidDesription(description)) {
+            ERROR(Errors.IsValidDesription, 'Entity.set_description');
+        }
+
+        return this.txb.moveCall({
+            target:Protocol.Instance().entityFn('description_set') as FnCallType,
+            arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(description)]
+        })
+    }
+
     destroy_resource(resource:Resource) { // Resource must self-owned.
         return this.txb.moveCall({
             target:Protocol.Instance().entityFn('resource_destroy') as FnCallType,
@@ -94,33 +129,23 @@ export class Entity {
                 this.txb.pure.address(new_address)]
         })   
     }
-    query_ent(address_queried:string) {
-        if (!IsValidAddress(address_queried)) {
-            ERROR(Errors.InvalidParam, 'query_ent');    
-        }
-
-        this.txb.moveCall({
-            target:Protocol.Instance().entityFn('QueryEnt') as FnCallType,
-            arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.address(address_queried)]
-        })   
-    }
 
     static EntityData = async (address:string) : Promise<EntityData|undefined>=> {
         if (IsValidAddress(address)) {
-            const txb = new TransactionBlock(); 
-            txb.moveCall({
-                target:Protocol.Instance().entityFn('QueryEnt') as FnCallType,
-                arguments:[Protocol.TXB_OBJECT(txb, Protocol.Instance().objectEntity()), 
-                    txb.pure.address(address)]
-            }) ;
+            const res = await Protocol.Client().getDynamicFieldObject({
+                parentId:Protocol.Instance().objectEntity(), name:{type:'address', value:address}});
 
-            const res = await Protocol.Client().devInspectTransactionBlock({sender:address, transactionBlock:txb});
-            if (res.results?.length === 1 && res.results[0].returnValues?.length === 1 )  {
-                const r1 = Bcs.getInstance().de_ent(Uint8Array.from(res.results[0].returnValues[0][0]));
-                return {info: Bcs.getInstance().de_entInfo(Uint8Array.from(r1.avatar)),
-                    resource_object: r1.resource ?? undefined, 
-                    like: r1.like, dislike:r1.dislike, address:address};
-            }
+            const content = (res?.data?.content as any)?.fields;
+            const info = new Map<string, string>();
+            (content?.value?.fields?.info?.fields?.contents as any)?.forEach((v:any) => {
+                info.set(v?.fields?.key, v?.fields?.value)
+            })
+
+            return {like:content?.value?.fields?.like, dislike:content?.value?.fields?.dislike, address: address,
+                resource_object: content?.value?.fields?.resource, lastActive_digest: res?.data?.previousTransaction ?? '', 
+                info : info, description:content?.value?.fields?.description}
         }
   } 
+  static MAX_INFO_LENGTH = 32;
+  static MAX_INFO_VALUE_LENGTH = 256; // The max length of each info value.
 }

@@ -177,36 +177,23 @@ export function parse_object_type(object_data:string) : string[] {
     return object_type;
 }
 
-export interface Entity_Info {
-    name: string;
-    description?: string;
-    avatar?: string;
-    twitter?: string;
-    discord?: string;
-    homepage?: string;
-}
-
 export class Bcs {
     private static _instance : any;
+
+    private VecMapStruct = bcs.struct('VecMap', {
+        contents: bcs.vector(bcs.tuple([bcs.string(), bcs.string()])),
+    });
+
     private EntStruct = bcs.struct('EntStruct', {
-        avatar: bcs.vector(bcs.u8()),
+        description: bcs.string(),
+        info: this.VecMapStruct,
         resource: bcs.option(bcs.Address),
-        safer_name: bcs.vector(bcs.string()),
-        safer_value: bcs.vector(bcs.string()),
         like: bcs.u32(),
         dislike: bcs.u32(),
     });
     private TagStruct = bcs.struct('TagStruct', {
         nick: bcs.string(),
         tags: bcs.vector(bcs.string()),
-    })
-    private PersonalInfo = bcs.struct('PersonalInfo', {
-        name: bcs.string(),
-        description: bcs.string(),
-        avatar: bcs.string(),
-        twitter: bcs.string(),
-        discord: bcs.string(),
-        homepage: bcs.string(),
     })
     private Guards = bcs.struct('Guards', {
         address: bcs.option(bcs.Address),
@@ -339,20 +326,7 @@ export class Bcs {
         const struct_vec = bcs.vector(bcs.u8()).parse(data);
         return this.EntStruct.parse(Uint8Array.from(struct_vec))
     }  
-    se_entInfo(info: Entity_Info) {
-        return this.PersonalInfo.serialize({
-            name: info.name ?? '',
-            description: info.description ?? '',
-            avatar: info.avatar ?? '',
-            twitter: info.twitter ?? '',
-            discord: info.discord ?? '',
-            homepage: info.homepage ?? '',
-        }).toBytes();
-    }
-    de_entInfo(data:Uint8Array | undefined) : any | undefined {
-        if (!data || data.length === 0) return undefined
-        return this.PersonalInfo.parse(data);
-    }    
+
     de_tags(data:Uint8Array | undefined) : any | undefined {
         if (!data || data.length === 0) return undefined;
         const struct_vec = bcs.vector(bcs.u8()).parse(data);
