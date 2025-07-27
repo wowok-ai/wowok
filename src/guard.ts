@@ -142,6 +142,10 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.order, query_name:'Has Arb', query_id:514, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Does the order contain an Arb for arbitration?', parameters_description:['arb address']},   
     {module:MODULES.order, query_name:'Type', query_id:515, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI")', parameters_description:[]},   
     {module:MODULES.order, query_name:'Type with Original Ids', query_id:516, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description:[]}, 
+    {module:MODULES.order, query_name:'Number of Items', query_id:517, parameters:[], return:ValueType.TYPE_U64, description:'The number of the purchased items', parameters_description:[]},   
+    {module:MODULES.order, query_name:'Has Item', query_id:518, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_BOOL, description:'Has the order included the purchase of a certain item?', parameters_description:['item name']},   
+    {module:MODULES.order, query_name:'Item Price', query_id:519, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_U64, description:'The price of the purchased item', parameters_description:['item name']}, 
+    {module:MODULES.order, query_name:'Item Quantity', query_id:520, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_U64, description:'The quantity of the purchased item', parameters_description:['item name']}, 
 
     {module:MODULES.machine, query_name:'Permission', query_id:700, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', },
     {module:MODULES.machine, query_name:'Paused', query_id:701, parameters:[], return:ValueType.TYPE_BOOL, description:'Pause the creation of new Progress?', },
