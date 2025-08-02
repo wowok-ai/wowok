@@ -1093,7 +1093,7 @@ export class Service {
                     target:Protocol.Instance().serviceFn('buy_with_passport') as FnCallType,
                     arguments: [passport, Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.vector('string', name), 
                         this.txb.pure.vector('u64', price), this.txb.pure.vector('u64', stock), 
-                        Protocol.TXB_OBJECT(this.txb, coin)],
+                        Protocol.TXB_OBJECT(this.txb, coin), this.txb.object(clock)],
                     typeArguments:[this.pay_token_type]            
             })}             
         } else {
@@ -1110,9 +1110,8 @@ export class Service {
                 order = this.txb.moveCall({
                     target:Protocol.Instance().serviceFn('buy') as FnCallType,
                     arguments: [Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.vector('string', name), 
-                        this.txb.pure.vector('u64', price), 
-                        this.txb.pure.vector('u64', stock), 
-                        Protocol.TXB_OBJECT(this.txb, coin)],
+                        this.txb.pure.vector('u64', price), this.txb.pure.vector('u64', stock), 
+                        Protocol.TXB_OBJECT(this.txb, coin), this.txb.object(clock)],
                     typeArguments:[this.pay_token_type]            
             })}           
         }

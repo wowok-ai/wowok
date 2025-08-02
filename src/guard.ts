@@ -85,6 +85,7 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.entity, query_name:'Has Resource by Entity', query_id:204, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_BOOL, description:'Whether an entity created a resource?', parameters_description:['address']}, 
     {module:MODULES.entity, query_name:'Entity Resource', query_id:205, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_ADDRESS, description:'The address of a resource object created by an entity.', parameters_description:['address']}, 
     {module:MODULES.entity, query_name:'Info', query_id:206, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_STRING], return:ValueType.TYPE_STRING, description:'The information of the entity (such as name, location, etc.).', parameters_description:['address', 'info name']}, 
+    {module:MODULES.entity, query_name:'Time', query_id:207, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The time of joining WoWok', parameters_description:['address']}, 
 
     {module:MODULES.demand, query_name:'Permission', query_id:300, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', },       
     {module:MODULES.demand, query_name:'Deadline', query_id:302, parameters:[], return:ValueType.TYPE_U64, description:'The expiration time of presenting.', },   
@@ -146,6 +147,7 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.order, query_name:'Has Item', query_id:518, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_BOOL, description:'Has the order included the purchase of a certain item?', parameters_description:['item name']},   
     {module:MODULES.order, query_name:'Item Price', query_id:519, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_U64, description:'The price of the purchased item', parameters_description:['item name']}, 
     {module:MODULES.order, query_name:'Item Quantity', query_id:520, parameters:[ValueType.TYPE_STRING], return:ValueType.TYPE_U64, description:'The quantity of the purchased item', parameters_description:['item name']}, 
+    {module:MODULES.order, query_name:'Time', query_id:521, parameters:[], return:ValueType.TYPE_U64, description:'Order generation time', parameters_description:[]},   
 
     {module:MODULES.machine, query_name:'Permission', query_id:700, parameters:[], return:ValueType.TYPE_ADDRESS, description:'Permission object address.', },
     {module:MODULES.machine, query_name:'Paused', query_id:701, parameters:[], return:ValueType.TYPE_BOOL, description:'Pause the creation of new Progress?', },
@@ -269,10 +271,12 @@ export const GUARD_QUERIES:GuardQuery[] = [
     {module:MODULES.arb, query_name:'Voting weight', query_id:1608, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The weight of a complete vote for the address.', parameters_description:['voter address']}, 
     {module:MODULES.arb, query_name:'Voting Time', query_id:1609, parameters:[ValueType.TYPE_ADDRESS], return:ValueType.TYPE_U64, description:'The time of a complete vote for the address.', parameters_description:['voter address']}, 
     {module:MODULES.arb, query_name:'Voting Option', query_id:1610, parameters:[ValueType.TYPE_ADDRESS, ValueType.TYPE_U8], return:ValueType.TYPE_BOOL, description:'Does an address complete voting for the option?', parameters_description:['voter address', 'option index']}, 
-    {module:MODULES.arb, query_name:'Number of Options', query_id:1611, parameters:[], return:ValueType.TYPE_U64, description:'Number of voting options.', }, 
-    {module:MODULES.arb, query_name:'Number of Votes', query_id:1612, parameters:[ValueType.TYPE_U8], return:ValueType.TYPE_U64, description:'The number of votes received for an option.', parameters_description:['option index']}, 
-    {module:MODULES.arb, query_name:'Type', query_id:1613, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI")', parameters_description:[]},   
-    {module:MODULES.arb, query_name:'Type with Original Ids', query_id:1614, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description:[]}, 
+    {module:MODULES.arb, query_name:'Number of Options', query_id:1611, parameters:[], return:ValueType.TYPE_U64, description:'Number of voting options.', parameters_description:[]}, 
+    {module:MODULES.arb, query_name:'Number of Voters', query_id:1612, parameters:[], return:ValueType.TYPE_U64, description:'Total number of voters', parameters_description:[]}, 
+    {module:MODULES.arb, query_name:'Number of Votes for the Option', query_id:1613, parameters:[ValueType.TYPE_U8], return:ValueType.TYPE_U64, description:'The number of votes received for an option.', parameters_description:['option index']}, 
+    {module:MODULES.arb, query_name:'Type', query_id:1614, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI")', parameters_description:[]},   
+    {module:MODULES.arb, query_name:'Type with Original Ids', query_id:1615, parameters:[], return:ValueType.TYPE_STRING, description:'The type name(eg. contains "2::sui::SUI") with original ids', parameters_description:[]}, 
+    {module:MODULES.arb, query_name:'Time', query_id:1616, parameters:[], return:ValueType.TYPE_U64, description:'Arb generation time', parameters_description:[]}, 
 ];
 
 export enum FunctionGroup {

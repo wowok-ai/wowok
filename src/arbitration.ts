@@ -474,38 +474,29 @@ export class Arbitration {
             ERROR(Errors.IsValidArray, 'arb.param.votable_proposition')
         }
 
+        const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
+        if (!param.fee) { //@ zero coin
+            param.fee = this.txb.moveCall({
+                target:Protocol.Instance().baseWowokFn('zero_coin') as FnCallType,
+                arguments:[],
+                typeArguments:[this.pay_token_type]
+            })
+        };
+
         if (passport) {
-            if (param.fee) {
-                return this.txb.moveCall({
-                    target:Protocol.Instance().arbitrationFn('dispute_with_passport') as FnCallType,
-                    arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.order), this.txb.pure.string(param.description),
-                        this.txb.pure.vector('string', array_unique(param.votable_proposition)), Protocol.TXB_OBJECT(this.txb, param.fee)],
-                    typeArguments:[this.pay_token_type, param.order_token_type]
-                })
-            } else {
-                return this.txb.moveCall({
-                    target:Protocol.Instance().arbitrationFn('free_dispute_with_passport') as FnCallType,
-                    arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.order), this.txb.pure.string(param.description),
-                        this.txb.pure.vector('string', array_unique(param.votable_proposition))],
-                    typeArguments:[this.pay_token_type, param.order_token_type]
-                })
-            }
+            return this.txb.moveCall({
+                target:Protocol.Instance().arbitrationFn('dispute_with_passport') as FnCallType,
+                arguments:[passport, Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.order), this.txb.pure.string(param.description),
+                    this.txb.pure.vector('string', array_unique(param.votable_proposition)), Protocol.TXB_OBJECT(this.txb, param.fee), this.txb.object(clock)],
+                typeArguments:[this.pay_token_type, param.order_token_type]
+            })
         } else {
-            if (param.fee) {
-                return this.txb.moveCall({
-                    target:Protocol.Instance().arbitrationFn('dispute') as FnCallType,
-                    arguments:[Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.order), this.txb.pure.string(param.description),
-                        this.txb.pure.vector('string', array_unique(param.votable_proposition)), Protocol.TXB_OBJECT(this.txb, param.fee)],
-                    typeArguments:[this.pay_token_type, param.order_token_type]
-                })
-            } else {
-                return this.txb.moveCall({
-                    target:Protocol.Instance().arbitrationFn('free_dispute') as FnCallType,
-                    arguments:[Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.order), this.txb.pure.string(param.description),
-                        this.txb.pure.vector('string', array_unique(param.votable_proposition))],
-                    typeArguments:[this.pay_token_type, param.order_token_type]
-                })
-            }
+            return this.txb.moveCall({
+                target:Protocol.Instance().arbitrationFn('dispute') as FnCallType,
+                arguments:[Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, param.order), this.txb.pure.string(param.description),
+                    this.txb.pure.vector('string', array_unique(param.votable_proposition)), Protocol.TXB_OBJECT(this.txb, param.fee), this.txb.object(clock)],
+                typeArguments:[this.pay_token_type, param.order_token_type]
+            })
         }
     }
 

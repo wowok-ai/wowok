@@ -12,6 +12,7 @@ export interface EntityData {
     address?:string,
     description?: string,
     lastActive_digest?: string,
+    time?: number,
 }
 
 export enum EntityInfo_Default {
@@ -48,11 +49,11 @@ export class Entity {
         if (typeof(address) === 'string' && !IsValidAddress(address)) {
             ERROR(Errors.IsValidAddress, like);
         }
-
+        const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
         this.txb.moveCall({
             target:Protocol.Instance().entityFn(like) as FnCallType,
             arguments:[Protocol.TXB_OBJECT(this.txb, this.object), Protocol.TXB_OBJECT(this.txb, resource.get_object()), 
-                typeof(address) === 'string' ? this.txb.pure.address(address) : address]
+                typeof(address) === 'string' ? this.txb.pure.address(address) : address, this.txb.object(clock)]
         })
     }
 
@@ -74,12 +75,14 @@ export class Entity {
 
         const keys = Array.from(info.keys()).map(v => v.toLocaleLowerCase());
         const values = Array.from(info.values());
-        
+        const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
+
         this.txb.moveCall({
             target:Protocol.Instance().entityFn('info_add') as FnCallType,
             arguments:[Protocol.TXB_OBJECT(this.txb, this.object), 
                 this.txb.pure.vector('string', keys),
-                this.txb.pure.vector('string', values)]
+                this.txb.pure.vector('string', values),
+                this.txb.object(clock)]
         })
     }
 
@@ -102,16 +105,18 @@ export class Entity {
 
 
     create_resource() : ResourceAddress {
+        const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
         return this.txb.moveCall({
             target:Protocol.Instance().entityFn('resource_create') as FnCallType,
-            arguments:[Protocol.TXB_OBJECT(this.txb, this.object)]
+            arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(clock)]
         })
     }
 
     create_resource2(): ResourceObject {
+        const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
         return this.txb.moveCall({
             target:Protocol.Instance().entityFn('resource_create2') as FnCallType,
-            arguments:[Protocol.TXB_OBJECT(this.txb, this.object)]
+            arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.object(clock)]
         }) 
     }
     
@@ -120,9 +125,10 @@ export class Entity {
             ERROR(Errors.IsValidDesription, 'Entity.set_description');
         }
 
+        const clock = this.txb.sharedObjectRef(Protocol.CLOCK_OBJECT);
         return this.txb.moveCall({
             target:Protocol.Instance().entityFn('description_set') as FnCallType,
-            arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(description)]
+            arguments:[Protocol.TXB_OBJECT(this.txb, this.object), this.txb.pure.string(description), this.txb.object(clock)]
         })
     }
 
@@ -163,7 +169,7 @@ export class Entity {
 
             return {like:content?.value?.fields?.like, dislike:content?.value?.fields?.dislike, address: address,
                 resource_object: content?.value?.fields?.resource, lastActive_digest: res?.data?.previousTransaction ?? '', 
-                info : info, description:content?.value?.fields?.description}
+                info : info, description:content?.value?.fields?.description, time:content?.value?.fields?.time}
         }
   } 
   static MAX_INFO_LENGTH = 32;

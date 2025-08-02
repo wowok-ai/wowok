@@ -335,7 +335,7 @@ GuardParser.ResolveData = (constants, stack, current) => {
 };
 GuardParser.Create = async (guards) => {
     if (!IsValidArray(guards, IsValidAddress)) {
-        return undefined;
+        ERROR(Errors.InvalidParam, 'GuardParser.Create: guards invalid');
     }
     let guard_list = array_unique(guards);
     let check_guards = [...guard_list];
