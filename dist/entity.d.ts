@@ -9,6 +9,7 @@ export interface EntityData {
     address?: string;
     description?: string;
     lastActive_digest?: string;
+    time?: number;
 }
 export declare enum EntityInfo_Default {
     name = "name",

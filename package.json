@@ -54,6 +54,6 @@
   },
   "dependencies": {
     "@mysten/bcs": "^1.6.3",
-    "@mysten/sui": "^1.34.0",
+    "@mysten/sui": "^1.34.0"
   }
 }
